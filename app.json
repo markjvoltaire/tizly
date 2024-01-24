@@ -1,7 +1,11 @@
 {
   "expo": {
-    "name": "tizly",
-    "slug": "tizly",
+    "name": "TizlyNative",
+    "slug": "TizlyNative",
+    "scheme": "TizlyNative",
+    "detach": {
+      "scheme": "TizlyNative"
+    },
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -15,7 +19,7 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.markjvoltaire.tizly"
+      "bundleIdentifier": "com.markjvoltaire.TizlyNative"
     },
     "android": {
       "adaptiveIcon": {
@@ -28,7 +32,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "a75feb47-991c-4543-af2b-79fd76371094"
+        "projectId": "61c54675-42ec-4c84-86cf-09843327f703"
       }
     }
   }
