@@ -10,8 +10,11 @@ import Post from "../screens/Post";
 import Alerts from "../screens/Alerts";
 import UserProfile from "../screens/UserProfile";
 import { useUser } from "../context/UserContext";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import ProfileDetail from "../screens/ProfileDetail";
 
 export default function Auth() {
+  const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
   const [loading, setLoading] = useState(true);
   const { user, setUser } = useUser();
@@ -50,6 +53,42 @@ export default function Auth() {
     fetchUserById();
   }, []);
 
+  const HomeStack = () => {
+    return (
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen
+          name="HomeScreen"
+          component={Home}
+          options={{ tabBarVisible: false }} // Hide tab bar for this screen
+        />
+
+        <Stack.Screen
+          name="ProfileDetail"
+          options={{ tabBarVisible: false }}
+          component={ProfileDetail}
+        />
+      </Stack.Navigator>
+    );
+  };
+
+  const ExploreStack = () => {
+    return (
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen
+          name="Explore"
+          component={Explore}
+          options={{ tabBarVisible: false }} // Hide tab bar for this screen
+        />
+
+        <Stack.Screen
+          name="ProfileDetail"
+          options={{ tabBarVisible: false }}
+          component={ProfileDetail}
+        />
+      </Stack.Navigator>
+    );
+  };
+
   return (
     <Tab.Navigator>
       <Tab.Screen
@@ -70,7 +109,7 @@ export default function Auth() {
             ),
         }}
         name="Home"
-        component={Home}
+        component={HomeStack}
       />
 
       <Tab.Screen
@@ -90,8 +129,8 @@ export default function Auth() {
               />
             ),
         }}
-        name="Explore"
-        component={Explore}
+        name="ExploreStack"
+        component={ExploreStack}
       />
 
       <Tab.Screen
