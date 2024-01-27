@@ -1,12 +1,11 @@
 {
   "expo": {
     "name": "tizly",
-    "slug": "tizly",
+    "  ": "tizly",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "auto",
-
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",

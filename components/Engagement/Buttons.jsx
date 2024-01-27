@@ -225,7 +225,13 @@ export default function Buttons({ post, userDetails }) {
             left: screenWidth / 2 - 80,
           }}
         >
-          <Text style={{ color: "white", textAlign: "center" }}>
+          <Text
+            style={{
+              color: "white",
+              textAlign: "center",
+              fontFamily: "Poppins-Bold",
+            }}
+          >
             Reaction sent
           </Text>
         </View>

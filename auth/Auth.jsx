@@ -12,6 +12,7 @@ import UserProfile from "../screens/UserProfile";
 import { useUser } from "../context/UserContext";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import ProfileDetail from "../screens/ProfileDetail";
+import Uploading from "../screens/Uploading";
 
 export default function Auth() {
   const Stack = createNativeStackNavigator();
@@ -89,6 +90,24 @@ export default function Auth() {
     );
   };
 
+  const PostStack = () => {
+    return (
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen
+          name="Post"
+          component={Post}
+          options={{ tabBarVisible: false }} // Hide tab bar for this screen
+        />
+
+        <Stack.Screen
+          name="Uploading"
+          options={{ tabBarVisible: false }}
+          component={Uploading}
+        />
+      </Stack.Navigator>
+    );
+  };
+
   return (
     <Tab.Navigator>
       <Tab.Screen
@@ -150,8 +169,8 @@ export default function Auth() {
               />
             ),
         }}
-        name="Post"
-        component={Post}
+        name="PostStack"
+        component={PostStack}
       />
 
       <Tab.Screen

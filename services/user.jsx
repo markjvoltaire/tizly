@@ -123,3 +123,47 @@ export async function getRandomUser() {
 
   return randomUsers;
 }
+
+export async function uploadStatus(description) {
+  console.log("description", description);
+  const userId = supabase.auth.currentUser.id;
+  try {
+    const newStatus = {
+      user_id: userId,
+      description: description, // Use the current value of the description state
+      media: null,
+      mediaType: "status",
+    };
+    const resp = await supabase.from("post").insert([newStatus]);
+    console.log("resp", resp);
+    return resp;
+  } catch (error) {
+    console.error("Error submitting comment:", error);
+    throw error;
+  }
+}
+
+export async function deletePost(post) {
+  const userId = supabase.auth.currentUser.id;
+  const resp = await supabase
+    .from("post")
+    .delete()
+    .eq("user_id", userId)
+    .eq("id", post.id);
+
+  return resp;
+}
+
+export async function reportPostById(post) {
+  const userId = supabase.auth.currentUser.id;
+  const resp = await supabase.from("reports").insert([
+    {
+      postId: post.id,
+      creatorId: post.user_id,
+      userId: userId.userId,
+      commentId: "THIS IS A POST REPORT",
+      comment: "THIS IS A POST REPORT",
+    },
+  ]);
+  return resp;
+}
