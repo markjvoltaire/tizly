@@ -1,10 +1,10 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 
-export default function Photo() {
+export default function VideoDetails() {
   return (
     <View>
-      <Text>Photo</Text>
+      <Text>VideoDetails</Text>
     </View>
   );
 }

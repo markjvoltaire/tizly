@@ -89,7 +89,7 @@ const Uploading = ({ route, navigation }) => {
 
     if (res.error === null) {
       navigation.goBack();
-      Alert.alert("Your Post Was Uploaded");
+      Alert.alert("Upload successful", "Your Post Was Uploaded");
       console.log("resp", resp);
     } else {
       console.log("ERROR", res.error);

@@ -12,6 +12,7 @@ import { useScrollToTop } from "@react-navigation/native";
 import PaginationComponent from "../components/Explore/PaginationComponent";
 import AppHeader from "../components/Headers/AppHeader";
 import ExplorePlaceHolder from "../components/Explore/ExplorePlaceHolder";
+import ExploreHeader from "../components/Headers/ExploreHeader";
 
 export default function Explore({ navigation }) {
   const [textInput, setTextInput] = useState("");
@@ -32,7 +33,7 @@ export default function Explore({ navigation }) {
     <TouchableWithoutFeedback onPress={dismissKeyboard}>
       <>
         <SafeAreaView style={styles.container}>
-          <AppHeader navigation={navigation} />
+          <ExploreHeader />
           <TextInput
             style={styles.textInput}
             placeholderTextColor="grey"

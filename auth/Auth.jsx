@@ -13,6 +13,8 @@ import { useUser } from "../context/UserContext";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import ProfileDetail from "../screens/ProfileDetail";
 import Uploading from "../screens/Uploading";
+import PostInfo from "../components/Post/PostInfo";
+import PostDetail from "../screens/PostDetails";
 
 export default function Auth() {
   const Stack = createNativeStackNavigator();
@@ -108,6 +110,30 @@ export default function Auth() {
     );
   };
 
+  const AlertStack = () => {
+    return (
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen
+          name="Alert"
+          component={Alerts}
+          options={{ tabBarVisible: false }} // Hide tab bar for this screen
+        />
+
+        <Stack.Screen
+          name="ProfileDetail"
+          options={{ tabBarVisible: false }}
+          component={ProfileDetail}
+        />
+
+        <Stack.Screen
+          name="PostDetail"
+          options={{ tabBarVisible: false }}
+          component={PostDetail}
+        />
+      </Stack.Navigator>
+    );
+  };
+
   return (
     <Tab.Navigator>
       <Tab.Screen
@@ -191,7 +217,7 @@ export default function Auth() {
             ),
         }}
         name="Alerts"
-        component={Alerts}
+        component={AlertStack}
       />
 
       <Tab.Screen

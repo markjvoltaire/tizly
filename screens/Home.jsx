@@ -139,14 +139,18 @@ export default function Home({ navigation }) {
     const moreImage = (
       <Pressable
         onPress={() => handleOptionPress(item)}
-        style={{ position: "absolute" }}
+        style={{
+          position: "absolute",
+
+          left: width * 0.85,
+        }}
       >
         <Image
           style={{
             height: 40,
             width: 40,
             marginRight: 10,
-            left: width * 0.85,
+
             bottom: height * 0.01,
           }}
           source={require("../assets/More.png")}
@@ -202,7 +206,13 @@ export default function Home({ navigation }) {
       }}
     >
       <AppHeader />
-      <View style={{ width: width, alignSelf: "center" }}>
+      <View
+        style={{
+          width: width,
+          alignSelf: "center",
+          marginBottom: height * 0.02,
+        }}
+      >
         <FlatList
           onRefresh={() => onRefresh()} // Move onRefresh to FlatList
           refreshing={refreshing} // Add refreshing prop to FlatList

@@ -151,7 +151,12 @@ export async function deletePost(post) {
     .eq("user_id", userId)
     .eq("id", post.id);
 
-  return resp;
+  const res = await supabase
+    .from("notifications")
+    .delete()
+    .eq("postId", post.id);
+
+  return resp && res;
 }
 
 export async function reportPostById(post) {
@@ -165,5 +170,42 @@ export async function reportPostById(post) {
       comment: "THIS IS A POST REPORT",
     },
   ]);
+  return resp;
+}
+
+export async function getNotifications() {
+  const userId = supabase.auth.currentUser.id;
+
+  // Fetch likes and comments
+  const { body: likesAndComments } = await supabase
+    .from("notifications")
+    .select("*")
+    .eq("creatorId", userId)
+    .neq("userId", userId);
+
+  // Fetch friend requests
+  const { body: friendRequests } = await supabase
+    .from("friendRequests")
+    .select("*")
+    .eq("receiverId", userId)
+    .eq("status", "pending");
+
+  // Combine likesAndComments and friendRequests arrays
+  const list = likesAndComments.concat(friendRequests);
+
+  // Sort the combined array by the 'id' property in descending order
+  list.sort((a, b) => b.id - a.id);
+
+  return list;
+}
+
+export async function getPost(post) {
+  const resp = await supabase
+    .from("post")
+    .select("*")
+    .eq("id", post.postId)
+    .single()
+    .limit(1);
+
   return resp;
 }

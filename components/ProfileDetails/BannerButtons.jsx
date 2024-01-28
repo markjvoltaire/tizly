@@ -6,6 +6,7 @@ import {
   View,
   Dimensions,
   TouchableOpacity,
+  Image,
 } from "react-native";
 
 import { supabase } from "../../services/supabase";
@@ -62,11 +63,10 @@ export default function BannerButtons({ userDetails, friendStatus }) {
                 paddingTop: screenHeight * 0.005,
               }}
             >
-              Friends
+              Following
             </Text>
           </TouchableOpacity>
         </Animated.View>
-
         <Animated.View
           style={{
             opacity: opacity2,
@@ -76,24 +76,19 @@ export default function BannerButtons({ userDetails, friendStatus }) {
             style={{
               borderWidth: 1,
               borderColor: "white",
-              width: screenWidth * 0.3,
+              width: screenWidth * 0.09,
               height: screenHeight * 0.036,
               padding: 1,
-              borderRadius: 12,
+              aspectRatio: 1,
+              borderRadius: 100,
               backgroundColor: "white",
+              justifyContent: "center",
             }}
           >
-            <Text
-              style={{
-                fontSize: 14,
-                fontWeight: "700",
-                alignSelf: "center",
-                color: "black",
-                paddingTop: screenHeight * 0.005,
-              }}
-            >
-              Options
-            </Text>
+            <Image
+              style={{ height: 30, width: 30, alignSelf: "center" }}
+              source={require("../../assets/More.png")}
+            />
           </TouchableOpacity>
         </Animated.View>
       </View>
@@ -142,24 +137,20 @@ export default function BannerButtons({ userDetails, friendStatus }) {
           <TouchableOpacity
             style={{
               borderWidth: 1,
-              backgroundColor: "white",
-              width: screenWidth * 0.3,
+              borderColor: "white",
+              width: screenWidth * 0.09,
               height: screenHeight * 0.036,
               padding: 1,
-              borderRadius: 12,
+              aspectRatio: 1,
+              borderRadius: 100,
+              backgroundColor: "white",
+              justifyContent: "center",
             }}
           >
-            <Text
-              style={{
-                fontSize: 14,
-                fontWeight: "700",
-                alignSelf: "center",
-
-                paddingTop: screenHeight * 0.005,
-              }}
-            >
-              Options
-            </Text>
+            <Image
+              style={{ height: 30, width: 30, alignSelf: "center" }}
+              source={require("../../assets/More.png")}
+            />
           </TouchableOpacity>
         </Animated.View>
       </View>
@@ -195,7 +186,7 @@ export default function BannerButtons({ userDetails, friendStatus }) {
                 paddingTop: screenHeight * 0.005,
               }}
             >
-              Join
+              Follow
             </Text>
           </TouchableOpacity>
         </Animated.View>
@@ -209,25 +200,19 @@ export default function BannerButtons({ userDetails, friendStatus }) {
             style={{
               borderWidth: 1,
               borderColor: "white",
-              width: screenWidth * 0.3,
+              width: screenWidth * 0.09,
               height: screenHeight * 0.036,
               padding: 1,
-              borderRadius: 12,
+              aspectRatio: 1,
+              borderRadius: 100,
               backgroundColor: "white",
+              justifyContent: "center",
             }}
           >
-            <Text
-              style={{
-                fontSize: 14,
-
-                alignSelf: "center",
-                fontWeight: "700",
-                color: "black",
-                paddingTop: screenHeight * 0.005,
-              }}
-            >
-              Options
-            </Text>
+            <Image
+              style={{ height: 30, width: 30, alignSelf: "center" }}
+              source={require("../../assets/More.png")}
+            />
           </TouchableOpacity>
         </Animated.View>
       </View>

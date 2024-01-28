@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import {
   StyleSheet,
   Dimensions,
@@ -9,10 +9,29 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { Video } from "expo-av";
+import { getUser } from "../../services/user";
 
-const Banner = ({ userDetails }) => {
+const Banner = ({ userDetails, scrollPosition, focused }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const video = useRef(null);
+  const [userInfo, setUserInfo] = useState(userDetails);
+  async function fetchUser() {
+    try {
+      const resp = await getUser(userInfo);
+      setUserInfo(resp.body);
+    } catch (error) {
+      console.error("Error fetching user details:", error);
+    }
+  }
+
+  useEffect(() => {
+    const loadUser = async () => {
+      if (userInfo.bannerImage === undefined) {
+        await fetchUser();
+      }
+    };
+    loadUser();
+  }, [userInfo.bannerImage]);
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -27,7 +46,7 @@ const Banner = ({ userDetails }) => {
 
   return (
     <>
-      {userDetails.bannerImageType === "video" ? (
+      {userInfo.bannerImageType === "video" ? (
         <>
           <View
             style={{
@@ -42,20 +61,20 @@ const Banner = ({ userDetails }) => {
           </View>
           <Animated.View style={{ ...styles.container, opacity: fadeAnim }}>
             <Video
-              shouldPlay
+              shouldPlay={
+                scrollPosition > 200 || focused === false ? false : true
+              }
               isLooping
               ref={video}
               resizeMode={
-                userDetails.bannerHeight > userDetails.bannerWidth
-                  ? "cover"
-                  : null
+                userInfo.bannerHeight > userInfo.bannerWidth ? "cover" : null
               }
               style={{
                 width: screenWidth,
                 height: screenHeight * 0.92,
                 alignSelf: "center",
               }}
-              source={{ uri: userDetails.bannerImage }}
+              source={{ uri: userInfo.bannerImage }}
             />
           </Animated.View>
         </>
@@ -80,7 +99,7 @@ const Banner = ({ userDetails }) => {
                 height: screenHeight * 0.92,
                 alignSelf: "center",
               }}
-              source={{ uri: userDetails.bannerImage }}
+              source={{ uri: userInfo.bannerImage }}
             />
           </Animated.View>
         </>

@@ -1,22 +1,15 @@
 import { Image, StyleSheet, Text, View } from "react-native";
 import React from "react";
 
-export default function AppHeader() {
+export default function ExploreHeader() {
   return (
     <View
       style={{
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center", // Center the content vertically
         padding: 10,
         borderBottomWidth: 0.9,
         borderBottomColor: 10,
       }}
     >
-      <Image
-        style={{ height: 18, width: 18, left: 10 }}
-        source={require("../../assets/Friends.png")}
-      />
       <Text
         style={{
           fontFamily: "Poppins-Black",
@@ -26,11 +19,6 @@ export default function AppHeader() {
       >
         Tizly
       </Text>
-
-      <Image
-        style={{ height: 18, width: 18, right: 10 }}
-        source={require("../../assets/Settings.png")}
-      />
     </View>
   );
 }

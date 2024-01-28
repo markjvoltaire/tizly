@@ -128,6 +128,9 @@ export default function Buttons({ post, userDetails }) {
               width: screenWidth,
               height: screenHeight,
               position: "absolute",
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
             }}
             onPress={() => setReactionModal(false)}
           >
