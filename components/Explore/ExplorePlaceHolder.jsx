@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   FlatList,
   StyleSheet,
@@ -10,13 +10,17 @@ import {
 } from "react-native";
 import { getRandomUser } from "../../services/user";
 import ExploreCard from "./ExploreCard";
+import { useScrollToTop } from "@react-navigation/native";
 
-export default function ExplorePlaceHolder() {
+export default function ExplorePlaceHolder({}) {
   const [userList, setUserList] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
   const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;
+
+  const ref = useRef(null);
+  useScrollToTop(ref);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -54,6 +58,7 @@ export default function ExplorePlaceHolder() {
       ) : (
         <View style={{ marginBottom: screenHeight * 0.03 }}>
           <FlatList
+            ref={ref}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.flatListContainer}
             renderItem={renderExploreCard}

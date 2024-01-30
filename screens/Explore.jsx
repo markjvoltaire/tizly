@@ -50,8 +50,13 @@ export default function Explore({ navigation }) {
               />
             </View>
           ) : (
-            <View style={{ top: screenHeight * 0.03, marginBottom: 65 }}>
-              <ExplorePlaceHolder />
+            <View
+              style={{
+                top: screenHeight * 0.03,
+                marginBottom: screenHeight * 0.1,
+              }}
+            >
+              <ExplorePlaceHolder useScrollToTop={useScrollToTop} />
             </View>
           )}
         </SafeAreaView>

@@ -6,6 +6,7 @@ import {
   FlatList,
   Dimensions,
   RefreshControl,
+  ActivityIndicator,
 } from "react-native";
 import { getNotifications } from "../services/user";
 import React, { useState, useEffect, useRef } from "react";
@@ -15,6 +16,7 @@ import { useScrollToTop } from "@react-navigation/native";
 export default function Alerts() {
   const [notifications, setNotifications] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(true);
   const ref = useRef(null);
   useScrollToTop(ref);
   const screenWidth = Dimensions.get("window").width;
@@ -24,6 +26,7 @@ export default function Alerts() {
     const fetchNotifications = async () => {
       const resp = await getNotifications();
       setNotifications(resp);
+      setLoading(false);
     };
     fetchNotifications();
   }, []);
@@ -55,6 +58,16 @@ export default function Alerts() {
       );
     }
   };
+
+  if (loading) {
+    return (
+      <View
+        style={{ justifyContent: "center", flex: 1, backgroundColor: "white" }}
+      >
+        <ActivityIndicator size="large" color="black" />
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>

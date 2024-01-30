@@ -1,25 +1,44 @@
 {
   "expo": {
-    "name": "tizly",
-    "  ": "tizly",
-    "version": "1.0.0",
+    "name": "TizlyNative",
+    "slug": "TizlyNative",
+    "scheme": "TizlyNative",
+    "detach": {
+      "scheme": "TizlyNative"
+    },
+    "plugins": [
+      [
+        "expo-updates",
+        {
+          "username": "markjvoltaire"
+        }
+      ]
+    ],
+    "version": "1.7",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "auto",
+    "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "black"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.markjvoltaire.tizly"
+      "bundleIdentifier": "com.markjvoltaire.TizlyNative",
+      "buildNumber": "25",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "Allow access to photos to upload photos from your library."
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#FFFFFF"
       }
     },
     "web": {
@@ -27,7 +46,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "a75feb47-991c-4543-af2b-79fd76371094"
+        "projectId": "61c54675-42ec-4c84-86cf-09843327f703"
       }
     }
   }

@@ -6,13 +6,14 @@ import {
   FlatList,
   Dimensions,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { getPosts } from "../../services/user";
 import PostHeader from "../Headers/PostHeader";
 import PhotoPost from "../PostTypes/PhotoPost";
 import VideoPost from "../PostTypes/VideoPost";
 import StatusPost from "../PostTypes/StatusPost";
 import NoPosts from "./NoPosts";
+import { useScrollToTop } from "@react-navigation/native";
 
 export default function UnlockedFeed({ userDetails, navigation }) {
   const userid = userDetails.user_id;

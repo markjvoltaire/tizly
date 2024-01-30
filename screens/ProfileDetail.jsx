@@ -15,7 +15,6 @@ import Banner from "../components/ProfileDetails/Banner";
 import Fader from "../components/ProfileDetails/Fader";
 import ProfileInformation from "../components/ProfileDetails/ProfileInformation";
 import { supabase } from "../services/supabase";
-import BannerButtons from "../components/ProfileDetails/BannerButtons";
 import UnlockedFeed from "../components/ProfileDetails/UnlockedFeed";
 import LockedFeed from "../components/ProfileDetails/LockedFeed";
 import { useFocusEffect } from "@react-navigation/native";
@@ -233,24 +232,6 @@ export default function ProfileDetail({ route, navigation }) {
           }
         />
       </View>
-      {/* HEADER */}
-      {/* <View
-        style={{
-          backgroundColor: "white",
-          height: screenHeight * 0.15,
-          bottom: screenHeight * 0.81,
-          width: screenWidth,
-          position: "absolute",
-          alignSelf: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Text
-          style={{ alignSelf: "center", top: 45, fontFamily: "Poppins-Bold" }}
-        >
-          {userDetails.username}
-        </Text>
-      </View> */}
     </>
   );
 }

@@ -209,3 +209,38 @@ export async function getPost(post) {
 
   return resp;
 }
+
+export async function getComments(post) {
+  const resp = await supabase
+    .from("notifications")
+    .select("*")
+    .eq("postId", post.id)
+    .eq("eventType", "comment");
+
+  return resp;
+}
+
+export async function reportCommentById(post) {
+  const resp = await supabase.from("reports").insert([
+    {
+      postId: post.postId,
+      creatorId: post.creatorId,
+      userId: post.userId,
+      commentId: post.commentId,
+      comment: post.comment,
+    },
+  ]);
+  return resp;
+}
+
+export async function deleteComment(post) {
+  const userId = supabase.auth.currentUser.id;
+  const resp = await supabase
+    .from("notifications")
+    .delete()
+    .eq("eventType", "comment")
+    .eq("userId", userId)
+    .eq("commentId", post.commentId);
+
+  return resp;
+}

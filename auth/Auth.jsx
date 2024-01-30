@@ -15,6 +15,7 @@ import ProfileDetail from "../screens/ProfileDetail";
 import Uploading from "../screens/Uploading";
 import PostInfo from "../components/Post/PostInfo";
 import PostDetail from "../screens/PostDetails";
+import Comments from "../screens/Comments";
 
 export default function Auth() {
   const Stack = createNativeStackNavigator();
@@ -62,6 +63,12 @@ export default function Auth() {
         <Stack.Screen
           name="HomeScreen"
           component={Home}
+          options={{ tabBarVisible: false }} // Hide tab bar for this screen
+        />
+
+        <Stack.Screen
+          name="Comments"
+          component={Comments}
           options={{ tabBarVisible: false }} // Hide tab bar for this screen
         />
 
