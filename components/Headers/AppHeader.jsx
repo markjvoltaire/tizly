@@ -1,7 +1,7 @@
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import React from "react";
 
-export default function AppHeader() {
+export default function AppHeader({ navigation }) {
   return (
     <View
       style={{
@@ -15,7 +15,7 @@ export default function AppHeader() {
     >
       <Image
         style={{ height: 18, width: 18, left: 10 }}
-        source={require("../../assets/Friends.png")}
+        source={require("../../assets/friends.png")}
       />
       <Text
         style={{
@@ -26,11 +26,12 @@ export default function AppHeader() {
       >
         Tizly
       </Text>
-
-      <Image
-        style={{ height: 18, width: 18, right: 10 }}
-        source={require("../../assets/Settings.png")}
-      />
+      <Pressable onPress={() => navigation.navigate("Settings")}>
+        <Image
+          style={{ height: 18, width: 18, right: 10 }}
+          source={require("../../assets/settings.png")}
+        />
+      </Pressable>
     </View>
   );
 }

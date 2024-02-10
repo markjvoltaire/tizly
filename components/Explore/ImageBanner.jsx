@@ -7,15 +7,20 @@ import {
   Text,
   Pressable,
   ActivityIndicator,
+  Dimensions,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useUser } from "../../context/UserContext";
+import ProfileCard from "../notifications/ProfileCard";
 
 export default function ImageBanner({ item }) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const [imageLoaded, setImageLoaded] = useState(false);
 
   const navigation = useNavigation();
+
+  let height = Dimensions.get("window").height;
+  let width = Dimensions.get("window").width;
 
   // const handlePress = () => {
   //   navigation.navigate("ProfileDetail", { userDetails: item });
@@ -47,6 +52,9 @@ export default function ImageBanner({ item }) {
 
   return (
     <>
+      <View style={{ width: width * 0.4 }}>
+        <ProfileCard userDetails={item} />
+      </View>
       <Pressable onPress={handlePress}>
         <Animated.View style={{ opacity: fadeAnim }}>
           <View
@@ -79,6 +87,7 @@ export default function ImageBanner({ item }) {
                 <ActivityIndicator size="large" color="white" />
               </View>
             )}
+
             <View
               style={{
                 ...StyleSheet.absoluteFillObject,

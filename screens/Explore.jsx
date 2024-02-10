@@ -9,9 +9,9 @@ import {
   Dimensions,
 } from "react-native";
 import { useScrollToTop } from "@react-navigation/native";
-import PaginationComponent from "../components/Explore/PaginationComponent";
+import PaginationComponent from "../components/explore/PaginationComponent";
 import AppHeader from "../components/Headers/AppHeader";
-import ExplorePlaceHolder from "../components/Explore/ExplorePlaceHolder";
+import ExplorePlaceHolder from "../components/explore/ExplorePlaceHolder";
 import ExploreHeader from "../components/Headers/ExploreHeader";
 
 export default function Explore({ navigation }) {

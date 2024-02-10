@@ -7,20 +7,25 @@ import {
   Pressable,
   Image,
   ActivityIndicator,
+  Modal,
+  useColorScheme,
 } from "react-native";
 import { Video } from "expo-av";
 import Buttons from "../Engagement/Buttons";
-import { useNavigation } from "@react-navigation/native";
 import AccessTab from "../AccessType/AccessTab";
+import ProfileInformation from "../ProfileDetails/ProfileInformation";
+import { useNavigation } from "@react-navigation/native"; // Import useNavigation hook
 
 export default function VideoPost({ post }) {
+  const navigation = useNavigation(); // Use useNavigation hook to get the navigation prop
   const [status, setStatus] = React.useState({});
   const video = useRef(null);
   const progressIntervalRef = useRef(null);
-  const [progress, setProgress] = useState(0);
-  const navigation = useNavigation();
+  const scheme = useColorScheme();
+
   const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;
+  const [modalVisible, setModalVisible] = useState(false);
 
   const aspectRatio =
     post.width !== null && post.height !== null
@@ -29,22 +34,6 @@ export default function VideoPost({ post }) {
 
   const newWidth = screenWidth * 0.92;
   const newHeight = newWidth / aspectRatio;
-
-  useEffect(() => {
-    const updateProgress = async () => {
-      const status = await video.current.getStatusAsync();
-      if (status.isLoaded) {
-        const currentProgress = status.positionMillis / status.durationMillis;
-        setProgress(currentProgress);
-      }
-    };
-
-    progressIntervalRef.current = setInterval(updateProgress, 100);
-
-    return () => {
-      clearInterval(progressIntervalRef.current);
-    };
-  }, []);
 
   const date = new Date(post.date);
   const currentDate = new Date();
@@ -91,80 +80,84 @@ export default function VideoPost({ post }) {
   }
 
   return (
-    <Pressable>
-      <View>
-        {post.description === "" ? null : (
-          <Text
+    <>
+      <Pressable>
+        <View>
+          {post.description === "" ? null : (
+            <Text
+              style={{
+                left: screenWidth * 0.02,
+                width: screenWidth * 0.9,
+                paddingBottom: 23,
+                top: 6,
+                color: scheme === "light" ? "black" : "white",
+              }}
+            >
+              {post.description}
+            </Text>
+          )}
+          {/* Center the ActivityIndicator within the Video */}
+          <View
             style={{
-              left: screenWidth * 0.02,
-              width: screenWidth * 0.9,
-              paddingBottom: 23,
-              top: 6,
+              position: "absolute",
+              top: "50%", // Center vertically
+              left: "50%", // Center horizontally
+              transform: [{ translateX: -35 }, { translateY: -35 }], // Adjust based on the size of the ActivityIndicator
             }}
           >
-            {post.description}
+            <ActivityIndicator size="large" />
+          </View>
+          <Pressable
+            onPress={() =>
+              navigation.navigate("VideoPost", {
+                post,
+              })
+            }
+          >
+            <Video
+              isMuted
+              isLooping
+              ref={video}
+              resizeMode="cover"
+              style={{
+                width: newWidth,
+                height: newHeight > newWidth ? 500 : newWidth,
+                alignSelf: "center",
+                borderRadius: 10,
+              }}
+              source={{ uri: post.media }}
+              onPlaybackStatusUpdate={(status) => setStatus(() => status)}
+            />
+          </Pressable>
+          <Image
+            style={{
+              position: "absolute",
+              top: "40%",
+              justifyContent: "center",
+              alignSelf: "center",
+              height: 70,
+              width: 70,
+            }}
+            source={require("../../assets/Play.png")}
+          />
+
+          <Text
+            style={{
+              paddingBottom: 20,
+              top: 12,
+              color: "#979797",
+              fontFamily: "Poppins-SemiBold",
+              fontSize: 12,
+            }}
+          >
+            {formattedDate}
           </Text>
-        )}
-        {/* Center the ActivityIndicator within the Video */}
-        <View
-          style={{
-            position: "absolute",
-            top: "50%", // Center vertically
-            left: "50%", // Center horizontally
-            transform: [{ translateX: -35 }, { translateY: -35 }], // Adjust based on the size of the ActivityIndicator
-          }}
-        >
-          <ActivityIndicator size="large" />
+          <View style={{ right: screenWidth * 0.01, top: screenHeight * 0.01 }}>
+            <Buttons post={post} />
+          </View>
         </View>
-        <Video
-          isMuted
-          isLooping
-          ref={video}
-          resizeMode="cover"
-          style={{
-            width: newWidth,
-            height: newHeight > newWidth ? 500 : newWidth,
-            alignSelf: "center",
-            borderRadius: 10,
-          }}
-          source={{ uri: post.media }}
-          onPlaybackStatusUpdate={(status) => setStatus(() => status)}
-        />
-        <Image
-          style={{
-            position: "absolute",
-            top: "40%",
-            justifyContent: "center",
-            alignSelf: "center",
-            height: 70,
-            width: 70,
-          }}
-          source={require("../../assets/Play.png")}
-        />
-        <View
-          style={{
-            paddingBottom: screenHeight * 0.01,
-            right: screenWidth * 0.02,
-          }}
-        >
-          <AccessTab post={post} />
-        </View>
-        <Text
-          style={{
-            paddingBottom: 20,
-            top: 12,
-            color: "#979797",
-            fontFamily: "Poppins-SemiBold",
-            fontSize: 12,
-          }}
-        >
-          {formattedDate}
-        </Text>
-        <View style={{ right: screenWidth * 0.01, top: screenHeight * 0.01 }}>
-          <Buttons post={post} />
-        </View>
-      </View>
-    </Pressable>
+      </Pressable>
+    </>
   );
 }
 

@@ -11,10 +11,13 @@ import {
   Image,
   Pressable,
   Alert,
+  ScrollView,
+  RefreshControl,
 } from "react-native";
 import {
   deletePost,
   getFriends,
+  getRandomFeed,
   getUnlockedUserPost,
   reportPostById,
 } from "../services/user";
@@ -24,14 +27,17 @@ import PhotoPost from "../components/PostTypes/PhotoPost";
 import VideoPost from "../components/PostTypes/VideoPost";
 import StatusPost from "../components/PostTypes/StatusPost";
 import AppHeader from "../components/Headers/AppHeader";
-import { RefreshControl, ScrollView } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 import { useUser } from "../context/UserContext";
+import ExploreCard from "../components/explore/ExploreCard";
 
 export default function Home({ navigation }) {
   const scheme = useColorScheme();
   const [loading, setLoading] = useState(true);
   const [listOfPosts, setListOfPosts] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [randomUsers, setRandomUsers] = useState([]);
+
   const { user } = useUser();
 
   const ref = useRef(null);
@@ -44,6 +50,7 @@ export default function Home({ navigation }) {
     try {
       const friendList = await getFriends();
       const feedList = await getUnlockedUserPost(friendList);
+
       setListOfPosts(feedList || []);
     } catch (error) {
       console.error("Error fetching user data:", error);
@@ -141,7 +148,6 @@ export default function Home({ navigation }) {
         onPress={() => handleOptionPress(item)}
         style={{
           position: "absolute",
-
           left: width * 0.85,
         }}
       >
@@ -168,7 +174,15 @@ export default function Home({ navigation }) {
     }
 
     return (
-      <View style={styles.item}>
+      <View
+        style={{
+          alignSelf: "center",
+          marginBottom: 10,
+          paddingBottom: 28,
+          borderBottomWidth: 0.2,
+          borderColor: scheme === "light" ? 10 : "#B6BAC7",
+        }}
+      >
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           {postHeader}
           {moreImage}
@@ -184,17 +198,70 @@ export default function Home({ navigation }) {
     setRefreshing(false);
   };
 
+  const checkChanges = async () => {
+    await fetchUserData();
+  };
+
+  const renderExploreCard = ({ item }) => <ExploreCard item={item} />;
+
+  useFocusEffect(
+    React.useCallback(() => {
+      checkChanges();
+      return () => {
+        null;
+      };
+    }, [])
+  );
+
   if (loading) {
     return (
       <View
         style={{ backgroundColor: "white", flex: 1, justifyContent: "center" }}
       >
         {listOfPosts.length === 0 ? (
-          <Text>No posts found. Please check your internet connection.</Text>
+          <View
+            style={{
+              backgroundColor: "white",
+              flex: 1,
+              justifyContent: "center",
+            }}
+          >
+            <ActivityIndicator color="grey" size="large" />
+          </View>
         ) : (
           <ActivityIndicator color="grey" size="large" />
         )}
       </View>
+    );
+  }
+
+  if (listOfPosts.length === 0) {
+    return (
+      <SafeAreaView
+        style={{
+          flex: 1,
+          backgroundColor: scheme === "light" ? "white" : "#121212",
+        }}
+      >
+        <AppHeader navigation={navigation} />
+        <ScrollView
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        >
+          <Text
+            style={{
+              textAlign: "center",
+              top: height * 0.2,
+              fontSize: 14,
+              color: "#555",
+              fontFamily: "Poppins-Bold",
+            }}
+          >
+            Your feed is empty. become friends with others to see their posts!
+          </Text>
+        </ScrollView>
+      </SafeAreaView>
     );
   }
 
@@ -205,7 +272,7 @@ export default function Home({ navigation }) {
         backgroundColor: scheme === "light" ? "white" : "#121212",
       }}
     >
-      <AppHeader />
+      <AppHeader navigation={navigation} />
       <View
         style={{
           width: width,
@@ -231,7 +298,7 @@ const styles = StyleSheet.create({
   item: {
     alignSelf: "center",
     marginBottom: 10,
-    paddingBottom: 18,
+    paddingBottom: 28,
     borderBottomWidth: 2,
     borderColor: 10,
   },

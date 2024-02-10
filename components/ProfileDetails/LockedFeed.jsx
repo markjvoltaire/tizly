@@ -49,16 +49,13 @@ export default function LockedFeed({ userDetails }) {
         style={styles.lockedImage}
       />
       <Text style={styles.messageText}>
-        Unlock {userDetails.username}'s feed for exclusive content
+        {userDetails.username}'s feed is exclusive for friends
       </Text>
       <View style={styles.placeholderContainer}>
         <Text style={styles.placeholderText}>{photoCount.length} Photos</Text>
         <Text style={styles.placeholderText}>{videoCount.length} Videos</Text>
         <Text style={styles.placeholderText}>{textCount.length} Status</Text>
       </View>
-      <TouchableOpacity style={styles.unlockButton}>
-        <Text style={styles.buttonText}>Unlock Feed</Text>
-      </TouchableOpacity>
     </View>
   );
 }
@@ -70,12 +67,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   lockedImage: {
-    width: 40,
-    height: 40,
+    width: 35,
+    height: 35,
     marginBottom: 20,
   },
   messageText: {
-    fontSize: 14,
+    fontSize: 16,
     textAlign: "center",
     marginBottom: 10,
     color: "#555",

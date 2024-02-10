@@ -9,6 +9,7 @@ import {
   Animated,
   TouchableOpacity,
   Image,
+  Alert,
 } from "react-native";
 import React, { useEffect, useState, useRef } from "react";
 import Banner from "../components/ProfileDetails/Banner";
@@ -18,12 +19,17 @@ import { supabase } from "../services/supabase";
 import UnlockedFeed from "../components/ProfileDetails/UnlockedFeed";
 import LockedFeed from "../components/ProfileDetails/LockedFeed";
 import { useFocusEffect } from "@react-navigation/native";
+import { getPosts } from "../services/user";
+import { useUser } from "../context/UserContext";
 
 export default function ProfileDetail({ route, navigation }) {
   const userDetails = route.params.userDetails;
-  const [friendStatus, setFriendStatus] = useState("notFriends");
+  const [refreshing, setRefreshing] = useState(false);
+  const [friendStatus, setFriendStatus] = useState(null);
   const [loading, setLoading] = useState(true);
   const [focused, setFocused] = useState(false);
+  const [posts, setPosts] = useState([]);
+  const { user } = useUser();
 
   const flatListRef = useRef(null);
   const [scrollPosition, setScrollPosition] = useState(0);
@@ -51,6 +57,163 @@ export default function ProfileDetail({ route, navigation }) {
     }).start();
   }, []);
 
+  async function unFriendUser() {
+    Alert.alert(`Do You Want To Unfriend @${userDetails.username}`, " ", [
+      {
+        text: "Remove",
+        onPress: () => deleteFriend(),
+        style: "destructive",
+      },
+      {
+        text: "Cancel",
+        onPress: () => null,
+        style: "cancel",
+      },
+    ]);
+  }
+
+  async function cancelPendingRequest() {
+    Alert.alert(`Do You Want To Unsend Your Friend Request`, " ", [
+      {
+        text: "Unsend",
+        onPress: () => unSendRequest(),
+        style: "destructive",
+      },
+      {
+        text: "Not Yet",
+        onPress: () => null,
+        style: "cancel",
+      },
+    ]);
+  }
+
+  async function deleteFriend() {
+    await supabase
+      .from("friendRequests")
+      .delete()
+      .eq("receiverId", user.user_id)
+      .eq("senderId", userDetails.user_id);
+
+    await supabase
+      .from("friendRequests")
+      .delete()
+      .eq("senderId", user.user_id)
+      .eq("receiverId", userDetails.user_id);
+
+    setFriendStatus("notFriends");
+  }
+
+  async function sendFriendRequest() {
+    const resp = await supabase.from("friendRequests").insert([
+      {
+        senderId: user.user_id,
+        senderUsername: user.username,
+        senderDisplayName: user.displayName,
+        receiverDisplayName: userDetails.displayName,
+        receiverUsername: userDetails.username,
+        receiverId: userDetails.user_id,
+        status: "pending",
+      },
+    ]);
+
+    const newReaction = {
+      comment: null,
+      creatorId: userDetails.user_id,
+      userId: user.user_id,
+      userProfileImage: user.profileimage,
+      postId: null,
+      userUsername: user.username,
+      creatorUsername: userDetails.username,
+      creatorDisplayname: userDetails.displayName,
+      userDisplayname: user.displayName,
+      creatorProfileImage: userDetails.profileimage,
+      media: null,
+      mediaType: null,
+      eventType: "friendRequest",
+      description: null,
+      liked: false,
+      reactionType: null,
+    };
+    const res = await supabase.from("notifications").insert([newReaction]);
+    setFriendStatus("pending");
+
+    return resp && res;
+  }
+
+  async function unSendRequest() {
+    await supabase
+      .from("friendRequests")
+      .delete()
+      .eq("receiverId", user.user_id)
+      .eq("senderId", userDetails.user_id);
+
+    await supabase
+      .from("friendRequests")
+      .delete()
+      .eq("senderId", user.user_id)
+      .eq("receiverId", userDetails.user_id);
+
+    const deleteNoti = await supabase
+      .from("notifications")
+      .delete()
+      .eq("creatorId", userDetails.user_id)
+      .eq("userId", user.user_id)
+      .eq("eventType", "friendRequest");
+
+    setFriendStatus("notFriends");
+
+    return deleteNoti;
+  }
+
+  async function acceptFriendRequest() {
+    const res = await supabase
+      .from("friendRequests")
+      .update({
+        status: "friends",
+      })
+      .eq("senderId", userDetails.user_id)
+      .eq("receiverId", user.user_id);
+    setFriendStatus("friends");
+
+    return res;
+  }
+
+  const createThreeButtonAlert = () =>
+    Alert.alert("View Request", "How would you like to handle this request", [
+      {
+        text: "Accept Request",
+        onPress: () => acceptFriendRequest(),
+      },
+      {
+        style: "destructive",
+        text: "Decline Request",
+        onPress: () => deleteFriend(),
+      },
+      {
+        text: "Cancel",
+        onPress: () => null,
+        style: "cancel",
+      },
+    ]);
+
+  async function friendButton() {
+    if (friendStatus === "notFriends") {
+      sendFriendRequest();
+    }
+
+    if (friendStatus === "friends") {
+      unFriendUser();
+    }
+
+    if (friendStatus === "pending") {
+      cancelPendingRequest();
+    }
+
+    if (friendStatus === "awaitingResponse") {
+      createThreeButtonAlert();
+    }
+  }
+
   async function fetchFriendStatus() {
     try {
       const userId = supabase.auth.currentUser.id;
@@ -65,11 +228,6 @@ export default function ProfileDetail({ route, navigation }) {
         .select("status")
         .eq("senderId", userDetails.user_id)
         .eq("receiverId", userId);
-
-      const userInformation = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("user_id", userDetails.user_id);
 
       if (userSentRequest.body.length === 1) {
         if (userSentRequest.body[0].status === "friends") {
@@ -100,8 +258,32 @@ export default function ProfileDetail({ route, navigation }) {
     }
   }
 
+  const onRefresh = async () => {
+    setRefreshing(true);
+
+    try {
+      const resp = await getPosts(userDetails.user_id);
+      setPosts(resp);
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
   useEffect(() => {
+    const getAllPost = async () => {
+      try {
+        const resp = await getPosts(userDetails.user_id);
+        setPosts(resp);
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchFriendStatus();
+    getAllPost();
   }, [userDetails]);
 
   const handleScroll = (event) => {
@@ -109,9 +291,15 @@ export default function ProfileDetail({ route, navigation }) {
     setScrollPosition(offsetY);
   };
 
+  const checkChanges = async () => {
+    const resp = await getPosts(userDetails.user_id);
+    setPosts(resp);
+  };
+
   useFocusEffect(
     React.useCallback(() => {
       setFocused(true);
+      checkChanges();
       return () => {
         setFocused(false);
       };
@@ -130,6 +318,8 @@ export default function ProfileDetail({ route, navigation }) {
     <>
       <View style={{ flex: 1, backgroundColor: "white" }}>
         <FlatList
+          refreshing={refreshing}
+          onRefresh={onRefresh}
           ref={flatListRef}
           onScroll={handleScroll}
           ListHeaderComponent={
@@ -149,68 +339,74 @@ export default function ProfileDetail({ route, navigation }) {
                 }}
               >
                 {/* Banner Buttons */}
-                <View style={{ flexDirection: "row" }}>
-                  <Animated.View
-                    style={{
-                      opacity: opacity1,
-                    }}
-                  >
-                    <TouchableOpacity
+                {/* If friendStatus is null show nothing */}
+                {friendStatus === null ? null : (
+                  <View style={{ flexDirection: "row" }}>
+                    <Animated.View
                       style={{
-                        borderWidth: 1,
-                        borderColor:
-                          friendStatus === "friends" ? "white" : null,
-                        backgroundColor:
-                          friendStatus === "friends" ? null : "white",
-                        width: screenWidth * 0.3,
-                        height: screenHeight * 0.036,
-                        padding: 1,
-                        marginRight: 20,
-                        borderRadius: 12,
+                        opacity: opacity1,
                       }}
                     >
-                      <Text
+                      <TouchableOpacity
+                        onPress={() => friendButton()}
                         style={{
-                          fontSize: 14,
-                          fontWeight: "700",
-                          alignSelf: "center",
-                          color: friendStatus === "friends" ? "white" : null,
-                          paddingTop: screenHeight * 0.005,
+                          backgroundColor:
+                            friendStatus === "friends" ? null : "white",
+                          width: screenWidth * 0.3,
+                          height: screenHeight * 0.036,
+                          padding: 1,
+                          marginRight: 20,
+                          borderRadius: 12,
+                          borderWidth: 1,
+                          borderColor:
+                            friendStatus === "friends" ? "white" : null,
                         }}
                       >
-                        {friendStatus === "friends"
-                          ? "following"
-                          : friendStatus === "notFriends"
-                          ? "Follow"
-                          : "pending"}
-                      </Text>
-                    </TouchableOpacity>
-                  </Animated.View>
-                  <Animated.View
-                    style={{
-                      opacity: opacity2,
-                    }}
-                  >
-                    <TouchableOpacity
+                        <Text
+                          style={{
+                            fontSize: 14,
+                            fontWeight: "700",
+                            alignSelf: "center",
+                            color: friendStatus === "friends" ? "white" : null,
+                            paddingTop: screenHeight * 0.006,
+                          }}
+                        >
+                          {friendStatus === "friends"
+                            ? "Friends"
+                            : friendStatus === "notFriends"
+                            ? "Add Friend"
+                            : friendStatus === "awaitingResponse"
+                            ? "view request"
+                            : "pending"}
+                        </Text>
+                      </TouchableOpacity>
+                    </Animated.View>
+                    <Animated.View
                       style={{
-                        borderWidth: 1,
-                        borderColor: "white",
-                        width: screenWidth * 0.09,
-                        height: screenHeight * 0.036,
-                        padding: 1,
-                        aspectRatio: 1,
-                        borderRadius: 100,
-                        backgroundColor: "white",
-                        justifyContent: "center",
+                        opacity: opacity2,
                       }}
                     >
-                      <Image
-                        style={{ height: 30, width: 30, alignSelf: "center" }}
-                        source={require("../assets/More.png")}
-                      />
-                    </TouchableOpacity>
-                  </Animated.View>
-                </View>
+                      <TouchableOpacity
+                        style={{
+                          borderWidth: 1,
+                          borderColor: "white",
+                          width: screenWidth * 0.09,
+                          height: screenHeight * 0.036,
+                          padding: 1,
+                          aspectRatio: 1,
+                          borderRadius: 100,
+                          backgroundColor: "white",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Image
+                          style={{ height: 30, width: 30, alignSelf: "center" }}
+                          source={require("../assets/More.png")}
+                        />
+                      </TouchableOpacity>
+                    </Animated.View>
+                  </View>
+                )}
               </View>
             </>
           }
@@ -220,8 +416,9 @@ export default function ProfileDetail({ route, navigation }) {
           showsVerticalScrollIndicator={false}
           ListFooterComponent={
             friendStatus === "friends" ? (
-              <View style={{ bottom: screenHeight * 0.05 }}>
+              <View style={{ bottom: screenHeight * 0.04 }}>
                 <UnlockedFeed
+                  posts={posts}
                   navigation={navigation}
                   userDetails={userDetails}
                 />

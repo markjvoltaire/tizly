@@ -1,4 +1,10 @@
-import { StyleSheet, Text, View, Dimensions } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Dimensions,
+  useColorScheme,
+} from "react-native";
 import React from "react";
 import Buttons from "../Engagement/Buttons";
 import AccessTab from "../AccessType/AccessTab";
@@ -6,6 +12,7 @@ import AccessTab from "../AccessType/AccessTab";
 export default function StatusPost({ post }) {
   let height = Dimensions.get("window").height;
   let width = Dimensions.get("window").width;
+  const scheme = useColorScheme();
 
   const date = new Date(post.date);
   const currentDate = new Date();
@@ -57,6 +64,7 @@ export default function StatusPost({ post }) {
         style={{
           width: width * 0.9,
           top: 5,
+          color: scheme === "light" ? "black" : "white",
         }}
       >
         {post.description}

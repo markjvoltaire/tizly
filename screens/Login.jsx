@@ -1,8 +1,7 @@
 import { SafeAreaView, StyleSheet, Text, View, Dimensions } from "react-native";
 import React, { useState } from "react";
-
-import LoginForm from "../components/Login/LoginForm";
-import LoginHeader from "../components/Login/LoginHeader";
+import LoginHeader from "../components/login/LoginHeader";
+import LoginForm from "../components/login/LoginForm";
 
 export default function Login({ navigation }) {
   let height = Dimensions.get("window").height;

@@ -17,7 +17,7 @@ export default function ExploreHeader() {
           color: "#00A3FF",
         }}
       >
-        Tizly
+        Explore
       </Text>
     </View>
   );

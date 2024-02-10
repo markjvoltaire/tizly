@@ -6,10 +6,11 @@ import {
   Animated,
   TouchableOpacity,
   Image,
+  Pressable,
 } from "react-native";
 import React, { useState, useRef, useEffect } from "react";
 
-export default function UserProfileButtons({ navigation }) {
+export default function UserProfileButtons({ navigation, user }) {
   const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;
 
@@ -41,7 +42,8 @@ export default function UserProfileButtons({ navigation }) {
           opacity: opacity1,
         }}
       >
-        <TouchableOpacity
+        <Pressable
+          onPress={() => navigation.navigate("EditProfile", { user })}
           style={{
             borderWidth: 1,
 
@@ -64,14 +66,14 @@ export default function UserProfileButtons({ navigation }) {
           >
             Edit Profile
           </Text>
-        </TouchableOpacity>
+        </Pressable>
       </Animated.View>
       <Animated.View
         style={{
           opacity: opacity2,
         }}
       >
-        <TouchableOpacity
+        <Pressable
           style={{
             borderWidth: 1,
             borderColor: "white",
@@ -83,12 +85,13 @@ export default function UserProfileButtons({ navigation }) {
             backgroundColor: "white",
             justifyContent: "center",
           }}
+          onPress={() => navigation.navigate("Settings")}
         >
           <Image
             style={{ height: 30, width: 30, alignSelf: "center" }}
             source={require("../../assets/More.png")}
           />
-        </TouchableOpacity>
+        </Pressable>
       </Animated.View>
     </View>
   );

@@ -10,6 +10,7 @@ import {
 import { Video } from "expo-av";
 import { useNavigation } from "@react-navigation/native";
 import { useUser } from "../../context/UserContext";
+import ProfileCard from "../notifications/ProfileCard";
 
 export default function VideoBanner({ item }) {
   const video = useRef(null);
@@ -42,55 +43,58 @@ export default function VideoBanner({ item }) {
   };
 
   return (
-    <Pressable onPress={handlePress}>
-      <Animated.View style={{ opacity: fadeAnim }}>
-        <View
-          style={{
-            height: 300,
-            width: 185,
-            alignSelf: "center",
-            borderRadius: 10,
-            position: "relative",
-          }}
-        >
-          <Video
-            isMuted
-            shouldPlay
-            isLooping
-            ref={video}
-            resizeMode="cover"
+    <>
+      <ProfileCard userDetails={item} />
+      <Pressable onPress={handlePress}>
+        <Animated.View style={{ opacity: fadeAnim }}>
+          <View
             style={{
               height: 300,
               width: 185,
               alignSelf: "center",
               borderRadius: 10,
+              position: "relative",
             }}
-            source={{ uri: item.bannerImage }}
-            onReadyForDisplay={onVideoLoad}
-          />
-          {videoLoaded ? null : (
+          >
+            <Video
+              isMuted
+              shouldPlay
+              isLooping
+              ref={video}
+              resizeMode="cover"
+              style={{
+                height: 300,
+                width: 185,
+                alignSelf: "center",
+                borderRadius: 10,
+              }}
+              source={{ uri: item.bannerImage }}
+              onReadyForDisplay={onVideoLoad}
+            />
+            {videoLoaded ? null : (
+              <View
+                style={{
+                  ...StyleSheet.absoluteFillObject,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <ActivityIndicator size="large" color="white" />
+              </View>
+            )}
             <View
               style={{
                 ...StyleSheet.absoluteFillObject,
-                justifyContent: "center",
-                alignItems: "center",
+                borderRadius: 10,
+                backgroundColor: "black",
+                position: "absolute",
+                opacity: 0.4,
               }}
-            >
-              <ActivityIndicator size="large" color="white" />
-            </View>
-          )}
-          <View
-            style={{
-              ...StyleSheet.absoluteFillObject,
-              borderRadius: 10,
-              backgroundColor: "black",
-              position: "absolute",
-              opacity: 0.4,
-            }}
-          ></View>
-        </View>
-      </Animated.View>
-    </Pressable>
+            ></View>
+          </View>
+        </Animated.View>
+      </Pressable>
+    </>
   );
 }
 

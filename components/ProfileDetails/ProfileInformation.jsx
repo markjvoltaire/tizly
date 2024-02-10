@@ -1,15 +1,21 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   StyleSheet,
-  Text,
   View,
   Dimensions,
-  Image,
   Animated,
+  TouchableOpacity,
+  Alert,
+  Pressable,
+  Modal,
+  Image,
+  ActivityIndicator,
 } from "react-native";
+import { supabase } from "../../services/supabase";
 
 export default function ProfileInformation({ userDetails }) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const [modal, setModal] = useState(false);
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -31,17 +37,19 @@ export default function ProfileInformation({ userDetails }) {
           bottom: screenHeight * 0.2,
         }}
       >
-        <Animated.Image
-          style={{
-            height: screenHeight * 0.06,
-            width: screenWidth * 0.13,
-            borderRadius: 100,
-            marginLeft: 10,
-            opacity: fadeAnim,
-            backgroundColor: "grey",
-          }}
-          source={{ uri: userDetails.profileimage }}
-        />
+        <Pressable onPress={() => setModal(true)}>
+          <Animated.Image
+            style={{
+              height: screenHeight * 0.06,
+              width: screenWidth * 0.13,
+              borderRadius: 100,
+              marginLeft: 10,
+              opacity: fadeAnim,
+              backgroundColor: "grey",
+            }}
+            source={{ uri: userDetails.profileimage }}
+          />
+        </Pressable>
         <View style={{ marginRight: 10, left: 10 }}>
           <Animated.Text
             style={{
@@ -66,6 +74,38 @@ export default function ProfileInformation({ userDetails }) {
           </Animated.Text>
         </View>
       </View>
+
+      <Modal animationType="fade" transparent={true} visible={modal}>
+        <Pressable onPress={() => setModal(false)}>
+          <View
+            style={{
+              height: screenHeight,
+              width: screenWidth,
+              backgroundColor: "black",
+              opacity: 0.9,
+            }}
+          ></View>
+          <View
+            style={{
+              position: "absolute",
+              alignSelf: "center",
+              top: screenHeight * 0.3,
+            }}
+          >
+            <Image
+              style={{
+                height: screenHeight * 0.2,
+                aspectRatio: 1,
+                borderRadius: 100,
+                position: "absolute",
+                backgroundColor: "grey",
+                alignSelf: "center",
+              }}
+              source={{ uri: userDetails.profileimage }}
+            />
+          </View>
+        </Pressable>
+      </Modal>
     </>
   );
 }

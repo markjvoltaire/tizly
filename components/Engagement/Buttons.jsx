@@ -70,7 +70,6 @@ export default function Buttons({ post, userDetails }) {
       const resp = await supabase.from("notifications").insert([newReaction]);
       setReactionModal(false);
       setShowReactionSent(true);
-      console.log("resp", resp);
 
       setTimeout(() => {
         setShowReactionSent(false);
@@ -89,26 +88,24 @@ export default function Buttons({ post, userDetails }) {
         style={{ width: 25, left: post.user_id === user.user_id ? 5 : 5 }}
       >
         <Image
-          style={{ height: 22, width: 22 }}
+          style={{ height: 20, width: 20 }}
           source={require("../../assets/Chat.png")}
         />
       </TouchableOpacity>
 
-      {post.user_id === user.user_id ? null : (
-        <TouchableOpacity
-          onPress={() => setReactionModal(true)}
-          style={{ width: 25, left: 40 }}
-        >
-          <Image
-            style={{
-              height: 22,
-              width: 22,
-              left: post.user_id === user.user_id ? -15 : -15,
-            }}
-            source={require("../../assets/Category.png")}
-          />
-        </TouchableOpacity>
-      )}
+      <TouchableOpacity
+        onPress={() => setReactionModal(true)}
+        style={{ width: 25, left: 40 }}
+      >
+        <Image
+          style={{
+            height: 20,
+            width: 20,
+            left: post.user_id === user.user_id ? -15 : -15,
+          }}
+          source={require("../../assets/Category.png")}
+        />
+      </TouchableOpacity>
 
       {/* REACTION MODAL */}
       <Modal
@@ -170,21 +167,21 @@ export default function Buttons({ post, userDetails }) {
             >
               <TouchableOpacity
                 onPress={() => {
-                  handleReaction("love");
+                  handleReaction("❤");
                 }}
               >
                 <Text style={{ fontSize: 40 }}>❤</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity onPress={() => handleReaction("laugh")}>
+              <TouchableOpacity onPress={() => handleReaction("😂")}>
                 <Text style={{ fontSize: 40 }}>😂</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity onPress={() => handleReaction("clap")}>
+              <TouchableOpacity onPress={() => handleReaction("👏")}>
                 <Text style={{ fontSize: 40 }}>👏</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity onPress={() => handleReaction("fire")}>
+              <TouchableOpacity onPress={() => handleReaction("🔥")}>
                 <Text style={{ fontSize: 40 }}>🔥</Text>
               </TouchableOpacity>
             </View>
@@ -196,19 +193,19 @@ export default function Buttons({ post, userDetails }) {
                 top: screenHeight * 0.16,
               }}
             >
-              <TouchableOpacity onPress={() => handleReaction("100")}>
+              <TouchableOpacity onPress={() => handleReaction("💯")}>
                 <Text style={{ fontSize: 40 }}>💯</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity onPress={() => handleReaction("shocked")}>
+              <TouchableOpacity onPress={() => handleReaction("😮")}>
                 <Text style={{ fontSize: 40 }}>😮</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity onPress={() => handleReaction("heartEyes")}>
+              <TouchableOpacity onPress={() => handleReaction("😍")}>
                 <Text style={{ fontSize: 40 }}>😍</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity onPress={() => handleReaction("cool")}>
+              <TouchableOpacity onPress={() => handleReaction("😎")}>
                 <Text style={{ fontSize: 40 }}>😎</Text>
               </TouchableOpacity>
             </View>

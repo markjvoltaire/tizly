@@ -1,14 +1,11 @@
 import {
   StyleSheet,
-  Text,
   View,
   FlatList,
-  Animated,
-  TouchableOpacity,
   Dimensions,
-  Image,
+  ActivityIndicator,
 } from "react-native";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { useUser } from "../context/UserContext";
 import Banner from "../components/ProfileDetails/Banner";
 import { useFocusEffect } from "@react-navigation/native";
@@ -17,13 +14,17 @@ import ProfileInformation from "../components/ProfileDetails/ProfileInformation"
 import UnlockedFeed from "../components/ProfileDetails/UnlockedFeed";
 import UserProfileButtons from "../components/ProfileDetails/UserProfileButtons";
 import { useScrollToTop } from "@react-navigation/native";
+import { getPosts } from "../services/user";
 
 export default function UserProfile({ navigation }) {
   const { user } = useUser();
+
   const [scrollPosition, setScrollPosition] = useState(0);
   const flatListRef = useRef(null);
-
+  const [posts, setPosts] = useState([]);
   const [focused, setFocused] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   useScrollToTop(flatListRef);
 
@@ -35,14 +36,55 @@ export default function UserProfile({ navigation }) {
     setScrollPosition(offsetY);
   };
 
+  const onRefresh = async () => {
+    setRefreshing(true);
+
+    try {
+      const resp = await getPosts(user.user_id);
+      setPosts(resp);
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    const getAllPost = async () => {
+      try {
+        const resp = await getPosts(user.user_id);
+        setPosts(resp);
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    getAllPost();
+  }, []);
+
+  const checkChanges = async () => {
+    const resp = await getPosts(user.user_id);
+    setPosts(resp);
+  };
+
   useFocusEffect(
     React.useCallback(() => {
       setFocused(true);
+      checkChanges();
       return () => {
         setFocused(false);
       };
     }, [])
   );
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="grey" />
+      </View>
+    );
+  }
 
   return (
     <View
@@ -53,6 +95,8 @@ export default function UserProfile({ navigation }) {
     >
       <FlatList
         ref={flatListRef}
+        refreshing={refreshing}
+        onRefresh={onRefresh}
         onScroll={handleScroll}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
@@ -63,17 +107,22 @@ export default function UserProfile({ navigation }) {
               focused={focused}
             />
             <Fader />
-            <ProfileInformation userDetails={user} />
+            <ProfileInformation navigation={navigation} userDetails={user} />
             <View
               style={{ bottom: screenHeight * 0.15, left: screenWidth * 0.02 }}
             >
-              <UserProfileButtons navigation={navigation} />
+              <UserProfileButtons user={user} navigation={navigation} />
             </View>
           </>
         }
         ListFooterComponent={
           <View style={{ bottom: screenHeight * 0.07 }}>
-            <UnlockedFeed userDetails={user} navigation={navigation} />
+            <UnlockedFeed
+              setPosts={setPosts}
+              posts={posts}
+              userDetails={user}
+              navigation={navigation}
+            />
           </View>
         }
       />
@@ -81,4 +130,11 @@ export default function UserProfile({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "black",
+  },
+});

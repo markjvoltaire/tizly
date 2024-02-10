@@ -58,8 +58,7 @@ export default function SignUpForm({ navigation }) {
             displayName: displayName,
           },
         ]);
-        console.log("User signed up successfully:", user.id);
-        console.log("resp", resp.body[0]);
+
         setUser(resp.body[0]);
         return resp;
       } else {

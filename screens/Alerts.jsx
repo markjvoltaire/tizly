@@ -10,8 +10,11 @@ import {
 } from "react-native";
 import { getNotifications } from "../services/user";
 import React, { useState, useEffect, useRef } from "react";
-import CommentCard from "../components/Notifications/CommentCard";
+import CommentCard from "../components/notifications/CommentCard";
 import { useScrollToTop } from "@react-navigation/native";
+import PostPreview from "../components/notifications/PostPreview";
+import ReactionCard from "../components/notifications/ReactionCard";
+import RequestCard from "../components/notifications/RequestCard";
 
 export default function Alerts() {
   const [notifications, setNotifications] = useState([]);
@@ -25,7 +28,9 @@ export default function Alerts() {
   useEffect(() => {
     const fetchNotifications = async () => {
       const resp = await getNotifications();
+
       setNotifications(resp);
+
       setLoading(false);
     };
     fetchNotifications();
@@ -48,12 +53,45 @@ export default function Alerts() {
       return (
         <View
           style={{
-            paddingBottom: screenHeight * 0.03,
-            borderBottomWidth: 1,
-            borderColor: 10,
+            flexDirection: "row", // Set flexDirection to 'row'
+            paddingBottom: screenHeight * 0.01,
+            borderBottomWidth: 0.2,
+            borderColor: "#CCCCCC", // Replace with a valid color value
           }}
         >
           <CommentCard item={item} />
+          <PostPreview item={item} />
+        </View>
+      );
+    }
+
+    if (item.eventType === "friendRequest") {
+      return (
+        <View
+          style={{
+            flexDirection: "row", // Set flexDirection to 'row'
+            paddingBottom: screenHeight * 0.01,
+            borderBottomWidth: 0.2,
+            borderColor: "#CCCCCC", // Replace with a valid color value
+          }}
+        >
+          <RequestCard item={item} />
+        </View>
+      );
+    }
+
+    if (item.eventType === "reaction") {
+      return (
+        <View
+          style={{
+            flexDirection: "row", // Set flexDirection to 'row'
+            paddingBottom: screenHeight * 0.01,
+            borderBottomWidth: 0.2,
+            borderColor: "#CCCCCC", // Replace with a valid color value
+          }}
+        >
+          <ReactionCard item={item} />
+          <PostPreview item={item} />
         </View>
       );
     }

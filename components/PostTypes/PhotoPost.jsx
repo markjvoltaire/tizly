@@ -5,6 +5,7 @@ import {
   Animated,
   Dimensions,
   Image,
+  useColorScheme,
   ActivityIndicator,
 } from "react-native";
 import Buttons from "../Engagement/Buttons";
@@ -13,6 +14,7 @@ import AccessTab from "../AccessType/AccessTab";
 export default function PhotoPost({ post }) {
   const height = Dimensions.get("window").height;
   const width = Dimensions.get("window").width;
+  const scheme = useColorScheme();
 
   const calculateAspectRatio = () => post.width / post.height;
   const aspectRatio = calculateAspectRatio();
@@ -88,6 +90,7 @@ export default function PhotoPost({ post }) {
             width: width * 0.9,
             paddingBottom: 23,
             top: 6,
+            color: scheme === "light" ? "black" : "white",
           }}
         >
           {post.description}
@@ -118,13 +121,13 @@ export default function PhotoPost({ post }) {
           source={{ uri: post.media }}
         />
       </View>
-      <View style={{}}>
+      {/* <View style={{}}>
         <AccessTab post={post} />
-      </View>
+      </View> */}
       <Text
         style={{
           paddingBottom: 26,
-          top: 20,
+          top: 15,
           color: "#979797",
           fontFamily: "Poppins-SemiBold",
           fontSize: 12,

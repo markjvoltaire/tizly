@@ -5,46 +5,29 @@ import {
   ActivityIndicator,
   FlatList,
   Dimensions,
+  Pressable,
+  Alert,
 } from "react-native";
-import React, { useEffect, useState, useRef } from "react";
-import { getPosts } from "../../services/user";
+import React from "react";
 import PostHeader from "../Headers/PostHeader";
 import PhotoPost from "../PostTypes/PhotoPost";
 import VideoPost from "../PostTypes/VideoPost";
 import StatusPost from "../PostTypes/StatusPost";
 import NoPosts from "./NoPosts";
-import { useScrollToTop } from "@react-navigation/native";
+import { Image } from "react-native";
+import { useUser } from "../../context/UserContext";
+import { deletePost, reportPostById } from "../../services/user";
 
-export default function UnlockedFeed({ userDetails, navigation }) {
-  const userid = userDetails.user_id;
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
+export default function UnlockedFeed({
+  userDetails,
+  navigation,
+  posts,
+  setPosts,
+}) {
+  const { user } = useUser();
 
   const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;
-
-  useEffect(() => {
-    const getAllPost = async () => {
-      try {
-        const resp = await getPosts(userid);
-
-        setPosts(resp);
-      } catch (error) {
-        console.error("Error fetching posts:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    getAllPost();
-  }, [userid]);
-
-  if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="grey" />
-      </View>
-    );
-  }
 
   // Check if the posts array is empty
   if (posts.length === 0) {
@@ -55,8 +38,101 @@ export default function UnlockedFeed({ userDetails, navigation }) {
     );
   }
 
+  const handleOptionPress = (item) => {
+    item.user_id === user.user_id
+      ? handleCommentDelete(item)
+      : reportPost(item);
+  };
+
+  const handleCommentDelete = (item) => {
+    Alert.alert(
+      "Delete Post",
+      "Are you sure you want to delete this post?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          onPress: async () => {
+            try {
+              // Your code to delete the post from the backend goes here
+              // For example, you might want to call an API endpoint to delete the post
+              await deletePost(item);
+              // Assuming the comment is deleted successfully, update the postList
+              setPosts((prevPost) =>
+                prevPost.filter((postItem) => postItem.id !== item.id)
+              );
+
+              Alert.alert("Post Deleted", "Your post has been deleted.");
+
+              // Show a success message or perform any other actions after deletion
+            } catch (error) {
+              console.error("Error deleting comment:", error);
+            }
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
+  const reportPost = (item) => {
+    Alert.alert(
+      "Report Post",
+      "Are you sure you want to report this Post?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Report",
+          onPress: async () => {
+            try {
+              // Your code to report the Post goes here
+              // For example, you might want to call an API endpoint to report the post
+              await reportPostById(item);
+              // Show a success message
+              Alert.alert(
+                "Report Sent",
+                "Your report has been sent. Thank you for your feedback."
+              );
+
+              // Perform any other actions after reporting
+            } catch (error) {
+              console.error("Error reporting post:", error);
+            }
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
   const renderItem = ({ item }) => {
     const postHeader = <PostHeader navigation={navigation} post={item} />;
+    const moreImage = (
+      <Pressable
+        onPress={() => handleOptionPress(item)}
+        style={{
+          position: "absolute",
+          left: screenWidth * 0.85,
+          top: screenHeight * 0.003,
+        }}
+      >
+        <Image
+          style={{
+            height: 40,
+            width: 40,
+            marginRight: 10,
+            bottom: screenHeight * 0.01,
+          }}
+          source={require("../../assets/More.png")}
+        />
+      </Pressable>
+    );
 
     let postContent;
     if (item.mediaType === "image") {
@@ -70,25 +146,28 @@ export default function UnlockedFeed({ userDetails, navigation }) {
     return (
       <View
         style={{
-          paddingBottom: screenHeight * 0.06,
+          paddingBottom: screenHeight * 0.04,
           borderBottomWidth: 2,
           borderColor: 10,
           alignSelf: "center",
         }}
       >
         {postHeader}
+        {moreImage}
         {postContent}
       </View>
     );
   };
 
   return (
-    <FlatList
-      data={posts}
-      renderItem={renderItem}
-      keyExtractor={(item) => item.id.toString()} // Adjust with your item ID
-      showsVerticalScrollIndicator={false}
-    />
+    <View style={{ bottom: screenHeight * 0.01 }}>
+      <FlatList
+        data={posts}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id.toString()} // Adjust with your item ID
+        showsVerticalScrollIndicator={false}
+      />
+    </View>
   );
 }
 

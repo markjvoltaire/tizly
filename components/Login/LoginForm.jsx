@@ -57,7 +57,6 @@ export default function LoginForm({ navigation }) {
       setUser(data);
       setState("changePassword");
       Alert.alert("OTP Verified! You Can Now Change Your Password");
-      console.log("state", state);
     }
   }
 
@@ -75,7 +74,6 @@ export default function LoginForm({ navigation }) {
     }
 
     console.log("error", error);
-    console.log("data", data);
   }
 
   useEffect(() => {

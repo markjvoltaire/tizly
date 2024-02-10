@@ -30,6 +30,7 @@ export default function Post({ navigation }) {
   const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;
 
+
   const pickPost = async () => {
     let photo = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -41,7 +42,7 @@ export default function Post({ navigation }) {
     });
 
     if (!photo.canceled) {
-      console.log("photo", photo);
+
       // "fileSize": 791445
       // "fileSize": 88749,
       let newfile = {
@@ -58,7 +59,6 @@ export default function Post({ navigation }) {
     }
   };
 
-  console.log("postInfo", postInfo);
   const handleScreenPress = () => {
     Keyboard.dismiss();
   };
@@ -184,7 +184,7 @@ export default function Post({ navigation }) {
                     width: 40,
                     alignSelf: "center",
                   }}
-                  source={require("../assets/Gallery.png")}
+                  source={require("../assets/gallery.png")}
                 />
               </View>
             ) : postInfo.mediaType === "image" ? (

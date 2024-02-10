@@ -9,8 +9,9 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { getRandomUser } from "../../services/user";
-import ExploreCard from "./ExploreCard";
+
 import { useScrollToTop } from "@react-navigation/native";
+import ExploreCard from "./ExploreCard";
 
 export default function ExplorePlaceHolder({}) {
   const [userList, setUserList] = useState([]);

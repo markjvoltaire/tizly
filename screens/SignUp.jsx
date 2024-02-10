@@ -1,8 +1,7 @@
 import { Dimensions, SafeAreaView, View } from "react-native";
 import React from "react";
-
-import SignUpHeader from "../components/SignUp/SignUpHeader";
-import SignUpForm from "../components/SignUp/SignUpForm";
+import SignUpHeader from "../components/signup/SignUpHeader";
+import SignUpForm from "../components/signup/SignUpForm";
 
 export default function SignUp({ navigation }) {
   let height = Dimensions.get("window").height;

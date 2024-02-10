@@ -1,15 +1,28 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Alert, SafeAreaView, StyleSheet, Text } from "react-native";
+import {
+  Alert,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  View,
+  Dimensions,
+  Pressable,
+  TouchableOpacity,
+} from "react-native";
 import { supabase } from "../services/supabase";
 import { useUser } from "../context/UserContext";
+import LottieView from "lottie-react-native";
 
 const Uploading = ({ route, navigation }) => {
-  const { user } = useUser();
-  const { postInfo, description } = route.params;
+  const { user, setUser } = useUser();
+  const { postInfo, description, displayname, username } = route.params;
 
   const video = useRef(null);
   const [postProgress, setPostProgress] = useState("");
   const [canceled, setCanceled] = useState(false);
+
+  const screenWidth = Dimensions.get("window").width;
+  const screenHeight = Dimensions.get("window").height;
 
   let xhr; // XHR object variable
 
@@ -47,8 +60,8 @@ const Uploading = ({ route, navigation }) => {
   const handleUploadResponse = async (xhr) => {
     if (xhr.status === 200) {
       const resp = JSON.parse(xhr.responseText);
+
       await uploadToSupabase(resp);
-      console.log("resp", resp);
     } else {
       console.log("Upload to Cloudinary failed.");
       handleUploadFailure();
@@ -65,52 +78,220 @@ const Uploading = ({ route, navigation }) => {
     navigation.goBack();
   };
 
-  async function uploadToSupabase(resp) {
-    console.log("starting supabase");
-
-    const userId = supabase.auth.currentUser.id;
-
-    const res = await supabase.from("post").insert([
-      {
-        user_id: userId,
-        description,
-        media: resp.secure_url,
-        mediaType: resp.resource_type,
-        subsOnly: true,
-        height: resp.height,
-        width: resp.width,
-      },
-    ]);
-
-    if (canceled) {
-      Alert.alert("Your Post Was Canceled");
-      return;
+  const cancelUpload = () => {
+    if (xhr) {
+      xhr.abort(); // Abort the XHR request
+      setCanceled(true); // Set the canceled state to true
+      setCanceled(false);
+      navigation.goBack();
     }
+  };
+
+  async function updateUserInfo() {
+    const userId = supabase.auth.currentUser.id;
+    const res = await supabase
+      .from("profiles")
+      .update({
+        username: username,
+        displayName: displayname,
+      })
+      .eq("user_id", userId);
 
     if (res.error === null) {
-      navigation.goBack();
-      Alert.alert("Upload successful", "Your Post Was Uploaded");
-      console.log("resp", resp);
+      navigation.navigate("EditProfile");
+      Alert.alert("Your changes were saved!!!!");
+      setUser(res.body[0]);
     } else {
       console.log("ERROR", res.error);
       Alert.alert("Something Went Wrong");
     }
 
-    console.log("FROM SUPABASE UPLOAD", res);
     return res;
   }
 
+  async function uploadToSupabase(resp) {
+    if (description === "UPLOAD_PROFILE_IMAGE_") {
+      const userId = supabase.auth.currentUser.id;
+
+      const res = await supabase
+        .from("profiles")
+        .update({
+          profileimage: resp.secure_url,
+          username: username,
+          displayName: displayname,
+        })
+        .eq("user_id", userId);
+
+      if (canceled) {
+        Alert.alert("Your Post Was Canceled");
+        return;
+      }
+
+      if (res.error === null) {
+        navigation.navigate("EditProfile");
+        Alert.alert("Upload successful", "Your Profile Was Updated");
+        setUser(res.body[0]);
+      } else {
+        console.log("ERROR", res.error);
+        Alert.alert("Something Went Wrong");
+      }
+
+      return res;
+    } else if (description === "UPLOAD_PROFILE_BANNER_") {
+      const userId = supabase.auth.currentUser.id;
+
+      const res = await supabase
+        .from("profiles")
+        .update({
+          bannerImage: resp.secure_url,
+          bannerImageType: postInfo.mediaType,
+          bannerHeight: postInfo.height,
+          bannerWidth: postInfo.width,
+          username: username,
+          displayName: displayname,
+        })
+        .eq("user_id", userId);
+
+      if (canceled) {
+        Alert.alert("Your Post Was Canceled");
+        return;
+      }
+
+      if (res.error === null) {
+        navigation.navigate("UserProfile");
+        Alert.alert("Your Profile Was Updated");
+        setUser(res.body[0]);
+      } else {
+        console.log("ERROR", res.error);
+        Alert.alert("Something Went Wrong");
+      }
+
+      return res;
+    } else {
+      const userId = supabase.auth.currentUser.id;
+      const res = await supabase.from("post").insert([
+        {
+          user_id: userId,
+          description,
+          media: resp.secure_url,
+          mediaType: resp.resource_type,
+          subsOnly: true,
+          height: resp.height,
+          width: resp.width,
+        },
+      ]);
+
+      if (canceled) {
+        Alert.alert("Your Post Was Canceled");
+        return;
+      }
+
+      if (res.error === null) {
+        navigation.goBack();
+        Alert.alert("Upload successful", "Your Post Was Uploaded");
+      } else {
+        console.log("ERROR", res.error);
+        Alert.alert("Something Went Wrong");
+      }
+
+      return res;
+    }
+  }
+
   useEffect(() => {
-    handleXHR();
+    const fetchData = async () => {
+      if (postInfo === null) {
+        await updateUserInfo();
+      } else {
+        await handleXHR();
+      }
+    };
+
+    fetchData();
+
     return () => {
       navigation.navigate("Home");
     };
-  }, []);
+  }, [postInfo]);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
-      <Text style={{ alignSelf: "center" }}>Uploading</Text>
-    </SafeAreaView>
+    <View
+      style={{
+        flex: 1,
+        justifyContent: "center",
+        backgroundColor: "#00A3FF",
+        alignItems: "center",
+      }}
+    >
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        {description === "UPLOAD_PROFILE_IMAGE_" ? (
+          <Text
+            style={{
+              alignSelf: "center",
+              color: "white",
+              fontSize: 16,
+              fontFamily: "Poppins-Bold",
+            }}
+          >
+            Updating Your Profile Image
+          </Text>
+        ) : description === "UPLOAD_PROFILE_BANNER_" ? (
+          <Text
+            style={{
+              alignSelf: "center",
+              color: "white",
+              fontSize: 16,
+              fontFamily: "Poppins-Bold",
+            }}
+          >
+            Updating your banner
+          </Text>
+        ) : (
+          <Text
+            style={{
+              alignSelf: "center",
+              color: "white",
+              fontSize: 16,
+              fontFamily: "Poppins-Bold",
+            }}
+          >
+            Uploading your post
+          </Text>
+        )}
+
+        <LottieView
+          style={{
+            height: 50,
+            width: 50,
+          }}
+          source={require("../assets/lottie/whiteLoader.json")}
+          autoPlay
+        />
+      </View>
+      <TouchableOpacity
+        onPress={cancelUpload}
+        style={{
+          backgroundColor: "black",
+          width: screenWidth * 0.62,
+          height: screenHeight * 0.035,
+          justifyContent: "center",
+          borderRadius: 10,
+          top: screenHeight * 0.07,
+          alignSelf: "center",
+        }}
+      >
+        <Text
+          style={{
+            color: "white",
+            fontFamily: "Poppins-Bold",
+            alignSelf: "center",
+            fontSize: 12,
+          }}
+        >
+          Cancel Upload
+        </Text>
+      </TouchableOpacity>
+    </View>
   );
 };
 

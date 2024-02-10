@@ -84,7 +84,7 @@ export default function Welcome({ navigation }) {
             </Animated.Text>
 
             {/* {Tagline} */}
-            {/* <Animated.Text
+            <Animated.Text
               style={{
                 fontFamily: "Poppins-SemiBold",
                 color: "white",
@@ -94,8 +94,8 @@ export default function Welcome({ navigation }) {
                 opacity: fadeAnim,
               }}
             >
-              It's Personal.
-            </Animated.Text> */}
+              Connect. Share. Privately
+            </Animated.Text>
           </View>
           <Modal animationType="slide" transparent={true} visible={modal}>
             <View

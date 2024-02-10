@@ -5,6 +5,7 @@ import {
   View,
   Dimensions,
   Image,
+  useColorScheme,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { getUser } from "../../services/user";
@@ -14,7 +15,52 @@ export default function PostHeader({ post, navigation }) {
   const [userDetails, setUserDetails] = useState({});
   let height = Dimensions.get("window").height;
   let width = Dimensions.get("window").width;
-  const { user, setUser } = useUser();
+
+  const postDate = new Date(post.date);
+  const currentDate = new Date();
+  const timeDifference = currentDate - postDate;
+  const secondsDifference = Math.floor(timeDifference / 1000);
+  const minutesDifference = Math.floor(secondsDifference / 60);
+  const hoursDifference = Math.floor(minutesDifference / 60);
+  const daysDifference = Math.floor(hoursDifference / 24);
+
+  const scheme = useColorScheme();
+
+  const formatTimeAgo = (value, unit) => {
+    return value === 1 ? `1 ${unit} ago` : `${value} ${unit}s ago`;
+  };
+
+  let formattedDate;
+
+  if (daysDifference > 7) {
+    const monthNames = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+    const month = postDate.getMonth();
+    const monthName = monthNames[month];
+    formattedDate = `${monthName} ${postDate.getDate()}  ${postDate.getFullYear()}`;
+  } else if (daysDifference > 0) {
+    formattedDate = formatTimeAgo(daysDifference, "day");
+  } else if (hoursDifference > 0) {
+    formattedDate = formatTimeAgo(hoursDifference, "hour");
+  } else if (minutesDifference > 0) {
+    formattedDate = formatTimeAgo(minutesDifference, "minute");
+  } else {
+    formattedDate = "Just now";
+  }
+
+  const { user } = useUser();
 
   const handlePress = () => {
     if (user.user_id === userDetails.user_id) {
@@ -76,7 +122,7 @@ export default function PostHeader({ post, navigation }) {
           <View
             style={{
               marginLeft: 10,
-              paddingRight: width * 0.02,
+              paddingRight: width * 0.08,
             }}
           >
             <Text
@@ -85,6 +131,7 @@ export default function PostHeader({ post, navigation }) {
                 fontFamily: "Poppins-Bold",
                 fontSize: 13,
                 marginBottom: -3,
+                color: scheme === "light" ? "black" : "white",
               }}
             >
               {userDetails.displayName}

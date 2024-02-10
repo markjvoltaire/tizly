@@ -7,9 +7,13 @@ import {
   Image,
   View,
   ActivityIndicator,
+  TouchableOpacity,
+  Alert,
+  Pressable,
 } from "react-native";
 import { Video } from "expo-av";
 import { getUser } from "../../services/user";
+import { supabase } from "../../services/supabase";
 
 const Banner = ({ userDetails, scrollPosition, focused }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -62,7 +66,7 @@ const Banner = ({ userDetails, scrollPosition, focused }) => {
           <Animated.View style={{ ...styles.container, opacity: fadeAnim }}>
             <Video
               shouldPlay={
-                scrollPosition > 200 || focused === false ? false : true
+                scrollPosition > 120 || focused === false ? false : true
               }
               isLooping
               ref={video}

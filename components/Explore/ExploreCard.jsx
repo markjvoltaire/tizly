@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
-import ImageBanner from "./ImageBanner";
 import VideoBanner from "./VideoBanner";
+import ImageBanner from "./ImageBanner";
 
 export default function ExploreCard({ item }) {
   if (item.bannerImageType === "image") {

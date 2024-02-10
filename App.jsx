@@ -36,6 +36,7 @@ export default function App() {
   return (
     <UserProvider>
       <NavigationContainer>
+        <StatusBar style="auto" />
         {auth === null ? <NoAuth /> : <Auth />}
       </NavigationContainer>
     </UserProvider>

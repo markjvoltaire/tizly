@@ -19,11 +19,13 @@ import {
 import {
   deleteComment,
   getComments,
+  getUser,
   reportCommentById,
 } from "../services/user";
 import Comment from "../components/Engagement/Comment";
 import { useUser } from "../context/UserContext";
 import { supabase } from "../services/supabase";
+import ProfileCard from "../components/notifications/ProfileCard";
 
 export default function Comments({ route }) {
   const screenWidth = Dimensions.get("window").width;
@@ -36,7 +38,7 @@ export default function Comments({ route }) {
   const [commentList, setCommentList] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(true);
+  const [userDetails, setUserDetails] = useState(post);
 
   const handleOptionPress = (item) => {
     item.userId === user.user_id
@@ -115,11 +117,22 @@ export default function Comments({ route }) {
     } else {
       try {
         const newComment = {
-          // ... your newComment object
-
-          // Ensure that postId and user_id are set, replace them with the actual properties from your data
-          postId: post.id || "",
-          userId: user.user_id || "",
+          comment: comment,
+          creatorId: userDetails.user_id,
+          userId: user.user_id,
+          userProfileImage: user.profileimage,
+          postId: post.id,
+          userUsername: user.username,
+          creatorUsername: userDetails.username,
+          creatorDisplayname: userDetails.displayName,
+          userDisplayname: user.displayName,
+          creatorProfileImage: userDetails.profileimage,
+          media: post.media,
+          mediaType: post.mediaType,
+          eventType: "comment",
+          description: post.description,
+          liked: false,
+          reactionType: null,
         };
 
         const resp = await supabase.from("notifications").insert([newComment]);
@@ -128,6 +141,7 @@ export default function Comments({ route }) {
           // Assuming resp.body is an array with at least one item
           setCommentList((prevComments) => [...prevComments, resp.body[0]]);
           setComment("");
+
           return resp;
         } else {
           console.error("Invalid response from supabase:", resp);
@@ -162,12 +176,10 @@ export default function Comments({ route }) {
     const loadComments = async () => {
       setLoading(true);
       try {
-        const resp = await getComments(post);
-        if (resp.body.length === 0) {
-          setCommentList([]);
-        } else {
-          setCommentList(resp.body);
-        }
+        const resp = await getUser(userDetails);
+        setUserDetails(resp.body);
+        const res = await getComments(post);
+        setCommentList(res.body);
       } catch (error) {
         console.error("Error loading comments:", error);
       } finally {
@@ -189,8 +201,9 @@ export default function Comments({ route }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.header}>Comments</Text>
-
+      <View style={{ alignSelf: "center" }}>
+        <ProfileCard userDetails={userDetails} />
+      </View>
       <KeyboardAvoidingView
         style={styles.flex1}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
