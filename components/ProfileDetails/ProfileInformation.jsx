@@ -34,7 +34,7 @@ export default function ProfileInformation({ userDetails }) {
         style={{
           flexDirection: "row",
           alignItems: "center",
-          bottom: screenHeight * 0.2,
+          bottom: screenHeight * 0.18,
         }}
       >
         <Pressable onPress={() => setModal(true)}>

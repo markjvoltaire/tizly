@@ -10,6 +10,7 @@ import {
   Animated,
   Alert,
   Linking,
+  Pressable,
 } from "react-native";
 import react, { useRef, useEffect } from "react";
 import { supabase } from "../services/supabase";
@@ -153,13 +154,17 @@ export default function Settings({ navigation }) {
       scrollEnabled={false}
       style={{
         flex: 1,
-        backgroundColor: scheme === "dark" ? "#1C1C1C" : "white",
+        backgroundColor: scheme === "light" ? "white" : "#080A0B",
       }}
     >
       <TouchableOpacity onPress={() => navigation.goBack()}>
         <Image
           style={{ height: 25, width: 25, top: height * 0.08, left: 23 }}
-          source={require("../assets/Back.png")}
+          source={
+            scheme === "light"
+              ? require("../assets/Back.png")
+              : require("../assets/WhiteBack.png")
+          }
         />
       </TouchableOpacity>
 
@@ -343,7 +348,7 @@ export default function Settings({ navigation }) {
           top: height * 0.53,
         }}
       >
-        <TouchableOpacity onPress={() => signOutUser()}>
+        {/* <TouchableOpacity onPress={() => signOutUser()}>
           <Image
             style={{
               position: "absolute",
@@ -354,7 +359,31 @@ export default function Settings({ navigation }) {
             }}
             source={require("../assets/signOut.png")}
           />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
+
+        <Pressable
+          style={{
+            backgroundColor: scheme === "light" ? "black" : "white",
+            width: width * 0.8,
+            height: height * 0.05,
+            justifyContent: "center",
+            borderRadius: 10,
+            top: height * 0.28,
+
+            alignSelf: "center",
+          }}
+        >
+          <Text
+            style={{
+              color: scheme === "light" ? "white" : "black",
+              fontFamily: "Poppins-Bold",
+              alignSelf: "center",
+              fontSize: 16,
+            }}
+          >
+            Sign Out
+          </Text>
+        </Pressable>
       </View>
     </ScrollView>
   );

@@ -5,17 +5,31 @@ import {
   Image,
   TouchableOpacity,
   ActivityIndicator,
+  useColorScheme,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 
 export default function NoPosts({ userDetails }) {
+  const scheme = useColorScheme();
   return (
     <View style={styles.container}>
       <Image
-        source={require("../../assets/LightClock.png")}
+        source={
+          scheme === "light"
+            ? require("../../assets/LightClock.png")
+            : require("../../assets/DarkClock.png")
+        }
         style={styles.lockedImage}
       />
-      <Text style={styles.messageText}>
+      <Text
+        style={{
+          fontSize: 14,
+          textAlign: "center",
+          marginBottom: 10,
+          color: scheme === "light" ? "#555" : "white",
+          fontFamily: "Poppins-Bold",
+        }}
+      >
         {userDetails.username} hasn't uploaded anything yet...
       </Text>
     </View>

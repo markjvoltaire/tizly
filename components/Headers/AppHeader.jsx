@@ -1,7 +1,15 @@
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+  useColorScheme,
+} from "react-native";
 import React from "react";
 
 export default function AppHeader({ navigation }) {
+  const scheme = useColorScheme();
   return (
     <View
       style={{
@@ -15,13 +23,17 @@ export default function AppHeader({ navigation }) {
     >
       <Image
         style={{ height: 18, width: 18, left: 10 }}
-        source={require("../../assets/friends.png")}
+        source={
+          scheme === "light"
+            ? require("../../assets/friends.png")
+            : require("../../assets/FriendsLight.png")
+        }
       />
       <Text
         style={{
           fontFamily: "Poppins-Black",
           fontSize: 18,
-          color: "#00A3FF",
+          color: scheme === "light" ? "#00A3FF" : "white",
         }}
       >
         Tizly
@@ -29,7 +41,11 @@ export default function AppHeader({ navigation }) {
       <Pressable onPress={() => navigation.navigate("Settings")}>
         <Image
           style={{ height: 18, width: 18, right: 10 }}
-          source={require("../../assets/settings.png")}
+          source={
+            scheme === "light"
+              ? require("../../assets/settings.png")
+              : require("../../assets/SettingsLight.png")
+          }
         />
       </Pressable>
     </View>

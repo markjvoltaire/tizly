@@ -16,6 +16,7 @@ import ProfileCard from "../notifications/ProfileCard";
 export default function ImageBanner({ item }) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const [imageLoaded, setImageLoaded] = useState(false);
+  const { user } = useUser();
 
   const navigation = useNavigation();
 
@@ -25,8 +26,6 @@ export default function ImageBanner({ item }) {
   // const handlePress = () => {
   //   navigation.navigate("ProfileDetail", { userDetails: item });
   // };
-
-  const { user, setUser } = useUser();
 
   const handlePress = () => {
     if (user.user_id === item.user_id) {

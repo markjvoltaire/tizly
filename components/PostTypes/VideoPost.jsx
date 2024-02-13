@@ -14,15 +14,14 @@ import { Video } from "expo-av";
 import Buttons from "../Engagement/Buttons";
 import AccessTab from "../AccessType/AccessTab";
 import ProfileInformation from "../ProfileDetails/ProfileInformation";
-import { useNavigation } from "@react-navigation/native"; // Import useNavigation hook
+import { useNavigation } from "@react-navigation/native";
 
 export default function VideoPost({ post }) {
-  const navigation = useNavigation(); // Use useNavigation hook to get the navigation prop
-  const [status, setStatus] = React.useState({});
+  const navigation = useNavigation();
+  const [status, setStatus] = useState({});
   const video = useRef(null);
   const progressIntervalRef = useRef(null);
   const scheme = useColorScheme();
-
   const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;
   const [modalVisible, setModalVisible] = useState(false);
@@ -81,9 +80,9 @@ export default function VideoPost({ post }) {
 
   return (
     <>
-      <Pressable>
+      <Pressable onPress={() => navigation.navigate("VideoPost", { post })}>
         <View>
-          {post.description === "" ? null : (
+          {post.description !== "" && (
             <Text
               style={{
                 left: screenWidth * 0.02,
@@ -96,17 +95,6 @@ export default function VideoPost({ post }) {
               {post.description}
             </Text>
           )}
-          {/* Center the ActivityIndicator within the Video */}
-          <View
-            style={{
-              position: "absolute",
-              top: "50%", // Center vertically
-              left: "50%", // Center horizontally
-              transform: [{ translateX: -35 }, { translateY: -35 }], // Adjust based on the size of the ActivityIndicator
-            }}
-          >
-            <ActivityIndicator size="large" />
-          </View>
           <Pressable
             onPress={() =>
               navigation.navigate("VideoPost", {
@@ -124,6 +112,7 @@ export default function VideoPost({ post }) {
                 height: newHeight > newWidth ? 500 : newWidth,
                 alignSelf: "center",
                 borderRadius: 10,
+                backgroundColor: "grey",
               }}
               source={{ uri: post.media }}
               onPlaybackStatusUpdate={(status) => setStatus(() => status)}
@@ -160,5 +149,3 @@ export default function VideoPost({ post }) {
     </>
   );
 }
-
-const styles = StyleSheet.create({});

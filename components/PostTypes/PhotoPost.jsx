@@ -109,7 +109,7 @@ export default function PhotoPost({ post }) {
       >
         {/* Uncomment the line below once you have the actual image URI */}
         <View style={{ position: "absolute" }}>
-          <ActivityIndicator size="large" />
+          <ActivityIndicator color="white" size="large" />
         </View>
         <Image
           style={{
@@ -117,6 +117,7 @@ export default function PhotoPost({ post }) {
             height: newHeight,
             alignSelf: "center",
             borderRadius: 10,
+            backgroundColor: "grey",
           }}
           source={{ uri: post.media }}
         />

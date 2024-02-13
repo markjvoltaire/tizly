@@ -4,6 +4,7 @@ import {
   View,
   Dimensions,
   ActivityIndicator,
+  useColorScheme,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 
@@ -16,6 +17,7 @@ export default function CommentCard({ item }) {
   const screenHeight = Dimensions.get("window").height;
   const [userDetails, setUserDetails] = useState({});
   const [loading, setLoading] = useState(true);
+  const scheme = useColorScheme();
 
   const prop = {
     user_id: item.userId,
@@ -49,7 +51,7 @@ export default function CommentCard({ item }) {
       <Text
         style={{
           left: screenWidth * 0.02,
-          color: "#464646",
+          color: scheme === "light" ? "#464646" : "white",
           paddingBottom: screenHeight * 0.02,
           top: screenHeight * 0.01,
           fontWeight: "300",
@@ -65,7 +67,14 @@ export default function CommentCard({ item }) {
           left: screenWidth * 0.02,
         }}
       >
-        <Text style={{ fontWeight: "500" }}>{item.comment}</Text>
+        <Text
+          style={{
+            fontWeight: "500",
+            color: scheme === "light" ? "black" : "white",
+          }}
+        >
+          {item.comment}
+        </Text>
       </View>
     </View>
   );

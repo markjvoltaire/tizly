@@ -7,13 +7,17 @@ import {
   TouchableOpacity,
   Alert,
   Pressable,
+  useColorScheme,
 } from "react-native";
 import { supabase } from "../../services/supabase";
 import { useNavigation } from "@react-navigation/native";
+import { useUser } from "../../context/UserContext";
 
 export default function ProfileCard({ userDetails }) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const navigation = useNavigation();
+  const { user } = useUser();
+  const scheme = useColorScheme();
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -26,11 +30,19 @@ export default function ProfileCard({ userDetails }) {
   const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;
 
+  const handlePress = () => {
+    if (user.user_id === userDetails.user_id) {
+      navigation.navigate("UserProfile");
+    }
+
+    if (user.user_id !== userDetails.user_id) {
+      navigation.navigate("ProfileDetail", { userDetails: userDetails });
+    }
+  };
+
   return (
     <>
-      <Pressable
-        onPress={() => navigation.navigate("ProfileDetail", { userDetails })}
-      >
+      <Pressable onPress={() => handlePress()}>
         <View
           style={{
             flexDirection: "row",
@@ -57,6 +69,7 @@ export default function ProfileCard({ userDetails }) {
                 fontSize: 11,
                 marginBottom: -2,
                 opacity: fadeAnim,
+                color: scheme === "light" ? "black" : "white",
               }}
             >
               {userDetails.displayName}

@@ -6,6 +6,7 @@ import {
   Image,
   Pressable,
   Modal,
+  useColorScheme,
 } from "react-native";
 import React, { useRef, useState } from "react";
 import { useNavigation } from "@react-navigation/native"; // Import useNavigation hook
@@ -17,6 +18,7 @@ export default function PostPreview({ item }) {
   const [status, setStatus] = React.useState({});
   const video = useRef(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const scheme = useColorScheme();
 
   const navigation = useNavigation();
 
@@ -98,6 +100,7 @@ export default function PostPreview({ item }) {
               borderRadius: 5,
               borderWidth: 0.3,
               left: screenWidth * 0.07,
+              borderColor: scheme === "light" ? "black" : "white",
             }}
           >
             <View
@@ -109,7 +112,12 @@ export default function PostPreview({ item }) {
               }}
             >
               <Text
-                style={{ alignSelf: "center", fontSize: 4, fontWeight: "300" }}
+                style={{
+                  alignSelf: "center",
+                  fontSize: 4,
+                  fontWeight: "300",
+                  color: scheme === "light" ? "black" : "white",
+                }}
               >
                 {item.description}
               </Text>

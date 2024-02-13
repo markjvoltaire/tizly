@@ -7,6 +7,7 @@ import {
   Dimensions,
   Pressable,
   Alert,
+  useColorScheme,
 } from "react-native";
 import React from "react";
 import PostHeader from "../Headers/PostHeader";
@@ -25,7 +26,7 @@ export default function UnlockedFeed({
   setPosts,
 }) {
   const { user } = useUser();
-
+  const scheme = useColorScheme();
   const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;
 
@@ -112,7 +113,11 @@ export default function UnlockedFeed({
   };
 
   const renderItem = ({ item }) => {
-    const postHeader = <PostHeader navigation={navigation} post={item} />;
+    const postHeader = (
+      <View style={{ top: 5 }}>
+        <PostHeader navigation={navigation} post={item} />
+      </View>
+    );
     const moreImage = (
       <Pressable
         onPress={() => handleOptionPress(item)}
@@ -129,7 +134,11 @@ export default function UnlockedFeed({
             marginRight: 10,
             bottom: screenHeight * 0.01,
           }}
-          source={require("../../assets/More.png")}
+          source={
+            scheme === "light"
+              ? require("../../assets/More.png")
+              : require("../../assets/MoreLight.png")
+          }
         />
       </Pressable>
     );
@@ -146,15 +155,15 @@ export default function UnlockedFeed({
     return (
       <View
         style={{
-          paddingBottom: screenHeight * 0.04,
-          borderBottomWidth: 2,
-          borderColor: 10,
+          paddingBottom: screenHeight * 0.06,
+          borderBottomWidth: 1,
+          borderColor: scheme === "light" ? 10 : "#383838",
           alignSelf: "center",
         }}
       >
         {postHeader}
         {moreImage}
-        {postContent}
+        <View style={{ top: 10 }}>{postContent}</View>
       </View>
     );
   };

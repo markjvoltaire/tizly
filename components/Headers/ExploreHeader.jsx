@@ -1,7 +1,8 @@
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, View, useColorScheme } from "react-native";
 import React from "react";
 
 export default function ExploreHeader() {
+  const scheme = useColorScheme();
   return (
     <View
       style={{
@@ -14,7 +15,7 @@ export default function ExploreHeader() {
         style={{
           fontFamily: "Poppins-Black",
           fontSize: 18,
-          color: "#00A3FF",
+          color: scheme === "light" ? "#00A3FF" : "white",
         }}
       >
         Explore

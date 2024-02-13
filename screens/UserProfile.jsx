@@ -4,6 +4,7 @@ import {
   FlatList,
   Dimensions,
   ActivityIndicator,
+  useColorScheme,
 } from "react-native";
 import React, { useRef, useState, useEffect } from "react";
 import { useUser } from "../context/UserContext";
@@ -25,6 +26,7 @@ export default function UserProfile({ navigation }) {
   const [focused, setFocused] = useState(false);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const scheme = useColorScheme();
 
   useScrollToTop(flatListRef);
 
@@ -90,7 +92,7 @@ export default function UserProfile({ navigation }) {
     <View
       style={{
         flex: 1,
-        backgroundColor: "white",
+        backgroundColor: scheme === "light" ? "white" : "#080A0B",
       }}
     >
       <FlatList

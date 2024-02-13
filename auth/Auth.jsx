@@ -30,20 +30,10 @@ export default function Auth() {
   const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
   const [loading, setLoading] = useState(true);
-  const { user, setUser } = useUser();
+  const { setUser } = useUser();
   const scheme = useColorScheme();
 
   const userId = supabase.auth.currentUser.id;
-
-  async function getUserById() {
-    const { body: user } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("user_id", userId)
-      .single();
-
-    return user;
-  }
 
   useEffect(() => {
     const fetchUserById = async () => {
@@ -285,7 +275,6 @@ export default function Auth() {
       <Tab.Screen
         options={{
           tabBarShowLabel: false,
-
           headerShown: false,
           tabBarIcon: ({ color, size, focused }) =>
             focused ? (

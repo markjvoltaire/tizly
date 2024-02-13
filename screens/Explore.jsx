@@ -7,6 +7,7 @@ import {
   Text,
   View,
   Dimensions,
+  useColorScheme,
 } from "react-native";
 import { useScrollToTop } from "@react-navigation/native";
 import PaginationComponent from "../components/explore/PaginationComponent";
@@ -20,6 +21,7 @@ export default function Explore({ navigation }) {
   useScrollToTop(ref);
   const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;
+  const scheme = useColorScheme();
 
   const dismissKeyboard = () => {
     Keyboard.dismiss();
@@ -32,7 +34,13 @@ export default function Explore({ navigation }) {
   return (
     <TouchableWithoutFeedback onPress={dismissKeyboard}>
       <>
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView
+          style={{
+            flex: 1,
+            alignItems: "center",
+            backgroundColor: scheme === "light" ? "white" : "#080A0B",
+          }}
+        >
           <ExploreHeader />
           <TextInput
             style={styles.textInput}

@@ -5,6 +5,7 @@ import {
   Image,
   TouchableOpacity,
   ActivityIndicator,
+  useColorScheme,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { getPosts } from "../../services/user";
@@ -12,6 +13,7 @@ import { getPosts } from "../../services/user";
 export default function LockedFeed({ userDetails }) {
   const [loading, setLoading] = useState(true);
   const [post, setPost] = useState([]);
+  const scheme = useColorScheme();
 
   const userid = userDetails.user_id;
 
@@ -45,16 +47,55 @@ export default function LockedFeed({ userDetails }) {
       }}
     >
       <Image
-        source={require("../../assets/blackLock.png")}
+        source={
+          scheme === "light"
+            ? require("../../assets/blackLock.png")
+            : require("../../assets/whiteLock.png")
+        }
         style={styles.lockedImage}
       />
-      <Text style={styles.messageText}>
+      <Text
+        style={{
+          fontSize: 16,
+          textAlign: "center",
+          marginBottom: 10,
+          color: scheme === "light" ? "#555" : "white",
+          fontFamily: "Poppins-Bold",
+        }}
+      >
         {userDetails.username}'s feed is exclusive for friends
       </Text>
       <View style={styles.placeholderContainer}>
-        <Text style={styles.placeholderText}>{photoCount.length} Photos</Text>
-        <Text style={styles.placeholderText}>{videoCount.length} Videos</Text>
-        <Text style={styles.placeholderText}>{textCount.length} Status</Text>
+        <Text
+          style={{
+            marginRight: 10,
+            fontSize: 18,
+            color: scheme === "light" ? "#777" : "white",
+            fontFamily: "Poppins-SemiBold",
+          }}
+        >
+          {photoCount.length} Photos
+        </Text>
+        <Text
+          style={{
+            marginRight: 10,
+            fontSize: 18,
+            color: scheme === "light" ? "#777" : "white",
+            fontFamily: "Poppins-SemiBold",
+          }}
+        >
+          {videoCount.length} Videos
+        </Text>
+        <Text
+          style={{
+            marginRight: 10,
+            fontSize: 18,
+            color: scheme === "light" ? "#777" : "white",
+            fontFamily: "Poppins-SemiBold",
+          }}
+        >
+          {textCount.length} Status
+        </Text>
       </View>
     </View>
   );

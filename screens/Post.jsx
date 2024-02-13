@@ -11,6 +11,7 @@ import {
   Keyboard,
   Pressable,
   Image,
+  Alert,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { useScrollToTop } from "@react-navigation/native";
@@ -30,7 +31,6 @@ export default function Post({ navigation }) {
   const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;
 
-
   const pickPost = async () => {
     let photo = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -42,7 +42,6 @@ export default function Post({ navigation }) {
     });
 
     if (!photo.canceled) {
-
       // "fileSize": 791445
       // "fileSize": 88749,
       let newfile = {
@@ -71,7 +70,7 @@ export default function Post({ navigation }) {
         // it is considered successful. You can show a success arlert here.
         navigation.navigate("Home");
         setDescription("");
-        alert("Upload successful!");
+        Alert.alert("Upload successful");
       } else {
         // If the uploadStatus function completes without throwing an error,
         // it is considered successful. You can show a success alert here.
@@ -94,7 +93,7 @@ export default function Post({ navigation }) {
   return (
     <SafeAreaView
       style={{
-        backgroundColor: scheme === "light" ? "white" : "#171616",
+        backgroundColor: scheme === "light" ? "white" : "#080A0B",
         flex: 1,
       }}
     >
@@ -108,6 +107,7 @@ export default function Post({ navigation }) {
                 fontSize: 17,
                 marginRight: screenWidth * 0.54,
                 left: screenWidth * 0.05,
+                color: scheme === "dark" ? "white" : "black",
               }}
             >
               Create Post
@@ -115,7 +115,7 @@ export default function Post({ navigation }) {
             <Pressable
               onPress={() => uploadPost(description)}
               style={{
-                backgroundColor: "black",
+                backgroundColor: scheme === "light" ? "black" : "white",
                 width: screenWidth * 0.22,
                 height: screenHeight * 0.035,
                 justifyContent: "center",
@@ -126,7 +126,7 @@ export default function Post({ navigation }) {
             >
               <Text
                 style={{
-                  color: "white",
+                  color: scheme === "light" ? "white" : "black",
                   fontFamily: "Poppins-Bold",
                   alignSelf: "center",
                   fontSize: 12,
@@ -184,7 +184,11 @@ export default function Post({ navigation }) {
                     width: 40,
                     alignSelf: "center",
                   }}
-                  source={require("../assets/gallery.png")}
+                  source={
+                    scheme === "light"
+                      ? require("../assets/gallery.png")
+                      : require("../assets/GalleryLight.png")
+                  }
                 />
               </View>
             ) : postInfo.mediaType === "image" ? (

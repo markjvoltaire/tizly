@@ -8,7 +8,7 @@ export default function Fader() {
     <>
       <View
         style={{
-          opacity: 0.45,
+          opacity: 0.7,
           position: "absolute",
           backgroundColor: "black",
           width: screenWidth,

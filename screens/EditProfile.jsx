@@ -11,7 +11,7 @@ import {
   Keyboard,
   Alert,
   Modal,
-  TouchableOpacity,
+  useColorScheme,
 } from "react-native";
 import { Pressable } from "react-native";
 import * as ImagePicker from "expo-image-picker";
@@ -30,6 +30,7 @@ export default function EditProfile({ route }) {
   const navigation = useNavigation();
   const [canceled, setCanceled] = useState(false);
   const [pressCount, setPressCount] = useState(0);
+  const scheme = useColorScheme();
 
   const [status, setStatus] = React.useState({});
   const video = useRef(null);
@@ -207,7 +208,12 @@ export default function EditProfile({ route }) {
   return (
     <>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
+        <SafeAreaView
+          style={{
+            flex: 1,
+            backgroundColor: scheme === "light" ? "white" : "#080A0B",
+          }}
+        >
           <View
             style={{
               flexDirection: "row",
@@ -215,19 +221,24 @@ export default function EditProfile({ route }) {
               alignItems: "center",
               padding: 10,
               borderBottomWidth: 0.9,
-              borderBottomColor: "#ccc",
+              borderColor: scheme === "light" ? 10 : "#383838",
             }}
           >
             <Pressable onPress={() => navigation.goBack()}>
               <Image
                 style={{ height: 20, width: 20, left: 10 }}
-                source={require("../assets/Back.png")}
+                source={
+                  scheme === "light"
+                    ? require("../assets/Back.png")
+                    : require("../assets/BackWhite.png")
+                }
               />
             </Pressable>
             <Text
               style={{
                 fontSize: 15,
                 fontFamily: "Poppins-Bold",
+                color: scheme === "light" ? "black" : "white",
               }}
             >
               Edit Profile
@@ -235,7 +246,11 @@ export default function EditProfile({ route }) {
             <Pressable onPress={() => updateProfile()}>
               <Image
                 style={{ height: 20, width: 20, right: 10 }}
-                source={require("../assets/Save.png")}
+                source={
+                  scheme === "light"
+                    ? require("../assets/Save.png")
+                    : require("../assets/SaveWhite.png")
+                }
               />
             </Pressable>
           </View>
@@ -249,7 +264,13 @@ export default function EditProfile({ route }) {
           >
             {/* Circle */}
             <View style={{ alignItems: "center" }}>
-              <Text style={{ marginBottom: 5, fontFamily: "Poppins-SemiBold" }}>
+              <Text
+                style={{
+                  marginBottom: 5,
+                  fontFamily: "Poppins-SemiBold",
+                  color: scheme === "light" ? "black" : "white",
+                }}
+              >
                 Profile Image
               </Text>
               <Pressable onPress={() => pickProfileImage()}>
@@ -269,7 +290,11 @@ export default function EditProfile({ route }) {
             <Pressable onPress={() => pickBanner()}>
               <View style={{ alignItems: "center" }}>
                 <Text
-                  style={{ marginBottom: 5, fontFamily: "Poppins-SemiBold" }}
+                  style={{
+                    marginBottom: 5,
+                    fontFamily: "Poppins-SemiBold",
+                    color: scheme === "light" ? "black" : "white",
+                  }}
                 >
                   Profile Banner
                 </Text>
@@ -298,8 +323,8 @@ export default function EditProfile({ route }) {
                         position: "absolute",
                         backgroundColor: "black",
                         width: 140,
-                        height: 200,
-                        top: height * 0.03,
+                        height: 210,
+                        top: height * 0.02,
                         borderRadius: 10,
                       }}
                     ></View>
@@ -332,6 +357,14 @@ export default function EditProfile({ route }) {
             </Pressable>
           </View>
           <View style={{ margin: 30, top: 10 }}>
+            <Text
+              style={{
+                color: scheme === "light" ? "black" : "white",
+                fontWeight: "700",
+              }}
+            >
+              Display name
+            </Text>
             <TextInput
               style={styles.input}
               value={displayname}
@@ -339,6 +372,14 @@ export default function EditProfile({ route }) {
               onChangeText={(text) => setDisplayname(text)}
               placeholderTextColor={"#929292"}
             />
+            <Text
+              style={{
+                color: scheme === "light" ? "black" : "white",
+                fontWeight: "700",
+              }}
+            >
+              Username
+            </Text>
             <TextInput
               style={styles.input}
               placeholder="Username"

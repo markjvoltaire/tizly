@@ -7,6 +7,7 @@ import {
   Dimensions,
   RefreshControl,
   ActivityIndicator,
+  useColorScheme,
 } from "react-native";
 import { getNotifications } from "../services/user";
 import React, { useState, useEffect, useRef } from "react";
@@ -24,6 +25,7 @@ export default function Alerts() {
   useScrollToTop(ref);
   const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;
+  const scheme = useColorScheme();
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -56,7 +58,7 @@ export default function Alerts() {
             flexDirection: "row", // Set flexDirection to 'row'
             paddingBottom: screenHeight * 0.01,
             borderBottomWidth: 0.2,
-            borderColor: "#CCCCCC", // Replace with a valid color value
+            borderColor: scheme === "light" ? 10 : "#383838",
           }}
         >
           <CommentCard item={item} />
@@ -72,7 +74,7 @@ export default function Alerts() {
             flexDirection: "row", // Set flexDirection to 'row'
             paddingBottom: screenHeight * 0.01,
             borderBottomWidth: 0.2,
-            borderColor: "#CCCCCC", // Replace with a valid color value
+            borderColor: scheme === "light" ? 10 : "#383838",
           }}
         >
           <RequestCard item={item} />
@@ -87,7 +89,7 @@ export default function Alerts() {
             flexDirection: "row", // Set flexDirection to 'row'
             paddingBottom: screenHeight * 0.01,
             borderBottomWidth: 0.2,
-            borderColor: "#CCCCCC", // Replace with a valid color value
+            borderColor: scheme === "light" ? 10 : "#383838",
           }}
         >
           <ReactionCard item={item} />
@@ -100,19 +102,29 @@ export default function Alerts() {
   if (loading) {
     return (
       <View
-        style={{ justifyContent: "center", flex: 1, backgroundColor: "white" }}
+        style={{
+          justifyContent: "center",
+          flex: 1,
+          backgroundColor: scheme === "light" ? "white" : "#080A0B",
+        }}
       >
-        <ActivityIndicator size="large" color="black" />
+        <ActivityIndicator size="large" color="grey" />
       </View>
     );
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
+    <SafeAreaView
+      style={{
+        flex: 1,
+        backgroundColor: scheme === "light" ? "white" : "#080A0B",
+      }}
+    >
       <Text
         style={{
           fontFamily: "Poppins-Black",
           fontSize: 20,
+          color: scheme === "light" ? "#00A3FF" : "white",
           left: 5,
           paddingBottom: screenHeight * 0.02,
         }}

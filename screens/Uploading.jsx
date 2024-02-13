@@ -8,6 +8,7 @@ import {
   Dimensions,
   Pressable,
   TouchableOpacity,
+  useColorScheme,
 } from "react-native";
 import { supabase } from "../services/supabase";
 import { useUser } from "../context/UserContext";
@@ -23,6 +24,7 @@ const Uploading = ({ route, navigation }) => {
 
   const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;
+  const scheme = useColorScheme();
 
   let xhr; // XHR object variable
 
@@ -99,7 +101,7 @@ const Uploading = ({ route, navigation }) => {
 
     if (res.error === null) {
       navigation.navigate("EditProfile");
-      Alert.alert("Your changes were saved!!!!");
+      Alert.alert("Your changes were saved");
       setUser(res.body[0]);
     } else {
       console.log("ERROR", res.error);
@@ -219,7 +221,7 @@ const Uploading = ({ route, navigation }) => {
       style={{
         flex: 1,
         justifyContent: "center",
-        backgroundColor: "#00A3FF",
+        backgroundColor: scheme === "light" ? "#00A3FF" : "#080A0B",
         alignItems: "center",
       }}
     >
@@ -271,7 +273,7 @@ const Uploading = ({ route, navigation }) => {
       <TouchableOpacity
         onPress={cancelUpload}
         style={{
-          backgroundColor: "black",
+          backgroundColor: scheme === "light" ? "black" : "white",
           width: screenWidth * 0.62,
           height: screenHeight * 0.035,
           justifyContent: "center",
@@ -282,7 +284,7 @@ const Uploading = ({ route, navigation }) => {
       >
         <Text
           style={{
-            color: "white",
+            color: scheme === "light" ? "white" : "black",
             fontFamily: "Poppins-Bold",
             alignSelf: "center",
             fontSize: 12,

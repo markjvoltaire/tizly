@@ -10,6 +10,8 @@ import {
   TouchableOpacity,
   Image,
   Alert,
+  Modal,
+  useColorScheme,
 } from "react-native";
 import React, { useEffect, useState, useRef } from "react";
 import Banner from "../components/ProfileDetails/Banner";
@@ -21,15 +23,33 @@ import LockedFeed from "../components/ProfileDetails/LockedFeed";
 import { useFocusEffect } from "@react-navigation/native";
 import { getPosts } from "../services/user";
 import { useUser } from "../context/UserContext";
+import Purchases from "react-native-purchases";
+import LottieView from "lottie-react-native";
 
 export default function ProfileDetail({ route, navigation }) {
   const userDetails = route.params.userDetails;
   const [refreshing, setRefreshing] = useState(false);
   const [friendStatus, setFriendStatus] = useState(null);
+  const [subscriptions, setSubscriptions] = useState();
   const [loading, setLoading] = useState(true);
   const [focused, setFocused] = useState(false);
   const [posts, setPosts] = useState([]);
+  const scheme = useColorScheme();
+  const [purchaseLoading, setPurchaseLoading] = useState(false);
   const { user } = useUser();
+
+  const listOfProducts = [
+    "Tizly001",
+    "Tizly002",
+    "Tizly003",
+    "Tizly004",
+    "Tizly005",
+    "Tizly006",
+    "Tizly007",
+    "Tizly008",
+    "Tizly009",
+    "Tizly010",
+  ];
 
   const flatListRef = useRef(null);
   const [scrollPosition, setScrollPosition] = useState(0);
@@ -197,6 +217,11 @@ export default function ProfileDetail({ route, navigation }) {
     ]);
 
   async function friendButton() {
+    if (userDetails.type === "business") {
+      subscribeToUser();
+      return;
+    }
+
     if (friendStatus === "notFriends") {
       sendFriendRequest();
     }
@@ -296,6 +321,34 @@ export default function ProfileDetail({ route, navigation }) {
     setPosts(resp);
   };
 
+  async function subscribeToUser() {
+    setPurchaseLoading(true);
+    const customerInfo = await Purchases.getCustomerInfo();
+
+    try {
+      const resp = await Purchases.getProducts(
+        customerInfo,
+        subscriptions,
+        null
+      );
+
+      console.log("resp", resp);
+      setPurchaseLoading(false);
+      // return res && resp;
+    } catch (error) {
+      if (error.userCancelled) {
+        setPurchaseLoading(false);
+        return null;
+      } else {
+        // setSubLoading("idle");
+        // setModalVisible(false);
+        setPurchaseLoading(false);
+        Alert.alert("Something Went Wrong, Try Again");
+        console.log("error", error);
+      }
+    }
+  }
+
   useFocusEffect(
     React.useCallback(() => {
       setFocused(true);
@@ -305,6 +358,46 @@ export default function ProfileDetail({ route, navigation }) {
       };
     }, [])
   );
+
+  useEffect(() => {
+    const main = async () => {
+      const userId = supabase.auth.currentUser.id;
+      Purchases.setDebugLogsEnabled(true);
+
+      await Purchases.configure({
+        apiKey: "appl_YzNJKcRtIKShkjSciXgXIqfSDqc",
+        appUserID: userId,
+      });
+
+      const prods = await Purchases.getProducts(listOfProducts);
+
+      const customerInfo = await Purchases.getCustomerInfo();
+
+      const currentSubscription = customerInfo.activeSubscriptions;
+
+      async function findProduct() {
+        const box = {
+          allProducts: prods.map((i) => i.identifier),
+          userSubs: currentSubscription,
+        };
+
+        const intersection = box.allProducts.filter(
+          (element) => !box.userSubs.includes(element)
+        );
+
+        let availableSubscription =
+          intersection[Math.floor(Math.random() * intersection.length)];
+
+        console.log("availableSubscription", availableSubscription);
+
+        setSubscriptions(availableSubscription);
+        console.log("availableSubscription", availableSubscription);
+      }
+
+      findProduct();
+    };
+    main();
+  }, []);
 
   if (loading) {
     return (
@@ -316,7 +409,12 @@ export default function ProfileDetail({ route, navigation }) {
 
   return (
     <>
-      <View style={{ flex: 1, backgroundColor: "white" }}>
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: scheme === "light" ? "white" : "#080A0B",
+        }}
+      >
         <FlatList
           refreshing={refreshing}
           onRefresh={onRefresh}
@@ -340,73 +438,74 @@ export default function ProfileDetail({ route, navigation }) {
               >
                 {/* Banner Buttons */}
                 {/* If friendStatus is null show nothing */}
-                {friendStatus === null ? null : (
-                  <View style={{ flexDirection: "row" }}>
-                    <Animated.View
+
+                <View style={{ flexDirection: "row" }}>
+                  <Animated.View
+                    style={{
+                      opacity: opacity1,
+                    }}
+                  >
+                    <TouchableOpacity
+                      onPress={() => friendButton()}
                       style={{
-                        opacity: opacity1,
+                        backgroundColor:
+                          friendStatus === "friends" ? null : "white",
+                        width: screenWidth * 0.3,
+                        height: screenHeight * 0.036,
+                        padding: 1,
+                        marginRight: 20,
+                        borderRadius: 12,
+                        borderWidth: 1,
+                        borderColor:
+                          friendStatus === "friends" ? "white" : null,
                       }}
                     >
-                      <TouchableOpacity
-                        onPress={() => friendButton()}
+                      <Text
                         style={{
-                          backgroundColor:
-                            friendStatus === "friends" ? null : "white",
-                          width: screenWidth * 0.3,
-                          height: screenHeight * 0.036,
-                          padding: 1,
-                          marginRight: 20,
-                          borderRadius: 12,
-                          borderWidth: 1,
-                          borderColor:
-                            friendStatus === "friends" ? "white" : null,
+                          fontSize: 14,
+                          fontWeight: "700",
+                          alignSelf: "center",
+                          color: friendStatus === "friends" ? "white" : null,
+                          paddingTop: screenHeight * 0.006,
                         }}
                       >
-                        <Text
-                          style={{
-                            fontSize: 14,
-                            fontWeight: "700",
-                            alignSelf: "center",
-                            color: friendStatus === "friends" ? "white" : null,
-                            paddingTop: screenHeight * 0.006,
-                          }}
-                        >
-                          {friendStatus === "friends"
-                            ? "Friends"
-                            : friendStatus === "notFriends"
-                            ? "Add Friend"
-                            : friendStatus === "awaitingResponse"
-                            ? "view request"
-                            : "pending"}
-                        </Text>
-                      </TouchableOpacity>
-                    </Animated.View>
-                    <Animated.View
+                        {userDetails.type === "business"
+                          ? "Subscribe"
+                          : friendStatus === "friends"
+                          ? "Friends"
+                          : friendStatus === "notFriends"
+                          ? "Add Friend"
+                          : friendStatus === "awaitingResponse"
+                          ? "view request"
+                          : "pending"}
+                      </Text>
+                    </TouchableOpacity>
+                  </Animated.View>
+                  <Animated.View
+                    style={{
+                      opacity: opacity2,
+                    }}
+                  >
+                    <TouchableOpacity
                       style={{
-                        opacity: opacity2,
+                        borderWidth: 1,
+                        borderColor: "white",
+                        width: screenWidth * 0.09,
+                        height: screenHeight * 0.036,
+                        padding: 1,
+                        aspectRatio: 1,
+                        borderRadius: 100,
+                        backgroundColor: "white",
+                        justifyContent: "center",
                       }}
                     >
-                      <TouchableOpacity
-                        style={{
-                          borderWidth: 1,
-                          borderColor: "white",
-                          width: screenWidth * 0.09,
-                          height: screenHeight * 0.036,
-                          padding: 1,
-                          aspectRatio: 1,
-                          borderRadius: 100,
-                          backgroundColor: "white",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <Image
-                          style={{ height: 30, width: 30, alignSelf: "center" }}
-                          source={require("../assets/More.png")}
-                        />
-                      </TouchableOpacity>
-                    </Animated.View>
-                  </View>
-                )}
+                      <Image
+                        style={{ height: 30, width: 30, alignSelf: "center" }}
+                        source={require("../assets/More.png")}
+                      />
+                    </TouchableOpacity>
+                  </Animated.View>
+                </View>
               </View>
             </>
           }
@@ -429,6 +528,37 @@ export default function ProfileDetail({ route, navigation }) {
           }
         />
       </View>
+      <Modal animationType="slide" visible={purchaseLoading}>
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: "#45A6FF",
+            justifyContent: "center",
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
+          <Text
+            style={{
+              alignSelf: "center",
+              color: "white",
+              fontSize: 16,
+              fontFamily: "Poppins-Bold",
+            }}
+          >
+            Loading Your Subscription
+          </Text>
+
+          <LottieView
+            style={{
+              height: 50,
+              width: 50,
+            }}
+            source={require("../assets/lottie/whiteLoader.json")}
+            autoPlay
+          />
+        </View>
+      </Modal>
     </>
   );
 }

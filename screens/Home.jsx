@@ -156,10 +156,13 @@ export default function Home({ navigation }) {
             height: 40,
             width: 40,
             marginRight: 10,
-
             bottom: height * 0.01,
           }}
-          source={require("../assets/More.png")}
+          source={
+            scheme === "light"
+              ? require("../assets/More.png")
+              : require("../assets/MoreLight.png")
+          }
         />
       </Pressable>
     );
@@ -179,15 +182,15 @@ export default function Home({ navigation }) {
           alignSelf: "center",
           marginBottom: 10,
           paddingBottom: 28,
-          borderBottomWidth: 0.2,
-          borderColor: scheme === "light" ? 10 : "#B6BAC7",
+          borderBottomWidth: 1,
+          borderColor: scheme === "light" ? 10 : "#383838",
         }}
       >
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           {postHeader}
           {moreImage}
         </View>
-        {postContent}
+        <View style={{ top: 10 }}>{postContent}</View>
       </View>
     );
   };
@@ -202,8 +205,6 @@ export default function Home({ navigation }) {
     await fetchUserData();
   };
 
-  const renderExploreCard = ({ item }) => <ExploreCard item={item} />;
-
   useFocusEffect(
     React.useCallback(() => {
       checkChanges();
@@ -216,12 +217,16 @@ export default function Home({ navigation }) {
   if (loading) {
     return (
       <View
-        style={{ backgroundColor: "white", flex: 1, justifyContent: "center" }}
+        style={{
+          backgroundColor: scheme === "light" ? "white" : "#080A0B",
+          flex: 1,
+          justifyContent: "center",
+        }}
       >
         {listOfPosts.length === 0 ? (
           <View
             style={{
-              backgroundColor: "white",
+              backgroundColor: scheme === "light" ? "white" : "#080A0B",
               flex: 1,
               justifyContent: "center",
             }}
@@ -240,7 +245,7 @@ export default function Home({ navigation }) {
       <SafeAreaView
         style={{
           flex: 1,
-          backgroundColor: scheme === "light" ? "white" : "#121212",
+          backgroundColor: scheme === "light" ? "white" : "#080A0B",
         }}
       >
         <AppHeader navigation={navigation} />
@@ -269,7 +274,7 @@ export default function Home({ navigation }) {
     <SafeAreaView
       style={{
         flex: 1,
-        backgroundColor: scheme === "light" ? "white" : "#121212",
+        backgroundColor: scheme === "light" ? "white" : "#080A0B",
       }}
     >
       <AppHeader navigation={navigation} />
@@ -281,8 +286,8 @@ export default function Home({ navigation }) {
         }}
       >
         <FlatList
-          onRefresh={() => onRefresh()} // Move onRefresh to FlatList
-          refreshing={refreshing} // Add refreshing prop to FlatList
+          refreshing={refreshing}
+          onRefresh={onRefresh} // Moved onRefresh to FlatList
           showsVerticalScrollIndicator={false}
           data={listOfPosts}
           ref={ref}
@@ -294,12 +299,4 @@ export default function Home({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
-  item: {
-    alignSelf: "center",
-    marginBottom: 10,
-    paddingBottom: 28,
-    borderBottomWidth: 2,
-    borderColor: 10,
-  },
-});
+const styles = StyleSheet.create({});
