@@ -16,6 +16,7 @@ import {
   Image,
   ActivityIndicator,
   useColorScheme,
+  Keyboard,
 } from "react-native";
 import {
   deleteComment,
@@ -145,7 +146,12 @@ export default function Comments({ route }) {
           // Assuming resp.body is an array with at least one item
           setCommentList((prevComments) => [...prevComments, resp.body[0]]);
           setComment("");
-          await notifyUserAboutNewComment(userDetails, comment, tokenCode);
+          Keyboard.dismiss();
+          if (userDetails.user_id === user.user_id) {
+            null;
+          } else {
+            await notifyUserAboutNewComment(user, comment, tokenCode);
+          }
           return resp;
         } else {
           console.error("Invalid response from supabase:", resp);
@@ -272,8 +278,6 @@ export default function Comments({ route }) {
             paddingHorizontal: 16,
             paddingVertical: 8,
             backgroundColor: scheme === "light" ? "white" : "#080A0B",
-            borderTopWidth: 1,
-            borderTopColor: "#ccc",
           }}
         >
           <TextInput

@@ -132,7 +132,6 @@ export default function UnlockedFeed({
             height: 40,
             width: 40,
             marginRight: 10,
-            bottom: screenHeight * 0.01,
           }}
           source={
             scheme === "light"

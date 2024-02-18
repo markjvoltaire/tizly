@@ -87,8 +87,12 @@ export default function PostHeader({ post, navigation }) {
 
   if (userDetails === null) {
     return (
-      <View style={{ backgroundColor: "white" }}>
-        <Text>PLEASE WAIT</Text>
+      <View
+        style={{ backgroundColor: scheme === "light" ? "white" : "#080A0B" }}
+      >
+        <Text style={{ color: scheme === "dark" ? "white" : "black" }}>
+          PLEASE WAIT
+        </Text>
       </View>
     );
   }

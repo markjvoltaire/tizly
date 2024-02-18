@@ -291,7 +291,7 @@ export default function Settings({ navigation }) {
           left: width * 0.05,
         }}
       >
-        <TouchableOpacity onPress={() => navigation.navigate("FriendList")}>
+        <TouchableOpacity onPress={() => navigation.navigate("FriendsList")}>
           <Text
             style={{
               color: scheme === "dark" ? "white" : "black",

@@ -192,31 +192,75 @@ export default function Post({ navigation }) {
                 />
               </View>
             ) : postInfo.mediaType === "image" ? (
-              <Image
-                resizeMode="cover"
-                style={{
-                  height: 80,
-                  width: 80,
-                  left: 10,
-                  alignSelf: "center",
-                  top: 40,
-                  borderRadius: 10,
-                }}
-                source={{ uri: postInfo.uri }}
-              />
+              <>
+                <Image
+                  resizeMode="cover"
+                  style={{
+                    height: 80,
+                    width: 80,
+                    left: 10,
+                    alignSelf: "center",
+                    top: 40,
+                    borderRadius: 10,
+                  }}
+                  source={{ uri: postInfo.uri }}
+                />
+                <Pressable
+                  style={{
+                    position: "absolute",
+                    bottom: 32,
+                    left: screenWidth * 0.27,
+                  }}
+                  onPress={() => setPostInfo(null)}
+                >
+                  <Image
+                    style={{
+                      height: 30,
+                      width: 30,
+                    }}
+                    source={
+                      scheme === "dark"
+                        ? require("../assets/whiteX.png")
+                        : require("../assets/blackX.png")
+                    }
+                  />
+                </Pressable>
+              </>
             ) : (
-              <Video
-                resizeMode="cover"
-                style={{
-                  height: 80,
-                  width: 80,
-                  left: 10,
-                  alignSelf: "center",
-                  top: 40,
-                  borderRadius: 10,
-                }}
-                source={{ uri: postInfo.uri }}
-              />
+              <>
+                <Video
+                  resizeMode="cover"
+                  style={{
+                    height: 80,
+                    width: 80,
+                    left: 10,
+                    alignSelf: "center",
+                    top: 40,
+                    borderRadius: 10,
+                  }}
+                  source={{ uri: postInfo.uri }}
+                />
+                <Pressable
+                  style={{
+                    position: "absolute",
+                    bottom: 32,
+                    left: screenWidth * 0.27,
+                  }}
+                  onPress={() => setPostInfo(null)}
+                >
+                  <Image
+                    style={{
+                      height: 30,
+                      width: 30,
+                    }}
+                    source={
+                      scheme === "dark"
+                        ? require("../assets/whiteX.png")
+                        : require("../assets/blackX.png")
+                    }
+                  />
+                </Pressable>
+              </>
             )}
           </Pressable>
         </View>

@@ -85,6 +85,33 @@ export const notifyUserAboutNewComment = async (
   tokenCode: string
 ) => {
   const token = await getUser(user.user_id);
-  const body = ` ${user.username} commented: ${comment}`;
+  const body = `${user.username} commented: ${comment}`;
+  sendPushNotification(token, body, tokenCode);
+};
+
+export const notifyUserAboutNewRequest = async (
+  user: any,
+  tokenCode: string
+) => {
+  const token = await getUser(user.user_id);
+  const body = `${user.username} sent you a friend request`;
+  sendPushNotification(token, body, tokenCode);
+};
+
+export const notifyUserAboutNewFriend = async (
+  user: any,
+  tokenCode: string
+) => {
+  const token = await getUser(user.user_id);
+  const body = `${user.username} accepted your friend request`;
+  sendPushNotification(token, body, tokenCode);
+};
+
+export const notifyUserAboutNewReaction = async (
+  user: any,
+  tokenCode: string
+) => {
+  const token = await getUser(user.user_id);
+  const body = `${user.username} reacted to your post`;
   sendPushNotification(token, body, tokenCode);
 };

@@ -392,7 +392,12 @@ export default function EditProfile({ route }) {
       </TouchableWithoutFeedback>
       {/* Profile Image Modal */}
       <Modal animationType="slide" visible={profileImageModal}>
-        <SafeAreaView>
+        <SafeAreaView
+          style={{
+            flex: 1,
+            backgroundColor: scheme === "light" ? "white" : "#080A0B",
+          }}
+        >
           <View
             style={{
               flexDirection: "row",
@@ -406,13 +411,18 @@ export default function EditProfile({ route }) {
             <Pressable onPress={() => closeProfileModal()}>
               <Image
                 style={{ height: 20, width: 20, left: 10 }}
-                source={require("../assets/Back.png")}
+                source={
+                  scheme === "light"
+                    ? require("../assets/Back.png")
+                    : require("../assets/WhiteBack.png")
+                }
               />
             </Pressable>
             <Text
               style={{
                 fontSize: 15,
                 fontFamily: "Poppins-Bold",
+                color: scheme === "light" ? "black" : "white",
               }}
             >
               Save This Profile Image?
@@ -420,7 +430,11 @@ export default function EditProfile({ route }) {
             <Pressable onPress={() => updateProfile()}>
               <Image
                 style={{ height: 20, width: 20, right: 10 }}
-                source={require("../assets/Save.png")}
+                source={
+                  scheme === "light"
+                    ? require("../assets/Save.png")
+                    : require("../assets/SaveWhite.png")
+                }
               />
             </Pressable>
           </View>

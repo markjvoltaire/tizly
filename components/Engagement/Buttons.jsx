@@ -12,28 +12,40 @@ import {
   Platform,
   Pressable,
   Animated,
+  SafeAreaView,
+  useColorScheme,
+  FlatList,
 } from "react-native";
 import PostHeader from "../Headers/PostHeader";
 import { useUser } from "../../context/UserContext";
 
 import { useNavigation } from "@react-navigation/native"; // Import useNavigation hook
 import { supabase } from "../../services/supabase";
-import { getUser } from "../../services/user";
-export default function Buttons({ post, userDetails }) {
+import { getReactionList, getUser } from "../../services/user";
+import { notifyUserAboutNewReaction } from "../../services/notification";
+import ProfileCard from "../notifications/ProfileCard";
+import ReactionList from "./ReactionList";
+export default function Buttons({ post }) {
   const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;
   const { user } = useUser();
-  const [showModal, setShowModal] = useState(false);
+  const [postUser, setPostUser] = useState(null);
   const [showReactionModal, setReactionModal] = useState(false);
   const [showReactionSent, setShowReactionSent] = useState(false); // New state
+  const [reactionList, setReactionList] = useState(false);
+  const [listOfReactions, setListOfReactions] = useState([]);
   const [token, setToken] = useState(null);
   const navigation = useNavigation();
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const scheme = useColorScheme();
 
   useEffect(() => {
     const getPushToken = async () => {
       const resp = await getUser(post);
+      const reactions = await getReactionList(post);
+      setListOfReactions(reactions);
       setToken(resp.body.expo_push_token);
+      setPostUser(resp.body);
     };
     getPushToken();
   }, []);
@@ -80,6 +92,11 @@ export default function Buttons({ post, userDetails }) {
       const resp = await supabase.from("notifications").insert([newReaction]);
       setReactionModal(false);
       setShowReactionSent(true);
+      if (postUser.user_id === user.user_id) {
+        null;
+      } else {
+        await notifyUserAboutNewReaction(user, postUser.expo_push_token);
+      }
 
       setTimeout(() => {
         setShowReactionSent(false);
@@ -104,7 +121,11 @@ export default function Buttons({ post, userDetails }) {
       </TouchableOpacity>
 
       <TouchableOpacity
-        onPress={() => setReactionModal(true)}
+        onPress={() =>
+          post.user_id === user.user_id
+            ? navigation.navigate("Reactions", { listOfReactions })
+            : setReactionModal(true)
+        }
         style={{ width: 25, left: 40 }}
       >
         <Image
@@ -246,23 +267,43 @@ export default function Buttons({ post, userDetails }) {
           </Text>
         </View>
       )}
+
+      <Modal animationType="slide" visible={reactionList}>
+        <SafeAreaView
+          style={{
+            backgroundColor: scheme === "light" ? "white" : "#080A0B",
+            flex: 1,
+          }}
+        >
+          <TouchableOpacity onPress={() => setReactionList(false)}>
+            <Image
+              style={{
+                height: 25,
+                width: 24,
+                top: screenHeight * 0.031,
+                left: 23,
+              }}
+              source={
+                scheme === "light"
+                  ? require("../../assets/Back.png")
+                  : require("../../assets/WhiteBack.png")
+              }
+            />
+          </TouchableOpacity>
+          <Text
+            style={{
+              color: scheme === "dark" ? "white" : "black",
+              fontFamily: "Poppins-Black",
+              fontSize: 22,
+              marginBottom: 10,
+              alignSelf: "center",
+            }}
+          >
+            Reactions
+          </Text>
+          <ReactionList listOfReactions={listOfReactions} />
+        </SafeAreaView>
+      </Modal>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 16,
-    justifyContent: "space-between", // Adjust as needed
-  },
-  commentInput: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    padding: 8,
-    marginRight: 8,
-  },
-});

@@ -12,6 +12,7 @@ import {
   Alert,
   Modal,
   useColorScheme,
+  Pressable,
 } from "react-native";
 import React, { useEffect, useState, useRef } from "react";
 import Banner from "../components/ProfileDetails/Banner";
@@ -25,9 +26,16 @@ import { getPosts } from "../services/user";
 import { useUser } from "../context/UserContext";
 import Purchases from "react-native-purchases";
 import LottieView from "lottie-react-native";
+import {
+  notifyUserAboutNewFriend,
+  notifyUserAboutNewRequest,
+} from "../services/notification";
 
 export default function ProfileDetail({ route, navigation }) {
+  const { user } = useUser();
   const userDetails = route.params.userDetails;
+  const tokenCode = userDetails.expo_push_token;
+  const userToken = user.expo_push_token;
   const [refreshing, setRefreshing] = useState(false);
   const [friendStatus, setFriendStatus] = useState(null);
   const [subscriptions, setSubscriptions] = useState();
@@ -36,7 +44,6 @@ export default function ProfileDetail({ route, navigation }) {
   const [posts, setPosts] = useState([]);
   const scheme = useColorScheme();
   const [purchaseLoading, setPurchaseLoading] = useState(false);
-  const { user } = useUser();
 
   const listOfProducts = [
     "Tizly001",
@@ -156,6 +163,7 @@ export default function ProfileDetail({ route, navigation }) {
     };
     const res = await supabase.from("notifications").insert([newReaction]);
     setFriendStatus("pending");
+    await notifyUserAboutNewRequest(user, tokenCode);
 
     return resp && res;
   }
@@ -194,6 +202,8 @@ export default function ProfileDetail({ route, navigation }) {
       .eq("senderId", userDetails.user_id)
       .eq("receiverId", user.user_id);
     setFriendStatus("friends");
+
+    await notifyUserAboutNewFriend(user, tokenCode);
 
     return res;
   }
@@ -332,7 +342,6 @@ export default function ProfileDetail({ route, navigation }) {
         null
       );
 
-      console.log("resp", resp);
       setPurchaseLoading(false);
       // return res && resp;
     } catch (error) {
@@ -427,6 +436,7 @@ export default function ProfileDetail({ route, navigation }) {
                 userDetails={userDetails}
                 focused={focused}
               />
+
               <Fader />
               <ProfileInformation userDetails={userDetails} />
               <View

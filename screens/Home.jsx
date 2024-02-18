@@ -30,7 +30,6 @@ import AppHeader from "../components/Headers/AppHeader";
 import { useFocusEffect } from "@react-navigation/native";
 import { useUser } from "../context/UserContext";
 import ExploreCard from "../components/explore/ExploreCard";
-import Push from "../components/Push";
 
 export default function Home({ navigation }) {
   const scheme = useColorScheme();
@@ -183,8 +182,9 @@ export default function Home({ navigation }) {
           alignSelf: "center",
           marginBottom: 10,
           paddingBottom: 28,
-          borderBottomWidth: 1,
-          borderColor: scheme === "light" ? "10 " : "#383838",
+          borderBottomWidth: 0.2,
+
+          borderColor: scheme === "light" ? "grey" : "#383838",
         }}
       >
         <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -283,7 +283,7 @@ export default function Home({ navigation }) {
         style={{
           width: width,
           alignSelf: "center",
-          marginBottom: height * 0.02,
+          marginBottom: height * 0.05,
         }}
       >
         <FlatList

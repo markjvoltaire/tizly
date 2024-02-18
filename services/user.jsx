@@ -199,6 +199,17 @@ export async function getNotifications() {
   return list;
 }
 
+export async function getReactionList(post) {
+  const userId = supabase.auth.currentUser.id;
+
+  const { body: resp } = await supabase
+    .from("notifications")
+    .select("*")
+    .eq("postId", post.id);
+
+  return resp;
+}
+
 export async function getPost(post) {
   const resp = await supabase
     .from("post")

@@ -25,6 +25,8 @@ import EditProfile from "../screens/EditProfile";
 import Settings from "../screens/Settings";
 import VideoScreen from "../screens/VideoScreen";
 import AlertVideo from "../screens/AlertVideo";
+import FriendsList from "../screens/FriendsList";
+import Reactions from "../screens/Reactions";
 
 export default function Auth() {
   const Stack = createNativeStackNavigator();
@@ -63,6 +65,12 @@ export default function Auth() {
         <Stack.Screen
           name="HomeScreen"
           component={Home}
+          options={{ tabBarVisible: false }} // Hide tab bar for this screen
+        />
+
+        <Stack.Screen
+          name="Reactions"
+          component={Reactions}
           options={{ tabBarVisible: false }} // Hide tab bar for this screen
         />
 
@@ -107,6 +115,12 @@ export default function Auth() {
           component={VideoScreen}
           options={{ tabBarVisible: false }} // Hide tab bar for this screen
         />
+
+        <Stack.Screen
+          name="FriendsList"
+          options={{ tabBarVisible: false }}
+          component={FriendsList}
+        />
       </Stack.Navigator>
     );
   };
@@ -125,10 +139,23 @@ export default function Auth() {
           component={UserProfile}
           options={{ tabBarVisible: false }} // Hide tab bar for this screen
         />
+
+        <Stack.Screen
+          name="Reactions"
+          component={Reactions}
+          options={{ tabBarVisible: false }} // Hide tab bar for this screen
+        />
+
         <Stack.Screen
           name="ProfileDetail"
           options={{ tabBarVisible: false }}
           component={ProfileDetail}
+        />
+
+        <Stack.Screen
+          name="EditProfile"
+          component={EditProfile}
+          options={{ tabBarVisible: false }} // Hide tab bar for this screen
         />
 
         <Stack.Screen
@@ -148,6 +175,12 @@ export default function Auth() {
           options={{ tabBarVisible: false }}
           component={Uploading}
         />
+
+        <Stack.Screen
+          name="FriendsList"
+          options={{ tabBarVisible: false }}
+          component={FriendsList}
+        />
       </Stack.Navigator>
     );
   };
@@ -159,6 +192,12 @@ export default function Auth() {
           name="Post"
           component={Post}
           options={{ tabBarVisible: false }} // Hide tab bar for this screen
+        />
+
+        <Stack.Screen
+          name="FriendsList"
+          options={{ tabBarVisible: false }}
+          component={FriendsList}
         />
 
         <Stack.Screen
@@ -176,6 +215,12 @@ export default function Auth() {
         <Stack.Screen
           name="Alert"
           component={Alerts}
+          options={{ tabBarVisible: false }} // Hide tab bar for this screen
+        />
+
+        <Stack.Screen
+          name="Reactions"
+          component={Reactions}
           options={{ tabBarVisible: false }} // Hide tab bar for this screen
         />
 
@@ -198,6 +243,12 @@ export default function Auth() {
         />
 
         <Stack.Screen
+          name="FriendsList"
+          options={{ tabBarVisible: false }}
+          component={FriendsList}
+        />
+
+        <Stack.Screen
           name="PostDetail"
           options={{ tabBarVisible: false }}
           component={PostDetail}
@@ -205,6 +256,12 @@ export default function Auth() {
         <Stack.Screen
           name="VideoPost"
           component={VideoScreen}
+          options={{ tabBarVisible: false }} // Hide tab bar for this screen
+        />
+
+        <Stack.Screen
+          name="Comments"
+          component={Comments}
           options={{ tabBarVisible: false }} // Hide tab bar for this screen
         />
       </Stack.Navigator>
@@ -223,6 +280,12 @@ export default function Auth() {
         <Stack.Screen
           name="Comments"
           component={Comments}
+          options={{ tabBarVisible: false }} // Hide tab bar for this screen
+        />
+
+        <Stack.Screen
+          name="Reactions"
+          component={Reactions}
           options={{ tabBarVisible: false }} // Hide tab bar for this screen
         />
 
@@ -253,6 +316,12 @@ export default function Auth() {
           name="Uploading"
           options={{ tabBarVisible: false }}
           component={Uploading}
+        />
+
+        <Stack.Screen
+          name="FriendsList"
+          options={{ tabBarVisible: false }}
+          component={FriendsList}
         />
 
         <Stack.Screen
