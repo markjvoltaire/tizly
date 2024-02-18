@@ -15,6 +15,7 @@ import {
   TouchableOpacity,
   Image,
   ActivityIndicator,
+  useColorScheme,
 } from "react-native";
 import {
   deleteComment,
@@ -26,13 +27,16 @@ import Comment from "../components/Engagement/Comment";
 import { useUser } from "../context/UserContext";
 import { supabase } from "../services/supabase";
 import ProfileCard from "../components/notifications/ProfileCard";
+import { notifyUserAboutNewComment } from "../services/notification";
 
 export default function Comments({ route }) {
   const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;
   const { user } = useUser();
+  const scheme = useColorScheme();
 
   const post = route.params.post;
+  const tokenCode = route.params.token;
 
   const [comment, setComment] = useState("");
   const [commentList, setCommentList] = useState([]);
@@ -141,7 +145,7 @@ export default function Comments({ route }) {
           // Assuming resp.body is an array with at least one item
           setCommentList((prevComments) => [...prevComments, resp.body[0]]);
           setComment("");
-
+          await notifyUserAboutNewComment(userDetails, comment, tokenCode);
           return resp;
         } else {
           console.error("Invalid response from supabase:", resp);
@@ -191,7 +195,12 @@ export default function Comments({ route }) {
 
   if (loading) {
     return (
-      <View style={{ backgroundColor: "white", flex: 1 }}>
+      <View
+        style={{
+          backgroundColor: scheme === "light" ? "white" : "#080A0B",
+          flex: 1,
+        }}
+      >
         <View style={{ top: screenHeight * 0.3 }}>
           <ActivityIndicator size="large" />
         </View>
@@ -200,7 +209,12 @@ export default function Comments({ route }) {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={{
+        flex: 1,
+        backgroundColor: scheme === "light" ? "white" : "#080A0B",
+      }}
+    >
       <View style={{ alignSelf: "center" }}>
         <ProfileCard userDetails={userDetails} />
       </View>
@@ -216,6 +230,7 @@ export default function Comments({ route }) {
                 alignSelf: "center",
                 top: screenHeight * 0.2,
                 fontWeight: "800",
+                color: scheme === "dark" ? "white" : "black",
               }}
             >
               Be The First To Comment
@@ -233,7 +248,11 @@ export default function Comments({ route }) {
                   <TouchableOpacity onPress={() => handleOptionPress(item)}>
                     <Image
                       style={{ height: 30, width: 30 }}
-                      source={require("../assets/More.png")}
+                      source={
+                        scheme === "light"
+                          ? require("../assets/More.png")
+                          : require("../assets/MoreLight.png")
+                      }
                     />
                   </TouchableOpacity>
                 </View>
@@ -245,17 +264,29 @@ export default function Comments({ route }) {
           )}
         </View>
 
-        <View style={styles.inputContainer}>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            paddingHorizontal: 16,
+            paddingVertical: 8,
+            backgroundColor: scheme === "light" ? "white" : "#080A0B",
+            borderTopWidth: 1,
+            borderTopColor: "#ccc",
+          }}
+        >
           <TextInput
+            placeholderTextColor="#080A0B"
             style={styles.commentInput}
-            placeholder="Add a comment..."
+            placeholder="Add a comment"
             value={comment}
             onChangeText={(text) => setComment(text)}
           />
 
           <Pressable
             style={{
-              backgroundColor: "#00A3FF",
+              backgroundColor: scheme === "light" ? "#00A3FF" : "white",
               width: screenWidth * 0.25,
               height: screenHeight * 0.04,
               justifyContent: "center",
@@ -265,7 +296,7 @@ export default function Comments({ route }) {
           >
             <Text
               style={{
-                color: "white",
+                color: scheme === "light" ? "white" : "black",
                 fontFamily: "Poppins-Bold",
                 alignSelf: "center",
               }}

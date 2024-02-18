@@ -362,6 +362,7 @@ export default function Settings({ navigation }) {
         </TouchableOpacity> */}
 
         <Pressable
+          onPress={() => signOutUser()}
           style={{
             backgroundColor: scheme === "light" ? "black" : "white",
             width: width * 0.8,

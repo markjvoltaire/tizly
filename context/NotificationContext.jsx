@@ -1,5 +1,4 @@
-import { PropsWithChildren, useEffect, useRef, useState } from "react";
-
+import { useEffect, useRef, useState } from "react";
 import { ExpoPushToken } from "expo-notifications";
 import * as Notifications from "expo-notifications";
 import { supabase } from "../services/supabase";
@@ -14,26 +13,27 @@ Notifications.setNotificationHandler({
   }),
 });
 
-const NotificationProvider = ({ children }: PropsWithChildren) => {
-  const [expoPushToken, setExpoPushToken] = useState<String | undefined>();
+const NotificationProvider = ({ children }) => {
+  const [expoPushToken, setExpoPushToken] = useState(null);
 
   const { user } = useUser();
 
-  const [notification, setNotification] =
-    useState<Notifications.Notification>();
-  const notificationListener = useRef<Notifications.Subscription>();
-  const responseListener = useRef<Notifications.Subscription>();
+  const [notification, setNotification] = useState();
+  const notificationListener = useRef();
+  const responseListener = useRef();
 
-  const savePushToken = async (newToken: string | undefined) => {
+  const savePushToken = async (newToken) => {
     setExpoPushToken(newToken);
-    if (!newToken) {
+    if (!newToken || !user?.user_id) {
       return;
     }
     // update the token in the database
-    await supabase
+    const resp = await supabase
       .from("profiles")
       .update({ expo_push_token: newToken })
-      .eq("id", user?.user_id);
+      .eq("user_id", user.user_id);
+
+    return resp;
   };
 
   useEffect(() => {
@@ -61,14 +61,11 @@ const NotificationProvider = ({ children }: PropsWithChildren) => {
     };
   }, []);
 
-  console.log("Push token: ", expoPushToken);
-  console.log("Notif: ", notification);
-
   return <>{children}</>;
 };
 
 // Can use this function below or use Expo's Push Notification Tool from: https://expo.dev/notifications
-export async function sendPushNotification(expoPushToken: string) {
+export async function sendPushNotification(expoPushToken) {
   const message = {
     to: expoPushToken,
     sound: "default",

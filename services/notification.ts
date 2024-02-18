@@ -2,6 +2,7 @@ import { Platform } from "react-native";
 import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
 import Constants from "expo-constants";
+import { supabase } from "./supabase";
 
 export async function registerForPushNotificationsAsync() {
   let token;
@@ -41,3 +42,49 @@ export async function registerForPushNotificationsAsync() {
 
   return token;
 }
+
+// Can use this function below or use Expo's Push Notification Tool from: https://expo.dev/notifications
+export async function sendPushNotification(
+  title: string,
+  body: string,
+  tokenCode: string
+) {
+  const message = {
+    to: tokenCode,
+    sound: "default",
+    title: "Tizly",
+    body,
+    data: { someData: "goes here" },
+  };
+
+  console.log("body", body);
+
+  await fetch("https://exp.host/--/api/v2/push/send", {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Accept-encoding": "gzip, deflate",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(message),
+  });
+}
+
+const getUser = async (user: any) => {
+  const { data } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", user.user_id)
+    .single();
+  return data?.expo_push_token;
+};
+
+export const notifyUserAboutNewComment = async (
+  user: any,
+  comment: string,
+  tokenCode: string
+) => {
+  const token = await getUser(user.user_id);
+  const body = ` ${user.username} commented: ${comment}`;
+  sendPushNotification(token, body, tokenCode);
+};

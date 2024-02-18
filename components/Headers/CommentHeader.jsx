@@ -6,6 +6,7 @@ import {
   Pressable,
   Dimensions,
   Image,
+  useColorScheme,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { useUser } from "../../context/UserContext";
@@ -19,6 +20,7 @@ export default function CommentHeader({ comment }) {
   const screenHeight = Dimensions.get("window").height;
   const navigation = useNavigation();
   const { user } = useUser();
+  const scheme = useColorScheme();
 
   const details = {
     user_id: comment.comment.userId,
@@ -85,7 +87,7 @@ export default function CommentHeader({ comment }) {
               >
                 <Text
                   style={{
-                    color: "black",
+                    color: scheme === "light" ? "black" : "white",
                     fontFamily: "Poppins-Bold",
                     fontSize: 14,
                     marginBottom: -3,

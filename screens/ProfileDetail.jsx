@@ -359,45 +359,45 @@ export default function ProfileDetail({ route, navigation }) {
     }, [])
   );
 
-  useEffect(() => {
-    const main = async () => {
-      const userId = supabase.auth.currentUser.id;
-      Purchases.setDebugLogsEnabled(true);
+  // useEffect(() => {
+  //   const main = async () => {
+  //     const userId = supabase.auth.currentUser.id;
+  //     Purchases.setDebugLogsEnabled(true);
 
-      await Purchases.configure({
-        apiKey: "appl_YzNJKcRtIKShkjSciXgXIqfSDqc",
-        appUserID: userId,
-      });
+  //     await Purchases.configure({
+  //       apiKey: "appl_YzNJKcRtIKShkjSciXgXIqfSDqc",
+  //       appUserID: userId,
+  //     });
 
-      const prods = await Purchases.getProducts(listOfProducts);
+  //     const prods = await Purchases.getProducts(listOfProducts);
 
-      const customerInfo = await Purchases.getCustomerInfo();
+  //     const customerInfo = await Purchases.getCustomerInfo();
 
-      const currentSubscription = customerInfo.activeSubscriptions;
+  //     const currentSubscription = customerInfo.activeSubscriptions;
 
-      async function findProduct() {
-        const box = {
-          allProducts: prods.map((i) => i.identifier),
-          userSubs: currentSubscription,
-        };
+  //     async function findProduct() {
+  //       const box = {
+  //         allProducts: prods.map((i) => i.identifier),
+  //         userSubs: currentSubscription,
+  //       };
 
-        const intersection = box.allProducts.filter(
-          (element) => !box.userSubs.includes(element)
-        );
+  //       const intersection = box.allProducts.filter(
+  //         (element) => !box.userSubs.includes(element)
+  //       );
 
-        let availableSubscription =
-          intersection[Math.floor(Math.random() * intersection.length)];
+  //       let availableSubscription =
+  //         intersection[Math.floor(Math.random() * intersection.length)];
 
-        console.log("availableSubscription", availableSubscription);
+  //       console.log("availableSubscription", availableSubscription);
 
-        setSubscriptions(availableSubscription);
-        console.log("availableSubscription", availableSubscription);
-      }
+  //       setSubscriptions(availableSubscription);
+  //       console.log("availableSubscription", availableSubscription);
+  //     }
 
-      findProduct();
-    };
-    main();
-  }, []);
+  //     findProduct();
+  //   };
+  //   main();
+  // }, []);
 
   if (loading) {
     return (

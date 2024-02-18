@@ -18,6 +18,7 @@ import { useUser } from "../../context/UserContext";
 
 import { useNavigation } from "@react-navigation/native"; // Import useNavigation hook
 import { supabase } from "../../services/supabase";
+import { getUser } from "../../services/user";
 export default function Buttons({ post, userDetails }) {
   const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;
@@ -25,8 +26,17 @@ export default function Buttons({ post, userDetails }) {
   const [showModal, setShowModal] = useState(false);
   const [showReactionModal, setReactionModal] = useState(false);
   const [showReactionSent, setShowReactionSent] = useState(false); // New state
+  const [token, setToken] = useState(null);
   const navigation = useNavigation();
   const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const getPushToken = async () => {
+      const resp = await getUser(post);
+      setToken(resp.body.expo_push_token);
+    };
+    getPushToken();
+  }, []);
 
   useEffect(() => {
     if (showReactionSent) {
@@ -84,7 +94,7 @@ export default function Buttons({ post, userDetails }) {
   return (
     <View style={{ flexDirection: "row" }}>
       <TouchableOpacity
-        onPress={() => navigation.navigate("Comments", { post })}
+        onPress={() => navigation.navigate("Comments", { post, token })}
         style={{ width: 25, left: post.user_id === user.user_id ? 5 : 5 }}
       >
         <Image

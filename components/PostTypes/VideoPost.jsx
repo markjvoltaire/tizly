@@ -132,7 +132,7 @@ export default function VideoPost({ post }) {
 
           <Text
             style={{
-              paddingBottom: 20,
+              paddingBottom: 25,
               top: 12,
               color: "#979797",
               fontFamily: "Poppins-SemiBold",

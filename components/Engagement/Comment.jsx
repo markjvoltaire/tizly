@@ -1,4 +1,10 @@
-import { StyleSheet, Text, View, Dimensions } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Dimensions,
+  useColorScheme,
+} from "react-native";
 import React from "react";
 import PostHeader from "../Headers/PostHeader";
 import { useUser } from "../../context/UserContext";
@@ -8,6 +14,7 @@ export default function Comment(comment, post) {
   const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;
   const { user } = useUser();
+  const scheme = useColorScheme();
 
   return (
     <View
@@ -25,7 +32,11 @@ export default function Comment(comment, post) {
           width: screenWidth * 0.96,
         }}
       >
-        <Text style={{ fontSize: 15 }}>{comment.comment.comment}</Text>
+        <Text
+          style={{ fontSize: 15, color: scheme === "dark" ? "white" : "black" }}
+        >
+          {comment.comment.comment}
+        </Text>
       </View>
     </View>
   );
