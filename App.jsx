@@ -8,6 +8,7 @@ import { supabase } from "./services/supabase";
 import { UserProvider } from "./context/UserContext";
 import NoAuth from "./auth/NoAuth";
 import Auth from "./auth/Auth";
+import NotificationContext from "./context/NotificationContext";
 
 export default function App() {
   const [auth, setAuth] = useState(null);
@@ -35,10 +36,12 @@ export default function App() {
 
   return (
     <UserProvider>
-      <NavigationContainer>
-        <StatusBar style="auto" />
-        {auth === null ? <NoAuth /> : <Auth />}
-      </NavigationContainer>
+      <NotificationContext>
+        <NavigationContainer>
+          <StatusBar style="auto" />
+          {auth === null ? <NoAuth /> : <Auth auth={auth} />}
+        </NavigationContainer>
+      </NotificationContext>
     </UserProvider>
   );
 }
