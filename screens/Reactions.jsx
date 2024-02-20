@@ -1,4 +1,5 @@
 import {
+  FlatList,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -7,31 +8,20 @@ import {
 } from "react-native";
 import React, { useEffect } from "react";
 import { supabase } from "../services/supabase";
+import ReactionProfile from "../components/Engagement/ReactionProfile";
 
 export default function Reactions({ route }) {
   const scheme = useColorScheme();
 
   const list = route.params.listOfReactions; // Assuming listOfReactions is an array of objects
 
-  const userIDS = list.map((reaction) => reaction.userId);
-
-  async function getUsers() {
-    const userId = supabase.auth.currentUser.id;
-    const resp = await supabase
-      .from("profiles")
-      .select("*")
-      .in("user_id", [userIDS]);
-
-    return resp.body;
-  }
-
-  useEffect(() => {
-    const getProfiles = async () => {
-      const res = getUsers();
-      console.log("res", res);
-    };
-    getProfiles();
-  }, []);
+  const renderItem = (item) => {
+    return (
+      <View>
+        <ReactionProfile item={item.item} />
+      </View>
+    );
+  };
 
   return (
     <SafeAreaView
@@ -51,6 +41,24 @@ export default function Reactions({ route }) {
       >
         Reactions
       </Text>
+      {list.length === 0 ? (
+        <View style={{ alignItems: "center", top: 200 }}>
+          <Text
+            style={{
+              color: scheme === "dark" ? "white" : "black",
+              fontFamily: "Poppins-Bold",
+            }}
+          >
+            No one reacted to this post yet
+          </Text>
+        </View>
+      ) : (
+        <FlatList
+          showsVerticalScrollIndicator={false}
+          renderItem={renderItem}
+          data={list}
+        />
+      )}
     </SafeAreaView>
   );
 }

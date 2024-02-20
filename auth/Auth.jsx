@@ -27,6 +27,7 @@ import VideoScreen from "../screens/VideoScreen";
 import AlertVideo from "../screens/AlertVideo";
 import FriendsList from "../screens/FriendsList";
 import Reactions from "../screens/Reactions";
+import BlockList from "../screens/BlockList";
 
 export default function Auth() {
   const Stack = createNativeStackNavigator();
@@ -121,6 +122,12 @@ export default function Auth() {
           options={{ tabBarVisible: false }}
           component={FriendsList}
         />
+
+        <Stack.Screen
+          name="BlockList"
+          options={{ tabBarVisible: false }}
+          component={BlockList}
+        />
       </Stack.Navigator>
     );
   };
@@ -135,6 +142,12 @@ export default function Auth() {
         />
 
         <Stack.Screen
+          name="BlockList"
+          options={{ tabBarVisible: false }}
+          component={BlockList}
+        />
+
+        <Stack.Screen
           name="UserProfile"
           component={UserProfile}
           options={{ tabBarVisible: false }} // Hide tab bar for this screen
@@ -143,6 +156,12 @@ export default function Auth() {
         <Stack.Screen
           name="Reactions"
           component={Reactions}
+          options={{ tabBarVisible: false }} // Hide tab bar for this screen
+        />
+
+        <Stack.Screen
+          name="Settings"
+          component={Settings}
           options={{ tabBarVisible: false }} // Hide tab bar for this screen
         />
 
@@ -225,6 +244,12 @@ export default function Auth() {
         />
 
         <Stack.Screen
+          name="BlockList"
+          options={{ tabBarVisible: false }}
+          component={BlockList}
+        />
+
+        <Stack.Screen
           name="AlertVideo"
           component={AlertVideo}
           options={{ tabBarVisible: false }} // Hide tab bar for this screen
@@ -275,6 +300,12 @@ export default function Auth() {
           name="UserProfile"
           component={UserProfile}
           options={{ tabBarVisible: false }} // Hide tab bar for this screen
+        />
+
+        <Stack.Screen
+          name="BlockList"
+          options={{ tabBarVisible: false }}
+          component={BlockList}
         />
 
         <Stack.Screen

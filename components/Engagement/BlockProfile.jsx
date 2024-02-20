@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   StyleSheet,
@@ -5,29 +6,29 @@ import {
   View,
   useColorScheme,
 } from "react-native";
-import React, { useEffect, useState } from "react";
-import { supabase } from "../../services/supabase";
 import { getUser } from "../../services/user";
 import ProfileCard from "../notifications/ProfileCard";
 
-export default function ReactionProfile({ item }) {
-  const [userDetails, setUserDetails] = useState(null);
-  const [loading, setLoading] = useState(true); // State to track loading status
+export default function BlockProfile({ item }) {
   const scheme = useColorScheme();
 
+  const [userDetails, setUserDetails] = useState(null);
+  const [loading, setLoading] = useState(true); // Initialize loading state
+
   const userInfo = {
-    user_id: item.userId,
+    user_id: item.creatorId,
   };
 
   useEffect(() => {
     const getProfiles = async () => {
       try {
         const res = await getUser(userInfo);
+
         setUserDetails(res.body);
-        setLoading(false); // Set loading to false when data is fetched
       } catch (error) {
         console.error("Error fetching user details:", error);
-        setLoading(false); // Set loading to false in case of error
+      } finally {
+        setLoading(false); // Set loading to false regardless of success or error
       }
     };
     getProfiles();
@@ -36,24 +37,14 @@ export default function ReactionProfile({ item }) {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" />
+        <ActivityIndicator size="large" color="grey" />
       </View>
     );
   }
 
   return (
-    <View style={{ paddingBottom: 30, flexDirection: "row" }}>
+    <View>
       <ProfileCard userDetails={userDetails} />
-      <Text
-        style={{
-          color: scheme === "dark" ? "white" : "black",
-          fontSize: 30,
-          top: 5,
-          left: 10,
-        }}
-      >
-        {item.reactionType}
-      </Text>
     </View>
   );
 }
@@ -64,6 +55,5 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     top: 40,
-    paddingBottom: 20,
   },
 });

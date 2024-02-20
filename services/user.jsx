@@ -205,7 +205,8 @@ export async function getReactionList(post) {
   const { body: resp } = await supabase
     .from("notifications")
     .select("*")
-    .eq("postId", post.id);
+    .eq("postId", post.id)
+    .eq("eventType", "reaction");
 
   return resp;
 }

@@ -13,6 +13,7 @@ import {
   Modal,
   useColorScheme,
   Pressable,
+  SafeAreaView,
 } from "react-native";
 import React, { useEffect, useState, useRef } from "react";
 import Banner from "../components/ProfileDetails/Banner";
@@ -44,6 +45,90 @@ export default function ProfileDetail({ route, navigation }) {
   const [posts, setPosts] = useState([]);
   const scheme = useColorScheme();
   const [purchaseLoading, setPurchaseLoading] = useState(false);
+  const [isUserBlocked, setIsUserBlocked] = useState(false);
+  const [hasUserBlockProfile, setHasUserBlockProfile] = useState(false);
+
+  async function blockUserCheck() {
+    const userId = supabase.auth.currentUser.id;
+
+    const resp = await supabase
+      .from("blocks")
+      .select("*")
+      .eq("creatorId", userId)
+      .eq("userId", userDetails.user_id);
+
+    return resp;
+  }
+
+  async function didUserBlockProfile() {
+    const userId = supabase.auth.currentUser.id;
+
+    const resp = await supabase
+      .from("blocks")
+      .select("*")
+      .eq("creatorId", userDetails.user_id)
+      .eq("userId", userId);
+
+    return resp;
+  }
+
+  async function blockUser() {
+    const resp = await supabase.from("blocks").insert([
+      {
+        // UserID Blocks CreatorId //
+        creatorId: userDetails.user_id,
+        userId: user.user_id,
+      },
+    ]);
+
+    navigation.goBack();
+    Alert.alert(`${userDetails.username} Has Been Blocked`, " ", [
+      { text: "OK", onPress: () => null },
+    ]);
+
+    return resp;
+  }
+
+  async function unblockUser() {
+    const { data, error } = await supabase
+      .from("blocks")
+      .delete()
+      .eq("userId", user.user_id)
+      .eq("creatorId", userDetails.user_id);
+
+    if (!error) {
+      setHasUserBlockProfile(false);
+    }
+
+    console.log("data", data);
+    console.log("error", error);
+
+    return data;
+  }
+
+  const handleUnblock = () =>
+    Alert.alert(`do you want to unblock ${userDetails.username} ?`, " ", [
+      {
+        text: "Cancel",
+        onPress: () => null,
+        style: "cancel",
+      },
+      { text: "yes", onPress: () => unblockUser() },
+    ]);
+
+  const createTwoButtonAlert = () =>
+    Alert.alert(`Do You Want To Block ${userDetails.username} ?`, " ", [
+      {
+        text: "Cancel",
+        onPress: () => null,
+        style: "cancel",
+      },
+      { text: "OK", onPress: () => blockUser() },
+    ]);
+
+  async function handleBlock() {
+    createTwoButtonAlert();
+  }
 
   const listOfProducts = [
     "Tizly001",
@@ -309,6 +394,21 @@ export default function ProfileDetail({ route, navigation }) {
   useEffect(() => {
     const getAllPost = async () => {
       try {
+        const res = await blockUserCheck();
+
+        if (res.body.length === 0) {
+          setIsUserBlocked(false);
+        } else {
+          setIsUserBlocked(res.body[0].blocked);
+        }
+
+        const response = await didUserBlockProfile();
+
+        if (response.body.length === 0) {
+          setHasUserBlockProfile(false);
+        } else {
+          setHasUserBlockProfile(response.body[0].blocked);
+        }
         const resp = await getPosts(userDetails.user_id);
         setPosts(resp);
       } catch (error) {
@@ -416,6 +516,73 @@ export default function ProfileDetail({ route, navigation }) {
     );
   }
 
+  if (hasUserBlockProfile === true) {
+    return (
+      <SafeAreaView
+        style={{
+          backgroundColor: scheme === "light" ? "white" : "#080A0B",
+          flex: 1,
+          justifyContent: "center",
+        }}
+      >
+        <Text
+          style={{
+            color: scheme === "dark" ? "white" : "black",
+            alignSelf: "center",
+            fontFamily: "Poppins-Bold",
+          }}
+        >
+          {userDetails.username} is blocked
+        </Text>
+        <Pressable
+          onPress={() => handleUnblock()}
+          style={{
+            backgroundColor: scheme === "light" ? "black" : "white",
+            width: screenWidth * 0.4,
+            height: screenHeight * 0.035,
+            justifyContent: "center",
+            borderRadius: 10,
+            top: screenHeight * 0.05,
+            alignSelf: "center",
+          }}
+        >
+          <Text
+            style={{
+              color: scheme === "light" ? "white" : "black",
+              fontFamily: "Poppins-Bold",
+              alignSelf: "center",
+              fontSize: 12,
+            }}
+          >
+            Unblock
+          </Text>
+        </Pressable>
+      </SafeAreaView>
+    );
+  }
+
+  if (isUserBlocked === true) {
+    return (
+      <SafeAreaView
+        style={{
+          backgroundColor: scheme === "light" ? "white" : "#080A0B",
+          flex: 1,
+          justifyContent: "center",
+        }}
+      >
+        <Text
+          style={{
+            color: scheme === "dark" ? "white" : "black",
+            alignSelf: "center",
+            fontFamily: "Poppins-Bold",
+          }}
+        >
+          {userDetails.username} blocked you
+        </Text>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <>
       <View
@@ -497,6 +664,7 @@ export default function ProfileDetail({ route, navigation }) {
                     }}
                   >
                     <TouchableOpacity
+                      onPress={() => handleBlock()}
                       style={{
                         borderWidth: 1,
                         borderColor: "white",
