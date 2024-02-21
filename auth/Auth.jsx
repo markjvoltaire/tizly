@@ -28,6 +28,7 @@ import AlertVideo from "../screens/AlertVideo";
 import FriendsList from "../screens/FriendsList";
 import Reactions from "../screens/Reactions";
 import BlockList from "../screens/BlockList";
+import FriendRequest from "../screens/FriendRequest";
 
 export default function Auth() {
   const Stack = createNativeStackNavigator();
@@ -78,6 +79,12 @@ export default function Auth() {
         <Stack.Screen
           name="Comments"
           component={Comments}
+          options={{ tabBarVisible: false }} // Hide tab bar for this screen
+        />
+
+        <Stack.Screen
+          name="FriendRequests"
+          component={FriendRequest}
           options={{ tabBarVisible: false }} // Hide tab bar for this screen
         />
 

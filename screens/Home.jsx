@@ -257,15 +257,43 @@ export default function Home({ navigation }) {
         >
           <Text
             style={{
+              width: width * 0.9,
+              alignSelf: "center",
               textAlign: "center",
               top: height * 0.2,
               fontSize: 14,
-              color: "#555",
+              color: scheme === "light" ? "#555" : "white",
               fontFamily: "Poppins-Bold",
             }}
           >
-            Your feed is empty. become friends with others to see their posts!
+            It seems like your feed is currently empty 🤔. Connect with others
+            to see their posts and grow your list of friends!
           </Text>
+
+          <Pressable
+            onPress={() => navigation.navigate("Explore")}
+            style={{
+              backgroundColor: scheme === "light" ? "black" : "white",
+              width: width * 0.8,
+              height: height * 0.05,
+              justifyContent: "center",
+              borderRadius: 10,
+              top: height * 0.28,
+
+              alignSelf: "center",
+            }}
+          >
+            <Text
+              style={{
+                color: scheme === "light" ? "white" : "black",
+                fontFamily: "Poppins-Bold",
+                alignSelf: "center",
+                fontSize: 16,
+              }}
+            >
+              Go Explore 🔍
+            </Text>
+          </Pressable>
         </ScrollView>
       </SafeAreaView>
     );

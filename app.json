@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "TizlyNative",
+    "name": "Tizly",
     "slug": "TizlyNative",
     "scheme": "TizlyNative",
     "detach": {
@@ -14,7 +14,7 @@
         }
       ]
     ],
-    "version": "33",
+    "version": "34",
     "orientation": "portrait",
     "icon": "./assets/blackLogo.png",
     "userInterfaceStyle": "automatic",
@@ -30,7 +30,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.markjvoltaire.TizlyNative",
-      "buildNumber": "152",
+      "buildNumber": "153",
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "Allow access to photos to upload photos from your library."
       }

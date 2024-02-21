@@ -1,6 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, useColorScheme } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -12,6 +12,7 @@ import NotificationContext from "./context/NotificationContext";
 
 export default function App() {
   const [auth, setAuth] = useState(null);
+  const scheme = useColorScheme();
 
   useEffect(() => {
     const handleAuthStateChange = (_event, session) => {

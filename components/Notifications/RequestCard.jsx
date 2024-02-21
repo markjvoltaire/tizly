@@ -7,11 +7,12 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Alert,
+  useColorScheme,
 } from "react-native";
 
 import NotificationHeader from "./NotificationHeader";
 import ProfileInformation from "../ProfileDetails/ProfileInformation";
-import { getUser } from "../../services/user";
+
 import ProfileCard from "./ProfileCard";
 import { supabase } from "../../services/supabase";
 import { useUser } from "../../context/UserContext";
@@ -22,18 +23,35 @@ export default function RequestCard({ item }) {
   const [userDetails, setUserDetails] = useState({});
   const [loading, setLoading] = useState(true);
   const { user } = useUser();
+  const scheme = useColorScheme();
+  // Assuming you've initialized Supabase somewhere in your code
+  // const supabase = createClient(...);
+
+  async function getUser(item) {
+    const resp = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("user_id", item.senderId)
+      .single();
+
+    return resp;
+  }
 
   const fetchUserDetails = async () => {
     try {
-      const resp = await getUser({ user_id: item.userId });
+      const resp = await getUser(item);
 
-      setUserDetails(resp.body);
+      setUserDetails(resp.data); // Assuming the user details are in 'data' property
     } catch (error) {
-      console.error("Error fetching user details:", error);
+      console.error("Error fetching user details:", error.message);
     } finally {
       setLoading(false); // Set loading to false regardless of success or failure
     }
   };
+
+  // Example usage:
+  // const item = { user_id: 'some_user_id' };
+  // fetchUserDetails(item);
 
   async function deleteFriend() {
     await supabase
@@ -99,18 +117,27 @@ export default function RequestCard({ item }) {
   }
 
   if (userDetails === null) {
+    console.log("item", item);
+    console.log("userDetails", userDetails);
     return null;
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>
+      <Text
+        style={{
+          color: scheme === "light" ? "#464646" : "white",
+          fontWeight: "500",
+          fontSize: 13,
+          paddingBottom: Dimensions.get("window").height * 0.01,
+        }}
+      >
         {userDetails === null
           ? null
           : `👥 ${userDetails.username} sent a friend request`}
       </Text>
       {userDetails === null ? null : <ProfileCard userDetails={userDetails} />}
-      <View style={styles.reactionContainer}></View>
+
       <TouchableOpacity
         onPress={() => friendButton()}
         style={{

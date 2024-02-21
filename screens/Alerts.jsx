@@ -56,7 +56,7 @@ export default function Alerts() {
         <View
           style={{
             flexDirection: "row", // Set flexDirection to 'row'
-            paddingBottom: screenHeight * 0.01,
+            paddingBottom: screenHeight * 0.03,
             borderBottomWidth: 0.2,
             borderColor: scheme === "light" ? 10 : "#383838",
           }}
@@ -72,7 +72,8 @@ export default function Alerts() {
         <View
           style={{
             flexDirection: "row", // Set flexDirection to 'row'
-            paddingBottom: screenHeight * 0.01,
+            paddingBottom: screenHeight * 0.03,
+            paddingTop: screenHeight * 0.01,
             borderBottomWidth: 0.2,
             borderColor: scheme === "light" ? 10 : "#383838",
           }}

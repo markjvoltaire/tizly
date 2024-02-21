@@ -28,6 +28,9 @@ export async function getFriends() {
     })
     .map((obj) => Object.values(obj)[0]);
 
+  // Push userId to filteredValues array
+  filteredValues.push(userId);
+
   return filteredValues;
 }
 
@@ -193,10 +196,12 @@ export async function getNotifications() {
   // Combine likesAndComments and friendRequests arrays
   const list = likesAndComments.concat(friendRequests);
 
-  // Sort the combined array by the 'id' property in descending order
-  list.sort((a, b) => b.id - a.id);
+  // Sort the combined array by the 'created_at' property in descending order
+  const newList = list.sort(
+    (a, b) => new Date(b.created_at) - new Date(a.created_at)
+  );
 
-  return list;
+  return newList;
 }
 
 export async function getReactionList(post) {

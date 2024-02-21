@@ -228,29 +228,10 @@ export default function ProfileDetail({ route, navigation }) {
       },
     ]);
 
-    const newReaction = {
-      comment: null,
-      creatorId: userDetails.user_id,
-      userId: user.user_id,
-      userProfileImage: user.profileimage,
-      postId: null,
-      userUsername: user.username,
-      creatorUsername: userDetails.username,
-      creatorDisplayname: userDetails.displayName,
-      userDisplayname: user.displayName,
-      creatorProfileImage: userDetails.profileimage,
-      media: null,
-      mediaType: null,
-      eventType: "friendRequest",
-      description: null,
-      liked: false,
-      reactionType: null,
-    };
-    const res = await supabase.from("notifications").insert([newReaction]);
     setFriendStatus("pending");
     await notifyUserAboutNewRequest(user, tokenCode);
 
-    return resp && res;
+    return resp;
   }
 
   async function unSendRequest() {

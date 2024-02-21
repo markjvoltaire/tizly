@@ -4,6 +4,7 @@ import {
   View,
   Dimensions,
   ActivityIndicator,
+  useColorScheme,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 
@@ -16,6 +17,7 @@ export default function ReactionCard({ item }) {
   const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;
   const [userDetails, setUserDetails] = useState({});
+  const scheme = useColorScheme();
   const [loading, setLoading] = useState(true);
 
   const prop = {
@@ -51,7 +53,7 @@ export default function ReactionCard({ item }) {
       <Text
         style={{
           left: screenWidth * 0.02,
-          color: "#464646",
+          color: scheme === "light" ? "#464646" : "white",
           fontWeight: "500",
           paddingBottom: screenHeight * 0.02,
           top: screenHeight * 0.01,
