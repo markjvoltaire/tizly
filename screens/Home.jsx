@@ -219,7 +219,7 @@ export default function Home({ navigation }) {
     return (
       <View
         style={{
-          backgroundColor: scheme === "light" ? "white" : "#080A0B",
+          backgroundColor: scheme === "light" ? "white" : "#111111",
           flex: 1,
           justifyContent: "center",
         }}
@@ -227,7 +227,7 @@ export default function Home({ navigation }) {
         {listOfPosts.length === 0 ? (
           <View
             style={{
-              backgroundColor: scheme === "light" ? "white" : "#080A0B",
+              backgroundColor: scheme === "light" ? "white" : "#111111",
               flex: 1,
               justifyContent: "center",
             }}
@@ -246,7 +246,7 @@ export default function Home({ navigation }) {
       <SafeAreaView
         style={{
           flex: 1,
-          backgroundColor: scheme === "light" ? "white" : "#080A0B",
+          backgroundColor: scheme === "light" ? "white" : "#111111",
         }}
       >
         <AppHeader navigation={navigation} />
@@ -303,7 +303,7 @@ export default function Home({ navigation }) {
     <SafeAreaView
       style={{
         flex: 1,
-        backgroundColor: scheme === "light" ? "white" : "#080A0B",
+        backgroundColor: scheme === "light" ? "white" : "#111111",
       }}
     >
       <AppHeader navigation={navigation} />

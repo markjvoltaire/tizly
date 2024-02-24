@@ -221,7 +221,7 @@ const Uploading = ({ route, navigation }) => {
       style={{
         flex: 1,
         justifyContent: "center",
-        backgroundColor: scheme === "light" ? "#00A3FF" : "#080A0B",
+        backgroundColor: scheme === "light" ? "#00A3FF" : "#111111",
         alignItems: "center",
       }}
     >

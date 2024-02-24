@@ -228,10 +228,29 @@ export default function ProfileDetail({ route, navigation }) {
       },
     ]);
 
+    const newReaction = {
+      comment: null,
+      creatorId: userDetails.user_id,
+      userId: user.user_id,
+      userProfileImage: user.profileimage,
+      postId: null,
+      userUsername: user.username,
+      creatorUsername: userDetails.username,
+      creatorDisplayname: userDetails.displayName,
+      userDisplayname: user.displayName,
+      creatorProfileImage: userDetails.profileimage,
+      media: null,
+      mediaType: null,
+      eventType: "friendRequest",
+      description: null,
+      liked: false,
+      reactionType: null,
+    };
+    const res = await supabase.from("notifications").insert([newReaction]);
     setFriendStatus("pending");
     await notifyUserAboutNewRequest(user, tokenCode);
 
-    return resp;
+    return resp && res;
   }
 
   async function unSendRequest() {
@@ -384,7 +403,7 @@ export default function ProfileDetail({ route, navigation }) {
         }
 
         const response = await didUserBlockProfile();
-
+        console.log("response", response.body);
         if (response.body.length === 0) {
           setHasUserBlockProfile(false);
         } else {
@@ -413,28 +432,36 @@ export default function ProfileDetail({ route, navigation }) {
   };
 
   async function subscribeToUser() {
-    setPurchaseLoading(true);
     const customerInfo = await Purchases.getCustomerInfo();
 
     try {
-      const resp = await Purchases.getProducts(
-        customerInfo,
+      const resp = await Purchases.purchaseProduct(
         subscriptions,
-        null
+        null,
+        Purchases.PURCHASE_TYPE.INAPP
       );
 
-      setPurchaseLoading(false);
-      // return res && resp;
+      const res = await supabase.from("subscriptions").insert([
+        {
+          userId: supabase.auth.currentUser.id,
+          creatorId: item.user_id,
+          creatorProfileImage: item.profileimage,
+          userProfileImage: user.profileimage,
+          creatorUsername: item.username,
+          userUsername: user.username,
+          creatorDisplayname: item.displayName,
+          userDisplayname: user.displayName,
+          subscriptionName: subscriptions,
+          subscriptionId: customerInfo.originalAppUserId,
+        },
+      ]);
+
+      return res && resp;
     } catch (error) {
       if (error.userCancelled) {
-        setPurchaseLoading(false);
         return null;
       } else {
-        // setSubLoading("idle");
-        // setModalVisible(false);
-        setPurchaseLoading(false);
         Alert.alert("Something Went Wrong, Try Again");
-        console.log("error", error);
       }
     }
   }
@@ -449,45 +476,45 @@ export default function ProfileDetail({ route, navigation }) {
     }, [])
   );
 
-  // useEffect(() => {
-  //   const main = async () => {
-  //     const userId = supabase.auth.currentUser.id;
-  //     Purchases.setDebugLogsEnabled(true);
+  useEffect(() => {
+    const main = async () => {
+      const userId = supabase.auth.currentUser.id;
+      Purchases.setDebugLogsEnabled(true);
 
-  //     await Purchases.configure({
-  //       apiKey: "appl_YzNJKcRtIKShkjSciXgXIqfSDqc",
-  //       appUserID: userId,
-  //     });
+      await Purchases.configure({
+        apiKey: "appl_YzNJKcRtIKShkjSciXgXIqfSDqc",
+        appUserID: userId,
+      });
 
-  //     const prods = await Purchases.getProducts(listOfProducts);
+      const prods = await Purchases.getProducts(listOfProducts);
 
-  //     const customerInfo = await Purchases.getCustomerInfo();
+      const customerInfo = await Purchases.getCustomerInfo();
 
-  //     const currentSubscription = customerInfo.activeSubscriptions;
+      const currentSubscription = customerInfo.activeSubscriptions;
 
-  //     async function findProduct() {
-  //       const box = {
-  //         allProducts: prods.map((i) => i.identifier),
-  //         userSubs: currentSubscription,
-  //       };
+      async function findProduct() {
+        const box = {
+          allProducts: prods.map((i) => i.identifier),
+          userSubs: currentSubscription,
+        };
 
-  //       const intersection = box.allProducts.filter(
-  //         (element) => !box.userSubs.includes(element)
-  //       );
+        const intersection = box.allProducts.filter(
+          (element) => !box.userSubs.includes(element)
+        );
 
-  //       let availableSubscription =
-  //         intersection[Math.floor(Math.random() * intersection.length)];
+        let availableSubscription =
+          intersection[Math.floor(Math.random() * intersection.length)];
 
-  //       console.log("availableSubscription", availableSubscription);
+        console.log("availableSubscription", availableSubscription);
 
-  //       setSubscriptions(availableSubscription);
-  //       console.log("availableSubscription", availableSubscription);
-  //     }
+        setSubscriptions(availableSubscription);
+        console.log("availableSubscription", availableSubscription);
+      }
 
-  //     findProduct();
-  //   };
-  //   main();
-  // }, []);
+      findProduct();
+    };
+    main();
+  }, []);
 
   if (loading) {
     return (

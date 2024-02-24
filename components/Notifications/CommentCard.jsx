@@ -54,7 +54,7 @@ export default function CommentCard({ item }) {
           color: scheme === "light" ? "#464646" : "white",
           paddingBottom: screenHeight * 0.02,
           top: screenHeight * 0.01,
-          fontWeight: "300",
+          fontWeight: "500",
           fontSize: 13,
         }}
       >

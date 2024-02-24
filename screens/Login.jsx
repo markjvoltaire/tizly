@@ -8,7 +8,7 @@ export default function Login({ navigation }) {
   let width = Dimensions.get("window").width;
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#00A3FF" }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#111111" }}>
       <LoginHeader navigation={navigation} />
       <View style={{ top: height * 0.2 }}>
         <LoginForm navigation={navigation} />

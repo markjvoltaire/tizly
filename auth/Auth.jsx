@@ -135,6 +135,12 @@ export default function Auth() {
           options={{ tabBarVisible: false }}
           component={BlockList}
         />
+
+        <Stack.Screen
+          name="Explore"
+          component={Explore}
+          options={{ tabBarVisible: false }} // Hide tab bar for this screen
+        />
       </Stack.Navigator>
     );
   };

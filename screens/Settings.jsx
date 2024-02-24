@@ -154,7 +154,7 @@ export default function Settings({ navigation }) {
       scrollEnabled={false}
       style={{
         flex: 1,
-        backgroundColor: scheme === "light" ? "white" : "#080A0B",
+        backgroundColor: scheme === "light" ? "white" : "#111111",
       }}
     >
       <TouchableOpacity onPress={() => navigation.goBack()}>

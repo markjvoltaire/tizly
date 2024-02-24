@@ -104,7 +104,7 @@ export default function FriendsList() {
     return (
       <View
         style={{
-          backgroundColor: scheme === "light" ? "white" : "#080A0B",
+          backgroundColor: scheme === "light" ? "white" : "#111111",
           flex: 1,
           justifyContent: "center",
           alignItems: "center", // Center align items horizontally
@@ -117,7 +117,7 @@ export default function FriendsList() {
   return (
     <SafeAreaView
       style={{
-        backgroundColor: scheme === "light" ? "white" : "#080A0B",
+        backgroundColor: scheme === "light" ? "white" : "#111111",
         flex: 1,
       }}
     >

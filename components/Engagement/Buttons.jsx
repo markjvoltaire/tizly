@@ -271,7 +271,7 @@ export default function Buttons({ post }) {
       <Modal animationType="slide" visible={reactionList}>
         <SafeAreaView
           style={{
-            backgroundColor: scheme === "light" ? "white" : "#080A0B",
+            backgroundColor: scheme === "light" ? "white" : "#111111",
             flex: 1,
           }}
         >

@@ -38,7 +38,7 @@ export default function Explore({ navigation }) {
           style={{
             flex: 1,
             alignItems: "center",
-            backgroundColor: scheme === "light" ? "white" : "#080A0B",
+            backgroundColor: scheme === "light" ? "white" : "#111111",
           }}
         >
           <ExploreHeader />

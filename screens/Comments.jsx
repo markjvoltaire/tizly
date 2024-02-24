@@ -203,7 +203,7 @@ export default function Comments({ route }) {
     return (
       <View
         style={{
-          backgroundColor: scheme === "light" ? "white" : "#080A0B",
+          backgroundColor: scheme === "light" ? "white" : "#111111",
           flex: 1,
         }}
       >
@@ -218,7 +218,7 @@ export default function Comments({ route }) {
     <SafeAreaView
       style={{
         flex: 1,
-        backgroundColor: scheme === "light" ? "white" : "#080A0B",
+        backgroundColor: scheme === "light" ? "white" : "#111111",
       }}
     >
       <View style={{ alignSelf: "center" }}>
@@ -277,7 +277,7 @@ export default function Comments({ route }) {
             justifyContent: "space-between",
             paddingHorizontal: 16,
             paddingVertical: 8,
-            backgroundColor: scheme === "light" ? "white" : "#080A0B",
+            backgroundColor: scheme === "light" ? "white" : "#111111",
           }}
         >
           <TextInput

@@ -15,7 +15,7 @@ export default function ExploreHeader() {
         style={{
           fontFamily: "Poppins-Black",
           fontSize: 18,
-          color: scheme === "light" ? "#00A3FF" : "white",
+          color: scheme === "light" ? "black" : "white",
         }}
       >
         Explore

@@ -36,7 +36,7 @@ export default function Post({ navigation }) {
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       aspect: [9, 16],
       canAskAgain: true,
-      videoMaxDuration: 8,
+      videoMaxDuration: 10,
       quality: 0.6,
       allowsEditing: true,
     });
@@ -93,7 +93,7 @@ export default function Post({ navigation }) {
   return (
     <SafeAreaView
       style={{
-        backgroundColor: scheme === "light" ? "white" : "#080A0B",
+        backgroundColor: scheme === "light" ? "white" : "#111111",
         flex: 1,
       }}
     >

@@ -106,7 +106,7 @@ export default function Alerts() {
         style={{
           justifyContent: "center",
           flex: 1,
-          backgroundColor: scheme === "light" ? "white" : "#080A0B",
+          backgroundColor: scheme === "light" ? "white" : "#111111",
         }}
       >
         <ActivityIndicator size="large" color="grey" />
@@ -118,14 +118,14 @@ export default function Alerts() {
     <SafeAreaView
       style={{
         flex: 1,
-        backgroundColor: scheme === "light" ? "white" : "#080A0B",
+        backgroundColor: scheme === "light" ? "white" : "#111111",
       }}
     >
       <Text
         style={{
           fontFamily: "Poppins-Black",
           fontSize: 20,
-          color: scheme === "light" ? "#00A3FF" : "white",
+          color: scheme === "light" ? "black" : "white",
           left: 5,
           paddingBottom: screenHeight * 0.02,
         }}

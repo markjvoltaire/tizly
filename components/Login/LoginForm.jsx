@@ -199,9 +199,8 @@ export default function LoginForm({ navigation }) {
         <TouchableOpacity
           onPress={() => loginWithEmail()}
           style={{
-            backgroundColor: "black",
-            borderWidth: 1,
-            borderColor: "black",
+            backgroundColor: "white",
+
             width: width * 0.8,
             height: height * 0.06,
             padding: 12,
@@ -215,7 +214,7 @@ export default function LoginForm({ navigation }) {
               fontFamily: "Poppins-SemiBold",
               alignSelf: "center",
               fontSize: 18,
-              color: "white",
+              color: "black",
             }}
           >
             Login
@@ -240,7 +239,7 @@ export default function LoginForm({ navigation }) {
 
       {/* FORGOT PASSWORD MODAL ===============================================*/}
       <Modal animationType="slide" visible={modal}>
-        <SafeAreaView style={{ backgroundColor: "#00A3FF", flex: 1 }}>
+        <SafeAreaView style={{ backgroundColor: "#111111", flex: 1 }}>
           <View>
             <TouchableOpacity
               style={{ width: width * 0.0 }}
@@ -310,7 +309,7 @@ export default function LoginForm({ navigation }) {
                 <TouchableOpacity
                   onPress={() => sendEmail()}
                   style={{
-                    backgroundColor: "black",
+                    backgroundColor: "white",
                     borderWidth: 1,
                     borderColor: "black",
                     width: width * 0.8,
@@ -326,7 +325,7 @@ export default function LoginForm({ navigation }) {
                       fontFamily: "Poppins-SemiBold",
                       alignSelf: "center",
                       fontSize: 18,
-                      color: "white",
+                      color: "black",
                     }}
                   >
                     Send Code To Email

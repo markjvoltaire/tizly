@@ -65,7 +65,7 @@ export default function FriendRequest() {
     return (
       <SafeAreaView
         style={{
-          backgroundColor: scheme === "light" ? "white" : "#080A0B",
+          backgroundColor: scheme === "light" ? "white" : "#111111",
           flex: 1,
           justifyContent: "center",
           alignItems: "center",
@@ -82,7 +82,7 @@ export default function FriendRequest() {
   return (
     <SafeAreaView
       style={{
-        backgroundColor: scheme === "light" ? "white" : "#080A0B",
+        backgroundColor: scheme === "light" ? "white" : "#111111",
         flex: 1,
       }}
     >

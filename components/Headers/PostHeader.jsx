@@ -88,7 +88,7 @@ export default function PostHeader({ post, navigation }) {
   if (userDetails === null) {
     return (
       <View
-        style={{ backgroundColor: scheme === "light" ? "white" : "#080A0B" }}
+        style={{ backgroundColor: scheme === "light" ? "white" : "#111111" }}
       >
         <Text style={{ color: scheme === "dark" ? "white" : "black" }}>
           PLEASE WAIT

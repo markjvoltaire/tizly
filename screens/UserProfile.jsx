@@ -92,7 +92,7 @@ export default function UserProfile({ navigation }) {
     <View
       style={{
         flex: 1,
-        backgroundColor: scheme === "light" ? "white" : "#080A0B",
+        backgroundColor: scheme === "light" ? "white" : "#111111",
       }}
     >
       <FlatList

@@ -32,6 +32,12 @@ export default function EditProfile({ route }) {
   const [pressCount, setPressCount] = useState(0);
   const scheme = useColorScheme();
 
+  // const calculateAspectRatio = () => post.width / post.height;
+  // const aspectRatio = calculateAspectRatio();
+
+  // const newWidth = width * 0.92;
+  // const newHeight = newWidth / aspectRatio;
+
   const [status, setStatus] = React.useState({});
   const video = useRef(null);
 
@@ -211,7 +217,7 @@ export default function EditProfile({ route }) {
         <SafeAreaView
           style={{
             flex: 1,
-            backgroundColor: scheme === "light" ? "white" : "#080A0B",
+            backgroundColor: scheme === "light" ? "white" : "#111111",
           }}
         >
           <View
@@ -395,7 +401,7 @@ export default function EditProfile({ route }) {
         <SafeAreaView
           style={{
             flex: 1,
-            backgroundColor: scheme === "light" ? "white" : "#080A0B",
+            backgroundColor: scheme === "light" ? "white" : "#111111",
           }}
         >
           <View

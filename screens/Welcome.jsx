@@ -62,7 +62,7 @@ export default function Welcome({ navigation }) {
   });
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#00A3FF" }}>
+    <View style={{ flex: 1, backgroundColor: "#111111" }}>
       {loading ? (
         <View style={{ flex: 1, justifyContent: "center" }}>
           <ActivityIndicator size="large" color="white" />

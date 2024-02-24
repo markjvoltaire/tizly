@@ -179,7 +179,7 @@ export default function SignUpForm({ navigation }) {
       <TouchableOpacity
         onPress={() => signUpWithEmail()}
         style={{
-          backgroundColor: "black",
+          backgroundColor: "white",
           borderWidth: 1,
           borderColor: "black",
           width: width * 0.8,
@@ -195,7 +195,7 @@ export default function SignUpForm({ navigation }) {
             fontFamily: "Poppins-SemiBold",
             alignSelf: "center",
             fontSize: 18,
-            color: "white",
+            color: "black",
           }}
         >
           Sign Up
