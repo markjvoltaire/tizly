@@ -403,7 +403,7 @@ export default function ProfileDetail({ route, navigation }) {
         }
 
         const response = await didUserBlockProfile();
-        console.log("response", response.body);
+
         if (response.body.length === 0) {
           setHasUserBlockProfile(false);
         } else {
@@ -444,23 +444,26 @@ export default function ProfileDetail({ route, navigation }) {
       const res = await supabase.from("subscriptions").insert([
         {
           userId: supabase.auth.currentUser.id,
-          creatorId: item.user_id,
-          creatorProfileImage: item.profileimage,
+          creatorId: userDetails.user_id,
+          creatorProfileImage: userDetails.profileimage,
           userProfileImage: user.profileimage,
-          creatorUsername: item.username,
+          creatorUsername: userDetails.username,
           userUsername: user.username,
-          creatorDisplayname: item.displayName,
+          creatorDisplayname: userDetails.displayName,
           userDisplayname: user.displayName,
           subscriptionName: subscriptions,
           subscriptionId: customerInfo.originalAppUserId,
         },
       ]);
 
+      console.log("res", res);
+
       return res && resp;
     } catch (error) {
       if (error.userCancelled) {
         return null;
       } else {
+        console.log("error", error);
         Alert.alert("Something Went Wrong, Try Again");
       }
     }
@@ -482,7 +485,7 @@ export default function ProfileDetail({ route, navigation }) {
       Purchases.setDebugLogsEnabled(true);
 
       await Purchases.configure({
-        apiKey: "appl_YzNJKcRtIKShkjSciXgXIqfSDqc",
+        apiKey: "appl_tIhSBcbpwTRUbYlfVvyNQXVJuzb",
         appUserID: userId,
       });
 
@@ -505,10 +508,7 @@ export default function ProfileDetail({ route, navigation }) {
         let availableSubscription =
           intersection[Math.floor(Math.random() * intersection.length)];
 
-        console.log("availableSubscription", availableSubscription);
-
         setSubscriptions(availableSubscription);
-        console.log("availableSubscription", availableSubscription);
       }
 
       findProduct();
