@@ -26,40 +26,6 @@ export default function PostHeader({ post, navigation }) {
 
   const scheme = useColorScheme();
 
-  const formatTimeAgo = (value, unit) => {
-    return value === 1 ? `1 ${unit} ago` : `${value} ${unit}s ago`;
-  };
-
-  let formattedDate;
-
-  if (daysDifference > 7) {
-    const monthNames = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ];
-    const month = postDate.getMonth();
-    const monthName = monthNames[month];
-    formattedDate = `${monthName} ${postDate.getDate()}  ${postDate.getFullYear()}`;
-  } else if (daysDifference > 0) {
-    formattedDate = formatTimeAgo(daysDifference, "day");
-  } else if (hoursDifference > 0) {
-    formattedDate = formatTimeAgo(hoursDifference, "hour");
-  } else if (minutesDifference > 0) {
-    formattedDate = formatTimeAgo(minutesDifference, "minute");
-  } else {
-    formattedDate = "Just now";
-  }
-
   const { user } = useUser();
 
   const handlePress = () => {
@@ -132,7 +98,7 @@ export default function PostHeader({ post, navigation }) {
             <Text
               style={{
                 color: "#121212",
-                fontFamily: "Poppins-Bold",
+                fontFamily: "SF-SemiBold",
                 fontSize: 13,
                 marginBottom: -3,
                 color: scheme === "light" ? "black" : "white",

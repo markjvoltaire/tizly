@@ -14,6 +14,7 @@ import {
   useColorScheme,
   Pressable,
   SafeAreaView,
+  Linking,
 } from "react-native";
 import React, { useEffect, useState, useRef } from "react";
 import Banner from "../components/ProfileDetails/Banner";
@@ -38,7 +39,7 @@ export default function ProfileDetail({ route, navigation }) {
   const tokenCode = userDetails.expo_push_token;
   const userToken = user.expo_push_token;
   const [refreshing, setRefreshing] = useState(false);
-  const [friendStatus, setFriendStatus] = useState(null);
+  const [friendStatus, setFriendStatus] = useState("");
   const [subscriptions, setSubscriptions] = useState();
   const [loading, setLoading] = useState(true);
   const [focused, setFocused] = useState(false);
@@ -47,6 +48,7 @@ export default function ProfileDetail({ route, navigation }) {
   const [purchaseLoading, setPurchaseLoading] = useState(false);
   const [isUserBlocked, setIsUserBlocked] = useState(false);
   const [hasUserBlockProfile, setHasUserBlockProfile] = useState(false);
+  const [subscriberType, setSubscriberType] = useState({});
 
   async function blockUserCheck() {
     const userId = supabase.auth.currentUser.id;
@@ -312,8 +314,15 @@ export default function ProfileDetail({ route, navigation }) {
     ]);
 
   async function friendButton() {
-    if (userDetails.type === "business") {
+    if (userDetails.type === "business" && friendStatus === "notSubscriber") {
       subscribeToUser();
+      return;
+    }
+
+    if (userDetails.type === "business" && friendStatus === "subscriber") {
+      Alert.alert(
+        "To manage this subscription, please go to iPhone Settings > Your Name > Subscriptions."
+      );
       return;
     }
 
@@ -333,9 +342,23 @@ export default function ProfileDetail({ route, navigation }) {
       createThreeButtonAlert();
     }
   }
-
   async function fetchFriendStatus() {
     try {
+      if (userDetails.type === "business") {
+        const subscriptionResp = await supabase
+          .from("subscriptions")
+          .select("*")
+          .eq("creatorId", userDetails.user_id)
+          .eq("userId", user.user_id);
+
+        setFriendStatus(
+          subscriptionResp.body.length === 1 ? "subscriber" : "notSubscriber"
+        );
+        setSubscriberType(subscriptionResp.body[0]);
+
+        return;
+      }
+
       const userId = supabase.auth.currentUser.id;
       const userSentRequest = await supabase
         .from("friendRequests")
@@ -349,32 +372,33 @@ export default function ProfileDetail({ route, navigation }) {
         .eq("senderId", userDetails.user_id)
         .eq("receiverId", userId);
 
-      if (userSentRequest.body.length === 1) {
-        if (userSentRequest.body[0].status === "friends") {
-          setFriendStatus("friends");
-        } else if (userSentRequest.body[0].status === "pending") {
-          setFriendStatus("pending");
-        }
-      }
-
-      if (userReceivedRequest.body.length === 1) {
-        if (userReceivedRequest.body[0].status === "friends") {
-          setFriendStatus("friends");
-        } else if (userReceivedRequest.body[0].status === "pending") {
-          setFriendStatus("awaitingResponse");
-        }
-      }
-
-      if (
-        userReceivedRequest.body.length === 0 &&
-        userSentRequest.body.length === 0
+      if (userSentRequest.body && userSentRequest.body.length === 1) {
+        setFriendStatus(
+          userSentRequest.body[0].status === "friends" ? "friends" : "pending"
+        );
+      } else if (
+        userReceivedRequest.body &&
+        userReceivedRequest.body.length === 1
       ) {
+        setFriendStatus(
+          userReceivedRequest.body[0].status === "friends"
+            ? "friends"
+            : "awaitingResponse"
+        );
+      } else {
         setFriendStatus("notFriends");
       }
     } catch (error) {
-      console.error("Error fetching user details:", error);
+      if (
+        error instanceof TypeError &&
+        error.message.includes("Cannot read property 'length' of null")
+      ) {
+        console.log("Friend request details are not available.");
+      } else {
+        console.error("Error fetching user details:", error);
+      }
     } finally {
-      setLoading(false); // Set loading to false regardless of success or failure
+      setLoading(false);
     }
   }
 
@@ -432,6 +456,7 @@ export default function ProfileDetail({ route, navigation }) {
   };
 
   async function subscribeToUser() {
+    setPurchaseLoading(true);
     const customerInfo = await Purchases.getCustomerInfo();
 
     try {
@@ -456,14 +481,17 @@ export default function ProfileDetail({ route, navigation }) {
         },
       ]);
 
-      console.log("res", res);
-
+      setFriendStatus("subscriber");
+      setPurchaseLoading(false);
+      Alert.alert("You are now a subscriber");
       return res && resp;
     } catch (error) {
       if (error.userCancelled) {
+        setPurchaseLoading(false);
         return null;
       } else {
         console.log("error", error);
+        setPurchaseLoading(false);
         Alert.alert("Something Went Wrong, Try Again");
       }
     }
@@ -591,6 +619,8 @@ export default function ProfileDetail({ route, navigation }) {
     );
   }
 
+  console.log(friendStatus);
+
   return (
     <>
       <View
@@ -634,7 +664,10 @@ export default function ProfileDetail({ route, navigation }) {
                       onPress={() => friendButton()}
                       style={{
                         backgroundColor:
-                          friendStatus === "friends" ? null : "white",
+                          friendStatus === "friends" ||
+                          friendStatus === "subscriber"
+                            ? null
+                            : "white",
                         width: screenWidth * 0.3,
                         height: screenHeight * 0.036,
                         padding: 1,
@@ -642,7 +675,10 @@ export default function ProfileDetail({ route, navigation }) {
                         borderRadius: 12,
                         borderWidth: 1,
                         borderColor:
-                          friendStatus === "friends" ? "white" : null,
+                          friendStatus === "friends" ||
+                          friendStatus === "subscriber"
+                            ? "white"
+                            : null,
                       }}
                     >
                       <Text
@@ -650,19 +686,27 @@ export default function ProfileDetail({ route, navigation }) {
                           fontSize: 14,
                           fontWeight: "700",
                           alignSelf: "center",
-                          color: friendStatus === "friends" ? "white" : null,
+                          color:
+                            friendStatus === "friends" ||
+                            friendStatus === "subscriber"
+                              ? "white"
+                              : null,
                           paddingTop: screenHeight * 0.006,
                         }}
                       >
-                        {userDetails.type === "business"
+                        {userDetails.type === "business" &&
+                        friendStatus === "notSubscriber"
                           ? "Subscribe"
                           : friendStatus === "friends"
                           ? "Friends"
                           : friendStatus === "notFriends"
                           ? "Add Friend"
                           : friendStatus === "awaitingResponse"
-                          ? "view request"
-                          : "pending"}
+                          ? "View Request"
+                          : userDetails.type === "business" &&
+                            friendStatus === "subscriber"
+                          ? "Subscribed"
+                          : null}
                       </Text>
                     </TouchableOpacity>
                   </Animated.View>
@@ -700,7 +744,7 @@ export default function ProfileDetail({ route, navigation }) {
           renderItem={() => null} // Render an empty item for the header
           showsVerticalScrollIndicator={false}
           ListFooterComponent={
-            friendStatus === "friends" ? (
+            friendStatus === "friends" || friendStatus === "subscriber" ? (
               <View style={{ bottom: screenHeight * 0.04 }}>
                 <UnlockedFeed
                   posts={posts}

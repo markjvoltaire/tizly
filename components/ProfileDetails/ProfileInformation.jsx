@@ -54,7 +54,7 @@ export default function ProfileInformation({ userDetails }) {
           <Animated.Text
             style={{
               color: "white",
-              fontFamily: "Poppins-Bold",
+              fontFamily: "SF-Bold",
               fontSize: 20,
               marginBottom: -2,
               opacity: fadeAnim,

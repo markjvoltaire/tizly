@@ -46,21 +46,20 @@ export default function UserProfileButtons({ navigation, user }) {
           onPress={() => navigation.navigate("EditProfile", { user })}
           style={{
             borderWidth: 1,
-
-            backgroundColor: "white",
+            borderColor: "white",
             width: screenWidth * 0.3,
             height: screenHeight * 0.036,
             padding: 1,
             marginRight: 20,
-            borderRadius: 12,
+            borderRadius: 10,
           }}
         >
           <Text
             style={{
               fontSize: 14,
-              fontWeight: "700",
+              fontFamily: "SF-SemiBold",
               alignSelf: "center",
-
+              color: "white",
               paddingTop: screenHeight * 0.005,
             }}
           >

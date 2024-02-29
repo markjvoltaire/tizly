@@ -63,7 +63,7 @@ export default function LockedFeed({ userDetails }) {
           fontFamily: "Poppins-Bold",
         }}
       >
-        {userDetails.username}'s feed is exclusive for friends
+        Subscribe to see {userDetails.username}'s posts
       </Text>
       <View style={styles.placeholderContainer}>
         <Text

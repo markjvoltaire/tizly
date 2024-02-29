@@ -14,7 +14,12 @@ export async function getFriends() {
     .eq("status", "friends")
     .eq("senderId", userId);
 
-  const postList = friends1.concat(friends2);
+  const { body: subscriber } = await supabase
+    .from("subscriptions")
+    .select("creatorId")
+    .eq("userId", userId);
+
+  const postList = friends1.concat(friends2, subscriber);
 
   const filteredValues = postList
     .map((item) => {
