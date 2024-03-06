@@ -25,6 +25,7 @@ const NotificationProvider = ({ children }) => {
   const savePushToken = async (newToken) => {
     setExpoPushToken(newToken);
     if (!newToken || !user?.user_id) {
+      console.log("FALSE");
       return;
     }
     // update the token in the database

@@ -35,7 +35,6 @@ export async function registerForPushNotificationsAsync() {
         projectId: Constants.easConfig?.projectId,
       })
     ).data;
-    console.log("YOOO", token);
   } else {
     alert("Must use physical device for Push Notifications");
   }

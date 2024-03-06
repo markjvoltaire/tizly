@@ -29,14 +29,13 @@ import StatusPost from "../components/PostTypes/StatusPost";
 import AppHeader from "../components/Headers/AppHeader";
 import { useFocusEffect } from "@react-navigation/native";
 import { useUser } from "../context/UserContext";
-import ExploreCard from "../components/explore/ExploreCard";
+import { registerForPushNotificationsAsync } from "../services/notification";
 
 export default function Home({ navigation }) {
   const scheme = useColorScheme();
   const [loading, setLoading] = useState(true);
   const [listOfPosts, setListOfPosts] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
-  const [randomUsers, setRandomUsers] = useState([]);
 
   const { user } = useUser();
 

@@ -37,12 +37,16 @@ export default function App() {
 
   return (
     <UserProvider>
-      <NotificationContext>
-        <NavigationContainer>
-          <StatusBar style="auto" />
-          {auth === null ? <NoAuth /> : <Auth auth={auth} />}
-        </NavigationContainer>
-      </NotificationContext>
+      <NavigationContainer>
+        <StatusBar style="auto" />
+        {auth === null ? (
+          <NoAuth />
+        ) : (
+          <NotificationContext>
+            <Auth auth={auth} />
+          </NotificationContext>
+        )}
+      </NavigationContainer>
     </UserProvider>
   );
 }

@@ -95,6 +95,16 @@ export default function Alerts() {
         >
           <ReactionCard item={item} />
           <PostPreview item={item} />
+          <Text
+            style={{
+              position: "absolute",
+              left: screenWidth * 0.75,
+              top: screenHeight * 0.06,
+              fontSize: 40,
+            }}
+          >
+            {item.reactionType}
+          </Text>
         </View>
       );
     }

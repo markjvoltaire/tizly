@@ -67,9 +67,7 @@ export default function ReactionCard({ item }) {
           width: screenHeight * 0.34,
           left: screenWidth * 0.02,
         }}
-      >
-        <Text style={{ fontSize: 80 }}>{item.reactionType}</Text>
-      </View>
+      ></View>
     </View>
   );
 }

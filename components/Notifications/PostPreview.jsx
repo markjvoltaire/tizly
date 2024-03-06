@@ -30,7 +30,7 @@ export default function PostPreview({ item }) {
             style={{
               width: screenWidth * 0.12,
               height: screenHeight * 0.07,
-              top: screenHeight * 0.02,
+              top: screenHeight * 0.01,
               borderRadius: 5,
               backgroundColor: "grey",
               left: screenWidth * 0.07,
@@ -96,7 +96,7 @@ export default function PostPreview({ item }) {
             style={{
               width: screenWidth * 0.17,
               height: screenHeight * 0.1,
-              top: screenHeight * 0.02,
+              top: screenHeight * 0.01,
               borderRadius: 5,
               borderWidth: 0.3,
               left: screenWidth * 0.07,
@@ -181,7 +181,7 @@ export default function PostPreview({ item }) {
           style={{
             width: screenWidth * 0.17,
             height: screenHeight * 0.1,
-            top: screenHeight * 0.02,
+            top: screenHeight * 0.01,
             borderRadius: 5,
             left: screenWidth * 0.07,
           }}
