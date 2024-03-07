@@ -492,7 +492,7 @@ export default function ProfileDetail({ route, navigation }) {
       } else {
         console.log("error", error);
         setPurchaseLoading(false);
-        Alert.alert("Something Went Wrong, Try Again");
+        Alert.alert(`${error}`);
       }
     }
   }
