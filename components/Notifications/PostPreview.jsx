@@ -100,7 +100,6 @@ export default function PostPreview({ item }) {
               borderRadius: 5,
               borderWidth: 0.3,
               left: screenWidth * 0.07,
-              borderColor: scheme === "light" ? "black" : "white",
             }}
           >
             <View

@@ -36,7 +36,7 @@ export default function Post({ navigation }) {
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       aspect: [9, 16],
       canAskAgain: true,
-      videoMaxDuration: 10,
+      videoMaxDuration: 15,
       quality: 0.6,
       allowsEditing: true,
     });
