@@ -38,8 +38,10 @@ export default function Post({ navigation }) {
       canAskAgain: true,
       videoMaxDuration: 15,
       quality: 0.6,
-      allowsEditing: true,
+      allowsEditing: false,
     });
+
+    console.log("photo", photo);
 
     if (!photo.canceled) {
       // "fileSize": 791445

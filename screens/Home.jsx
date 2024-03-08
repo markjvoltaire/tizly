@@ -30,6 +30,9 @@ import AppHeader from "../components/Headers/AppHeader";
 import { useFocusEffect } from "@react-navigation/native";
 import { useUser } from "../context/UserContext";
 import { registerForPushNotificationsAsync } from "../services/notification";
+import ProfileImage from "../components/Headers/ProfileImage";
+import ProfileInfo from "../components/Headers/ProfileInfo";
+import PostContent from "../components/Post/PostContent";
 
 export default function Home({ navigation }) {
   const scheme = useColorScheme();
@@ -141,7 +144,6 @@ export default function Home({ navigation }) {
   }, []);
 
   const renderItem = ({ item }) => {
-    const postHeader = <PostHeader navigation={navigation} post={item} />;
     const moreImage = (
       <Pressable
         onPress={() => handleOptionPress(item)}
@@ -155,7 +157,7 @@ export default function Home({ navigation }) {
             height: 40,
             width: 40,
             marginRight: 10,
-            bottom: height * 0.01,
+            bottom: height * 0.02,
           }}
           source={
             scheme === "light"
@@ -166,32 +168,27 @@ export default function Home({ navigation }) {
       </Pressable>
     );
 
-    let postContent;
-    if (item.mediaType === "image") {
-      postContent = <PhotoPost post={item} />;
-    } else if (item.mediaType === "video") {
-      postContent = <VideoPost post={item} />;
-    } else {
-      postContent = <StatusPost post={item} />;
-    }
-
     return (
-      <View
-        style={{
-          alignSelf: "center",
-          marginBottom: 10,
-          paddingBottom: 28,
-          borderBottomWidth: 0.2,
-
-          borderColor: scheme === "light" ? "grey" : "#383838",
-        }}
-      >
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          {postHeader}
+      <>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            padding: 10,
+          }}
+        >
           {moreImage}
+          <ProfileImage
+            navigation={navigation}
+            post={item}
+            style={styles.profileImage}
+          />
+          <ProfileInfo navigation={navigation} post={item} />
         </View>
-        <View style={{ top: 10 }}>{postContent}</View>
-      </View>
+        <View style={{ bottom: 15 }}>
+          <PostContent post={item} />
+        </View>
+      </>
     );
   };
 
@@ -218,7 +215,7 @@ export default function Home({ navigation }) {
     return (
       <View
         style={{
-          backgroundColor: scheme === "light" ? "white" : "#111111",
+          backgroundColor: scheme === "light" ? "#F9F9F9" : "#111111",
           flex: 1,
           justifyContent: "center",
         }}
@@ -321,10 +318,40 @@ export default function Home({ navigation }) {
           ref={ref}
           renderItem={renderItem}
           keyExtractor={(item) => item.id.toString()}
+          ItemSeparatorComponent={() => (
+            <View
+              style={{
+                bottom: 5,
+                height: 0.4,
+                backgroundColor: scheme === "dark" ? "#262626" : "#CED0CE",
+              }}
+            />
+          )}
         />
       </View>
     </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 10,
+  },
+  profileImage: {
+    borderRadius: 50,
+    width: 50,
+    height: 50,
+  },
+  textContainer: {
+    bottom: 8,
+  },
+  displayName: {
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  username: {
+    color: "gray",
+  },
+});

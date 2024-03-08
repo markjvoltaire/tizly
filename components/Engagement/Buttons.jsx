@@ -112,7 +112,7 @@ export default function Buttons({ post }) {
     <View style={{ flexDirection: "row" }}>
       <TouchableOpacity
         onPress={() => navigation.navigate("Comments", { post, token })}
-        style={{ width: 25, left: post.user_id === user.user_id ? 5 : 5 }}
+        style={{ width: 25, left: post.user_id === user.user_id ? 0 : 0 }}
       >
         <Image
           style={{ height: 20, width: 20 }}
@@ -132,7 +132,7 @@ export default function Buttons({ post }) {
           style={{
             height: 20,
             width: 20,
-            left: post.user_id === user.user_id ? -15 : -15,
+            left: post.user_id === user.user_id ? -25 : -25,
           }}
           source={require("../../assets/Category.png")}
         />
