@@ -3,6 +3,8 @@ import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
 import Constants from "expo-constants";
 import { supabase } from "./supabase";
+import { useUser } from "../context/UserContext";
+import { getNoti } from "./user";
 
 export async function registerForPushNotificationsAsync() {
   let token;
@@ -24,6 +26,7 @@ export async function registerForPushNotificationsAsync() {
       const { status } = await Notifications.requestPermissionsAsync();
       finalStatus = status;
     }
+
     if (finalStatus !== "granted") {
       alert("Failed to get push token for push notification!");
       return;
@@ -35,6 +38,9 @@ export async function registerForPushNotificationsAsync() {
         projectId: Constants.easConfig?.projectId,
       })
     ).data;
+    if (existingStatus === "granted") {
+      await getNoti(token);
+    }
   } else {
     alert("Must use physical device for Push Notifications");
   }
@@ -55,8 +61,6 @@ export async function sendPushNotification(
     body,
     data: { someData: "goes here" },
   };
-
-  console.log("body", body);
 
   await fetch("https://exp.host/--/api/v2/push/send", {
     method: "POST",
@@ -113,4 +117,15 @@ export const notifyUserAboutNewReaction = async (
   const token = await getUser(user.user_id);
   const body = `${user.username} reacted to your post`;
   sendPushNotification(token, body, tokenCode);
+};
+
+export const setNotification = async (tokenCode: string) => {
+  console.log("tokenCode", tokenCode);
+
+  // const { data } = await supabase
+  //   .from("profiles")
+  //   .select("*")
+  //   .eq("id", user.user_id)
+  //   .single();
+  // return data?.expo_push_token;
 };

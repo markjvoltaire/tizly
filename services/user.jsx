@@ -71,6 +71,17 @@ export async function getPosts(userid) {
   return post;
 }
 
+export async function getNoti(token) {
+  const userId = supabase.auth.currentUser.id;
+
+  const res = await supabase
+    .from("profiles")
+    .update({ expo_push_token: token })
+    .eq("user_id", userId);
+
+  return res;
+}
+
 export async function getFriendStatus(userDetails) {
   const userId = supabase.auth.currentUser.id;
   const userSentRequest = await supabase

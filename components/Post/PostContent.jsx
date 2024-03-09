@@ -80,8 +80,7 @@ export default function PostContent({ post }) {
               bottom: 5,
               lineHeight: 23,
               left: 12,
-              width: width * 0.82,
-              fontFamily: "SF-SemiBold",
+              width: width * 0.92,
             }}
           >
             {post.description}
@@ -101,7 +100,7 @@ export default function PostContent({ post }) {
 
         <Text
           style={{
-            color: scheme === "dark" ? "white" : "black",
+            color: "#9F9F9F",
             left: width * 0.03,
             marginBottom: 10,
             bottom: 6,
@@ -180,8 +179,7 @@ export default function PostContent({ post }) {
               bottom: 5,
               lineHeight: 23,
               left: 12,
-              width: width * 0.82,
-              fontFamily: "SF-SemiBold",
+              width: width * 0.92,
             }}
           >
             {post.description}
@@ -200,7 +198,7 @@ export default function PostContent({ post }) {
             ref={video}
             resizeMode="cover"
             style={{
-              height: newHeight,
+              height: newHeight / 1.3,
               width: newWidth,
               borderRadius: 10,
               marginBottom: 15,
@@ -226,7 +224,7 @@ export default function PostContent({ post }) {
 
         <Text
           style={{
-            color: scheme === "dark" ? "white" : "black",
+            color: "#9F9F9F",
             left: width * 0.03,
             marginBottom: 10,
             bottom: 6,
@@ -292,10 +290,10 @@ export default function PostContent({ post }) {
         <Text
           style={{
             color: scheme === "dark" ? "white" : "black",
-            fontSize: 14,
+            fontSize: 13,
             bottom: 7,
             lineHeight: 20,
-            fontFamily: "SF-SemiBold",
+
             width: width * 0.82,
           }}
         >

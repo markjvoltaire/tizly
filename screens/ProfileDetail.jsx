@@ -544,6 +544,8 @@ export default function ProfileDetail({ route, navigation }) {
     main();
   }, []);
 
+  console.log("friendStatus", friendStatus);
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -694,19 +696,16 @@ export default function ProfileDetail({ route, navigation }) {
                           paddingTop: screenHeight * 0.006,
                         }}
                       >
-                        {userDetails.type === "business" &&
-                        friendStatus === "notSubscriber"
-                          ? "Subscribe"
-                          : friendStatus === "friends"
-                          ? "Friends"
-                          : friendStatus === "notFriends"
-                          ? "Add Friend"
-                          : friendStatus === "awaitingResponse"
-                          ? "View Request"
-                          : userDetails.type === "business" &&
-                            friendStatus === "subscriber"
-                          ? "Subscribed"
-                          : null}
+                        {
+                          {
+                            notSubscriber: "Subscribe",
+                            friends: "Friends",
+                            notFriends: "Add Friend",
+                            awaitingResponse: "View Request",
+                            subscriber: "Subscribed",
+                            pending: "pending",
+                          }[friendStatus]
+                        }
                       </Text>
                     </TouchableOpacity>
                   </Animated.View>

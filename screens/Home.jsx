@@ -21,15 +21,11 @@ import {
   getUnlockedUserPost,
   reportPostById,
 } from "../services/user";
-import PostHeader from "../components/Headers/PostHeader";
+
 import { useScrollToTop } from "@react-navigation/native";
-import PhotoPost from "../components/PostTypes/PhotoPost";
-import VideoPost from "../components/PostTypes/VideoPost";
-import StatusPost from "../components/PostTypes/StatusPost";
 import AppHeader from "../components/Headers/AppHeader";
 import { useFocusEffect } from "@react-navigation/native";
 import { useUser } from "../context/UserContext";
-import { registerForPushNotificationsAsync } from "../services/notification";
 import ProfileImage from "../components/Headers/ProfileImage";
 import ProfileInfo from "../components/Headers/ProfileInfo";
 import PostContent from "../components/Post/PostContent";

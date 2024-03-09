@@ -45,7 +45,11 @@ export default function ProfileInfo({ post, navigation }) {
   }, []);
 
   if (isLoading) {
-    return <ActivityIndicator size="large" color="grey" />;
+    return (
+      <View style={{ bottom: 10 }}>
+        <ActivityIndicator size="small" color="grey" />
+      </View>
+    );
   }
   return (
     <Pressable onPress={() => handlePress()}>
@@ -54,7 +58,7 @@ export default function ProfileInfo({ post, navigation }) {
           style={{
             color: scheme === "dark" ? "white" : "black",
             fontFamily: "Poppins-Bold",
-            fontSize: 15,
+            fontSize: 13,
             paddingRight: 10,
             bottom: 10,
             right: 2,
@@ -64,10 +68,11 @@ export default function ProfileInfo({ post, navigation }) {
         </Text>
         <Text
           style={{
-            color: "grey",
+            color: "#9F9F9F",
             fontWeight: "500",
             fontSize: 12,
             bottom: 10,
+            right: 2,
           }}
         >
           @{userDetails.username}
