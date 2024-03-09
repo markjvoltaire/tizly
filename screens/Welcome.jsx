@@ -61,6 +61,8 @@ export default function Welcome({ navigation }) {
     "Poppins-Medium": require("../assets/fonts/Poppins-Medium.ttf"),
     "SF-SemiBold": require("../assets/fonts/SFUIText-Semibold.ttf"),
     "SF-Bold": require("../assets/fonts/SFUIText-Bold.ttf"),
+    "SF-Medium": require("../assets/fonts/SFUIText-Medium.ttf"),
+    "SF-Regular": require("../assets/fonts/SFUIText-Regular.ttf"),
   });
 
   return (

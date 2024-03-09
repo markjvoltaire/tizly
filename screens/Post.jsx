@@ -41,8 +41,6 @@ export default function Post({ navigation }) {
       allowsEditing: false,
     });
 
-    console.log("photo", photo);
-
     if (!photo.canceled) {
       // "fileSize": 791445
       // "fileSize": 88749,

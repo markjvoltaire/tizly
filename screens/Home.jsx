@@ -35,6 +35,14 @@ export default function Home({ navigation }) {
   const [loading, setLoading] = useState(true);
   const [listOfPosts, setListOfPosts] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 100); // 2 seconds loading time
+    return () => clearTimeout(timer);
+  }, []); // Reset loading state whenever text input changes
 
   const { user } = useUser();
 
@@ -206,6 +214,17 @@ export default function Home({ navigation }) {
       };
     }, [])
   );
+
+  if (isLoading) {
+    return (
+      <View
+        style={{
+          backgroundColor: scheme === "light" ? "white" : "#111111",
+          flex: 1,
+        }}
+      ></View>
+    );
+  }
 
   if (loading) {
     return (

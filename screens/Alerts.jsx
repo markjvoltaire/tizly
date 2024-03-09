@@ -21,11 +21,19 @@ export default function Alerts() {
   const [notifications, setNotifications] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const ref = useRef(null);
   useScrollToTop(ref);
   const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;
   const scheme = useColorScheme();
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 100); // 2 seconds loading time
+    return () => clearTimeout(timer);
+  }, []); // Reset loading state whenever text input changes
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -121,6 +129,17 @@ export default function Alerts() {
       >
         <ActivityIndicator size="large" color="grey" />
       </View>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <View
+        style={{
+          backgroundColor: scheme === "light" ? "white" : "#111111",
+          flex: 1,
+        }}
+      ></View>
     );
   }
 

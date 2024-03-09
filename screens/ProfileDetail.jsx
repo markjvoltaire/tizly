@@ -544,8 +544,6 @@ export default function ProfileDetail({ route, navigation }) {
     main();
   }, []);
 
-  console.log("friendStatus", friendStatus);
-
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -620,8 +618,6 @@ export default function ProfileDetail({ route, navigation }) {
       </SafeAreaView>
     );
   }
-
-  console.log(friendStatus);
 
   return (
     <>

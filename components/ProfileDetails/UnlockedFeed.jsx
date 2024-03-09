@@ -18,6 +18,9 @@ import NoPosts from "./NoPosts";
 import { Image } from "react-native";
 import { useUser } from "../../context/UserContext";
 import { deletePost, reportPostById } from "../../services/user";
+import ProfileImage from "../Headers/ProfileImage";
+import ProfileInfo from "../Headers/ProfileInfo";
+import PostContent from "../Post/PostContent";
 
 export default function UnlockedFeed({
   userDetails,
@@ -29,6 +32,8 @@ export default function UnlockedFeed({
   const scheme = useColorScheme();
   const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;
+  let height = Dimensions.get("window").height;
+  let width = Dimensions.get("window").width;
 
   // Check if the posts array is empty
   if (posts.length === 0) {
@@ -113,18 +118,12 @@ export default function UnlockedFeed({
   };
 
   const renderItem = ({ item }) => {
-    const postHeader = (
-      <View style={{ top: 5 }}>
-        <PostHeader navigation={navigation} post={item} />
-      </View>
-    );
     const moreImage = (
       <Pressable
         onPress={() => handleOptionPress(item)}
         style={{
           position: "absolute",
-          left: screenWidth * 0.85,
-          top: screenHeight * 0.003,
+          left: width * 0.85,
         }}
       >
         <Image
@@ -132,6 +131,7 @@ export default function UnlockedFeed({
             height: 40,
             width: 40,
             marginRight: 10,
+            bottom: height * 0.02,
           }}
           source={
             scheme === "light"
@@ -142,28 +142,29 @@ export default function UnlockedFeed({
       </Pressable>
     );
 
-    let postContent;
-    if (item.mediaType === "image") {
-      postContent = <PhotoPost post={item} />;
-    } else if (item.mediaType === "video") {
-      postContent = <VideoPost post={item} />;
-    } else {
-      postContent = <StatusPost post={item} />;
-    }
-
     return (
-      <View
-        style={{
-          paddingBottom: screenHeight * 0.06,
-          borderBottomWidth: 1,
-          borderColor: scheme === "light" ? 10 : "#383838",
-          alignSelf: "center",
-        }}
-      >
-        {postHeader}
-        {moreImage}
-        <View style={{ top: 10 }}>{postContent}</View>
-      </View>
+      <>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            padding: 10,
+          }}
+        >
+          {moreImage}
+          <ProfileImage
+            navigation={navigation}
+            post={item}
+            style={styles.profileImage}
+          />
+          <View>
+            <ProfileInfo navigation={navigation} post={item} />
+          </View>
+        </View>
+        <View style={{ bottom: 15 }}>
+          <PostContent post={item} />
+        </View>
+      </>
     );
   };
 
@@ -174,6 +175,15 @@ export default function UnlockedFeed({
         renderItem={renderItem}
         keyExtractor={(item) => item.id.toString()} // Adjust with your item ID
         showsVerticalScrollIndicator={false}
+        ItemSeparatorComponent={() => (
+          <View
+            style={{
+              bottom: 5,
+              height: 0.4,
+              backgroundColor: scheme === "dark" ? "#262626" : "#CED0CE",
+            }}
+          />
+        )}
       />
     </View>
   );
@@ -184,5 +194,26 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 10,
+  },
+  profileImage: {
+    borderRadius: 50,
+    width: 50,
+    height: 50,
+  },
+  textContainer: {
+    bottom: 8,
+  },
+  displayName: {
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  username: {
+    color: "gray",
   },
 });

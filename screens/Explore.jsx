@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   SafeAreaView,
   TextInput,
@@ -17,6 +17,7 @@ import ExploreHeader from "../components/Headers/ExploreHeader";
 
 export default function Explore({ navigation }) {
   const [textInput, setTextInput] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
   const ref = useRef(null);
   useScrollToTop(ref);
   const screenWidth = Dimensions.get("window").width;
@@ -30,6 +31,24 @@ export default function Explore({ navigation }) {
   const handleTextInputChange = (text) => {
     setTextInput(text);
   };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 100); // 2 seconds loading time
+    return () => clearTimeout(timer);
+  }, []); // Reset loading state whenever text input changes
+
+  if (isLoading) {
+    return (
+      <View
+        style={{
+          backgroundColor: scheme === "light" ? "white" : "#111111",
+          flex: 1,
+        }}
+      ></View>
+    );
+  }
 
   return (
     <TouchableWithoutFeedback onPress={dismissKeyboard}>

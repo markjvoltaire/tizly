@@ -75,12 +75,13 @@ export default function PostContent({ post }) {
           <Text
             style={{
               color: scheme === "dark" ? "white" : "black",
-              fontSize: 14,
+              fontSize: 13,
               paddingBottom: 8,
               bottom: 5,
               lineHeight: 23,
               left: 12,
               width: width * 0.92,
+              fontFamily: "SF-Medium",
             }}
           >
             {post.description}
@@ -104,8 +105,6 @@ export default function PostContent({ post }) {
             left: width * 0.03,
             marginBottom: 10,
             bottom: 6,
-
-            fontFamily: "Poppins-SemiBold",
           }}
         >
           {formattedDate}
@@ -174,12 +173,13 @@ export default function PostContent({ post }) {
           <Text
             style={{
               color: scheme === "dark" ? "white" : "black",
-              fontSize: 14,
+              fontSize: 13,
               paddingBottom: 8,
               bottom: 5,
               lineHeight: 23,
               left: 12,
               width: width * 0.92,
+              fontFamily: "SF-Medium",
             }}
           >
             {post.description}
@@ -228,7 +228,6 @@ export default function PostContent({ post }) {
             left: width * 0.03,
             marginBottom: 10,
             bottom: 6,
-            fontFamily: "Poppins-Bold",
           }}
         >
           {formattedDate}
@@ -291,13 +290,24 @@ export default function PostContent({ post }) {
           style={{
             color: scheme === "dark" ? "white" : "black",
             fontSize: 13,
-            bottom: 7,
+            bottom: 9,
             lineHeight: 20,
-
             width: width * 0.82,
+            fontFamily: "SF-Medium",
           }}
         >
           {post.description}
+        </Text>
+
+        <Text
+          style={{
+            color: "#9F9F9F",
+
+            marginBottom: 10,
+            bottom: 6,
+          }}
+        >
+          {formattedDate}
         </Text>
 
         <View style={{ top: 2 }}>

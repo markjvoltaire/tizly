@@ -32,6 +32,8 @@ export default function UserProfile({ navigation }) {
 
   const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;
+  let width = Dimensions.get("window").width;
+  let height = Dimensions.get("window").height;
 
   const handleScroll = (event) => {
     const offsetY = event.nativeEvent.contentOffset.y;
@@ -118,7 +120,13 @@ export default function UserProfile({ navigation }) {
           </>
         }
         ListFooterComponent={
-          <View style={{ bottom: screenHeight * 0.07 }}>
+          <View
+            style={{
+              bottom: screenHeight * 0.07,
+              width: width,
+              alignSelf: "center",
+            }}
+          >
             <UnlockedFeed
               setPosts={setPosts}
               posts={posts}
