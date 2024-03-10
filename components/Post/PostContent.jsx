@@ -302,7 +302,6 @@ export default function PostContent({ post }) {
         <Text
           style={{
             color: "#9F9F9F",
-
             marginBottom: 10,
             bottom: 6,
           }}

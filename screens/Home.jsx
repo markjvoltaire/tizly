@@ -182,6 +182,7 @@ export default function Home({ navigation }) {
           }}
         >
           {moreImage}
+
           <ProfileImage
             navigation={navigation}
             post={item}
