@@ -66,7 +66,7 @@ export default function Welcome({ navigation }) {
   });
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#111111" }}>
+    <View style={{ flex: 1, backgroundColor: "#00A3FF" }}>
       {loading ? (
         <View style={{ flex: 1, justifyContent: "center" }}>
           <ActivityIndicator size="large" color="white" />
@@ -90,7 +90,7 @@ export default function Welcome({ navigation }) {
             {/* {Tagline} */}
             <Animated.Text
               style={{
-                fontFamily: "Poppins-SemiBold",
+                fontFamily: "Poppins-Bold",
                 color: "white",
                 top: height * 0.16,
                 fontSize: 18,
@@ -98,7 +98,7 @@ export default function Welcome({ navigation }) {
                 opacity: fadeAnim,
               }}
             >
-              Connect. Share. Privately
+              Business Made Simple.
             </Animated.Text>
           </View>
           <Modal animationType="slide" transparent={true} visible={modal}>

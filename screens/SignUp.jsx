@@ -10,7 +10,7 @@ export default function SignUp({ navigation }) {
     <SafeAreaView
       style={{
         flex: 1,
-        backgroundColor: "#111111",
+        backgroundColor: "#00A3FF",
       }}
     >
       <SignUpHeader navigation={navigation} />
