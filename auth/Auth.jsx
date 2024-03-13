@@ -5,56 +5,70 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { supabase } from "../services/supabase";
 import Home from "../screens/Home";
-import Explore from "../screens/Explore";
+import Explore from "../screens/Inbox";
 import Post from "../screens/Post";
-import Alerts from "../screens/Alerts";
+import Alerts from "../screens/Bookings";
 import UserProfile from "../screens/UserProfile";
 import { useUser } from "../context/UserContext";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+
+import ProfileDetail from "../screens/ProfileDetail";
+import Inbox from "../screens/Inbox";
+import Bookings from "../screens/Bookings";
+import Search from "../screens/Search";
 
 export default function Auth() {
+  const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
   const [loading, setLoading] = useState(true);
   const { user, setUser } = useUser();
 
-  const userId = supabase.auth.currentUser.id;
+  const HomeStack = () => {
+    return (
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen
+          name="HomeScreen"
+          component={Home}
+          options={{ tabBarVisible: false }} // Hide tab bar for this screen
+        />
 
-  async function getUserById() {
-    const { body: user } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("user_id", userId)
-      .single();
+        <Stack.Screen
+          name="Search"
+          component={Search}
+          options={{ tabBarVisible: false }} // Hide tab bar for this screen
+        />
 
-    return user;
-  }
+        <Stack.Screen
+          name="ProfileDetail"
+          component={ProfileDetail}
+          options={{ tabBarVisible: false }} // Hide tab bar for this screen
+        />
 
-  useEffect(() => {
-    const fetchUserById = async () => {
-      try {
-        const { body: userData, error } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("user_id", supabase.auth.currentUser.id)
-          .single();
+        <Stack.Screen
+          name="UserProfile"
+          component={UserProfile}
+          options={{ tabBarVisible: false }} // Hide tab bar for this screen
+        />
+      </Stack.Navigator>
+    );
+  };
 
-        if (userData) {
-          setUser(userData);
-        }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUserById();
-  }, []);
+  const PostStack = () => {
+    return (
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen
+          name="Post"
+          component={Post}
+          options={{ tabBarVisible: false }} // Hide tab bar for this screen
+        />
+      </Stack.Navigator>
+    );
+  };
 
   return (
     <Tab.Navigator>
       <Tab.Screen
         options={{
-          tabBarShowLabel: false,
           headerShown: false,
           tabBarIcon: ({ color, size, focused }) =>
             focused ? (
@@ -64,86 +78,123 @@ export default function Auth() {
               />
             ) : (
               <Image
-                source={require("../assets/HomeNotActive.png")}
+                source={require("../assets/homeInactiveLightMode.png")}
                 style={{ width: size, height: size }}
               />
             ),
+          tabBarLabel: ({ focused }) => (
+            <Text
+              style={{
+                fontFamily: "alata",
+                fontSize: 12,
+                color: focused ? "black" : "grey",
+              }}
+            >
+              Home
+            </Text>
+          ),
         }}
         name="Home"
-        component={Home}
+        component={HomeStack}
       />
 
       <Tab.Screen
         options={{
-          tabBarShowLabel: false,
           headerShown: false,
           tabBarIcon: ({ color, size, focused }) =>
             focused ? (
               <Image
-                source={require("../assets/SearchActive.png")}
+                source={require("../assets/MessageActive.png")}
                 style={{ width: size, height: size }}
               />
             ) : (
               <Image
-                source={require("../assets/SearchNotActive.png")}
+                source={require("../assets/Message.png")}
                 style={{ width: size, height: size }}
               />
             ),
+          tabBarLabel: ({ focused }) => (
+            <Text
+              style={{
+                fontFamily: "alata",
+                fontSize: 12,
+                color: focused ? "black" : "grey",
+              }}
+            >
+              Inbox
+            </Text>
+          ),
         }}
         name="Explore"
         component={Explore}
       />
-
       <Tab.Screen
         options={{
-          tabBarShowLabel: false,
           headerShown: false,
           tabBarIcon: ({ color, size, focused }) =>
             focused ? (
               <Image
-                source={require("../assets/PlusActive.png")}
+                source={require("../assets/post.png")}
                 style={{ width: size, height: size }}
               />
             ) : (
               <Image
-                source={require("../assets/PlusNotActive.png")}
+                source={require("../assets/postNotActive.png")}
                 style={{ width: size, height: size }}
               />
             ),
+          tabBarLabel: ({ focused }) => (
+            <Text
+              style={{
+                fontFamily: "alata",
+                fontSize: 12,
+                color: focused ? "black" : "grey",
+              }}
+            >
+              Post
+            </Text>
+          ),
         }}
-        name="Post"
-        component={Post}
+        name="PostStack"
+        component={PostStack}
       />
 
       <Tab.Screen
         options={{
-          tabBarShowLabel: false,
           headerShown: false,
           tabBarIcon: ({ color, size, focused }) =>
             focused ? (
               <Image
-                source={require("../assets/NotificationActive.png")}
+                source={require("../assets/Calendar.png")}
                 style={{ width: size, height: size }}
               />
             ) : (
               <Image
-                source={require("../assets/NotificationNotActive.png")}
+                source={require("../assets/CalendarNotActive.png")}
                 style={{ width: size, height: size }}
               />
             ),
+          tabBarLabel: ({ focused }) => (
+            <Text
+              style={{
+                fontFamily: "alata",
+                fontSize: 12,
+                color: focused ? "black" : "grey",
+              }}
+            >
+              Bookings
+            </Text>
+          ),
         }}
-        name="Alerts"
-        component={Alerts}
+        name="Bookings"
+        component={Bookings}
       />
 
       <Tab.Screen
         options={{
-          tabBarShowLabel: false,
           headerShown: false,
           tabBarIcon: ({ color, size, focused }) =>
-            loading ? (
-              <ActivityIndicator color={color} size="small" />
-            ) : focused ? (
+            focused ? (
               <Image
                 source={require("../assets/profileActive.png")}
                 style={{ width: size, height: size }}
@@ -154,6 +205,17 @@ export default function Auth() {
                 style={{ width: size, height: size }}
               />
             ),
+          tabBarLabel: ({ focused }) => (
+            <Text
+              style={{
+                fontFamily: "alata",
+                fontSize: 12,
+                color: focused ? "black" : "grey",
+              }}
+            >
+              Profile
+            </Text>
+          ),
         }}
         name="UserProfile"
         component={UserProfile}
