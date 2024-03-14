@@ -16,27 +16,40 @@ import {
   Pressable, // Import ScrollView
 } from "react-native";
 import { useScrollToTop } from "@react-navigation/native"; // Import useScrollToTop
+import { supabase } from "../services/supabase";
+import { getRandomUser } from "../services/user";
 
 export default function Home({ navigation }) {
   let height = Dimensions.get("window").height;
   let width = Dimensions.get("window").width;
 
   const [loading, setLoading] = useState(true);
+  const [trendingUsers, setTrendingUsers] = useState([]);
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scrollViewRef = useRef(); // Ref for ScrollView
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      setLoading(false);
-      fadeIn();
-    }, 2000);
+    const fetchData = async () => {
+      try {
+        const resp = await getRandomUser();
+        setTrendingUsers(resp);
+        const timeout = setTimeout(() => {
+          setLoading(false);
+          fadeIn();
+        }, 1000);
 
-    return () => {
-      clearTimeout(timeout);
-      fadeAnim.setValue(0); // Reset the fade animation when component unmounts
+        return () => {
+          clearTimeout(timeout);
+          fadeAnim.setValue(0); // Reset the fade animation when component unmounts
+        };
+      } catch (error) {
+        // Handle errors here
+        console.error("Error fetching data:", error);
+      }
     };
-  }, []);
 
+    fetchData();
+  }, []);
   const fadeIn = () => {
     Animated.timing(fadeAnim, {
       toValue: 1,
@@ -48,26 +61,6 @@ export default function Home({ navigation }) {
   useScrollToTop(scrollViewRef); // Hook up useScrollToTop to ScrollView
 
   // Mock data for carousel items
-  const carouselItems = [
-    {
-      id: "1",
-      name: "Chef John",
-      type: "catering",
-      image: require("../assets/chef.jpg"),
-    },
-    {
-      id: "2",
-      name: "Kevin Views",
-      type: "visual media",
-      image: require("../assets/photo.jpg"),
-    },
-    {
-      id: "3",
-      name: "Dj Vybz",
-      type: "entertainment",
-      image: require("../assets/dj.jpg"),
-    },
-  ];
 
   const classes = [
     {
@@ -183,9 +176,9 @@ export default function Home({ navigation }) {
               <Text
                 style={{
                   fontWeight: "600",
+                  fontSize: 22,
                   left: 18,
                   bottom: 25,
-                  fontSize: 22,
                 }}
               >
                 Trending In Miami
@@ -193,7 +186,7 @@ export default function Home({ navigation }) {
               <FlatList
                 showsHorizontalScrollIndicator={false}
                 horizontal
-                data={carouselItems}
+                data={trendingUsers}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item, index }) => (
                   <Animated.View style={{ opacity: fadeAnim }}>
@@ -211,12 +204,12 @@ export default function Home({ navigation }) {
                           borderRadius: 160,
                           backgroundColor: "grey",
                         }} // Add marginHorizontal for spacing
-                        source={item.image}
+                        source={{ uri: item.profileimage }}
                       />
                       <Text
                         style={{ alignSelf: "center", fontFamily: "alata" }}
                       >
-                        {item.name}
+                        {item.username}
                       </Text>
                       <Text
                         style={{

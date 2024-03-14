@@ -19,7 +19,7 @@ export default function Search({ navigation }) {
     const timeout = setTimeout(() => {
       // Focus on the text input after 1 second
       textInputRef.current.focus();
-    }, 300);
+    }, 500);
 
     return () => clearTimeout(timeout); // Clean up timeout on unmount
   }, []);
