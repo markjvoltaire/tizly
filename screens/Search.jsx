@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import {
   SafeAreaView,
   StyleSheet,
@@ -14,15 +14,30 @@ import {
 
 export default function Search({ navigation }) {
   const textInputRef = useRef(null);
+  const [showCategories, setShowCategories] = useState(true);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      // Focus on the text input after 1 second
       textInputRef.current.focus();
     }, 500);
 
-    return () => clearTimeout(timeout); // Clean up timeout on unmount
+    return () => clearTimeout(timeout);
   }, []);
+
+  const handleCategoryPress = (category) => {
+    // Handle category press here
+    console.log("Category selected:", category);
+  };
+
+  const categories = [
+    "Photography",
+    "Catering",
+    "Entertainment",
+    "Fitness",
+    "Bartending",
+    "Videography",
+    "Beauty",
+  ];
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -44,6 +59,9 @@ export default function Search({ navigation }) {
               style={styles.input}
               placeholder="What service do you need?"
               placeholderTextColor="#8A8A8A"
+              onChangeText={(text) => {
+                setShowCategories(text === "" ? true : false);
+              }}
             />
             <Image
               source={require("../assets/searchGlass.png")}
@@ -51,6 +69,21 @@ export default function Search({ navigation }) {
             />
           </View>
         </View>
+
+        {showCategories && (
+          <View style={styles.categoryContainer}>
+            <Text style={styles.categoryTitle}>Categories</Text>
+            {categories.map((category, index) => (
+              <TouchableOpacity
+                key={index}
+                style={styles.categoryItem}
+                onPress={() => handleCategoryPress(category)}
+              >
+                <Text>{category}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
       </SafeAreaView>
     </TouchableWithoutFeedback>
   );
@@ -60,20 +93,20 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "white",
-    paddingTop: Platform.OS === "android" ? 25 : 0, // Adjust for status bar height on Android
+    paddingTop: Platform.OS === "android" ? 25 : 0,
   },
   inputContainer: {
     paddingHorizontal: 20,
     paddingTop: 20,
     flexDirection: "row",
-    justifyContent: "space-between", // To move the red box to the other side
+    justifyContent: "space-between",
     alignItems: "center",
   },
   textInputContainer: {
     flexDirection: "row",
     alignItems: "center",
     position: "relative",
-    flex: 1, // Occupy remaining space
+    flex: 1,
   },
   input: {
     flex: 1,
@@ -83,7 +116,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F3F3F9",
     borderRadius: 20,
     padding: 10,
-    paddingLeft: 35, // Adjust the space between image and text input
+    paddingLeft: 35,
   },
   image: {
     width: 20,
@@ -91,6 +124,22 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 10,
     top: "50%",
-    transform: [{ translateY: -10 }], // Center vertically
+    transform: [{ translateY: -10 }],
+  },
+  categoryContainer: {
+    paddingHorizontal: 20,
+    paddingTop: 20,
+  },
+  categoryTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  categoryItem: {
+    backgroundColor: "#F3F3F9",
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 10,
+    marginBottom: 10,
   },
 });

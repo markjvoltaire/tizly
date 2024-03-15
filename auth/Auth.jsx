@@ -5,9 +5,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { supabase } from "../services/supabase";
 import Home from "../screens/Home";
-import Explore from "../screens/Inbox";
-import Post from "../screens/Post";
-import Alerts from "../screens/Bookings";
+
 import UserProfile from "../screens/UserProfile";
 import { useUser } from "../context/UserContext";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -16,6 +14,11 @@ import ProfileDetail from "../screens/ProfileDetail";
 import Inbox from "../screens/Inbox";
 import Bookings from "../screens/Bookings";
 import Search from "../screens/Search";
+import InboxDetails from "../screens/InboxDetails";
+import Category from "../screens/Category";
+import Offering from "../screens/Offering";
+import Gigs from "../screens/Gigs";
+import Settings from "../screens/Settings";
 
 export default function Auth() {
   const Stack = createNativeStackNavigator();
@@ -33,9 +36,39 @@ export default function Auth() {
         />
 
         <Stack.Screen
+          name="Category"
+          component={Category}
+          options={{ tabBarVisible: false }} // Hide tab bar for this screen
+        />
+
+        <Stack.Screen
           name="Search"
           component={Search}
           options={{ tabBarVisible: false }} // Hide tab bar for this screen
+        />
+
+        <Stack.Screen
+          name="Offering"
+          component={Offering}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Gig Information", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+
+        <Stack.Screen
+          name="Settings"
+          component={Settings}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Settings", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
         />
 
         <Stack.Screen
@@ -54,17 +87,111 @@ export default function Auth() {
           component={UserProfile}
           options={{ tabBarVisible: false }} // Hide tab bar for this screen
         />
+
+        <Stack.Screen
+          name="InboxDetails"
+          component={InboxDetails}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Message Thread", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+      </Stack.Navigator>
+    );
+  };
+  const InboxStack = () => {
+    return (
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen
+          name="Inbox"
+          component={Inbox}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Message Thread", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+
+        <Stack.Screen
+          name="InboxDetails"
+          component={InboxDetails}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Message Thread", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
       </Stack.Navigator>
     );
   };
 
-  const PostStack = () => {
+  const GigsStack = () => {
     return (
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen
           name="Post"
-          component={Post}
-          options={{ tabBarVisible: false }} // Hide tab bar for this screen
+          component={Gigs}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Gigs Near You", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+
+        <Stack.Screen
+          name="Offering"
+          component={Offering}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Gig", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+      </Stack.Navigator>
+    );
+  };
+
+  const BookingsStack = () => {
+    return (
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen
+          name="Bookings"
+          component={Bookings}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Your Bookings", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+      </Stack.Navigator>
+    );
+  };
+
+  const UserProfileStack = () => {
+    return (
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen
+          name="UserProfile"
+          component={UserProfile}
+          options={{
+            tabBarVisible: false,
+
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
         />
       </Stack.Navigator>
     );
@@ -130,8 +257,8 @@ export default function Auth() {
             </Text>
           ),
         }}
-        name="Explore"
-        component={Explore}
+        name="InboxStack"
+        component={InboxStack}
       />
       <Tab.Screen
         options={{
@@ -156,12 +283,12 @@ export default function Auth() {
                 color: focused ? "black" : "grey",
               }}
             >
-              Post
+              Gigs
             </Text>
           ),
         }}
-        name="PostStack"
-        component={PostStack}
+        name="GigsStack"
+        component={GigsStack}
       />
 
       <Tab.Screen
@@ -191,8 +318,8 @@ export default function Auth() {
             </Text>
           ),
         }}
-        name="Bookings"
-        component={Bookings}
+        name="BookingsStack"
+        component={BookingsStack}
       />
 
       <Tab.Screen
@@ -222,8 +349,8 @@ export default function Auth() {
             </Text>
           ),
         }}
-        name="UserProfile"
-        component={UserProfile}
+        name="UserProfileStack"
+        component={UserProfileStack}
       />
     </Tab.Navigator>
   );

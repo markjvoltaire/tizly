@@ -1,17 +1,17 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 
-export default function Post() {
+export default function Settings() {
   return (
     <View
       style={{
-        flex: 1,
-        backgroundColor: "white",
-        alignItems: "center",
         justifyContent: "center",
+        flex: 1,
+        alignItems: "center",
+        backgroundColor: "white",
       }}
     >
-      <Text>Post</Text>
+      <Text>Settings</Text>
     </View>
   );
 }

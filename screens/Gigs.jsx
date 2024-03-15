@@ -14,7 +14,7 @@ import {
 const gigsData = [
   {
     id: "1",
-    profilePicture: require("../assets/photo.jpg"),
+    profilePicture: require("../assets/trainer.jpg"),
     username: "user1",
     description: "I need a personal trainer to help me with my fitness goals.",
     date: "2024-03-14",
@@ -24,7 +24,7 @@ const gigsData = [
   },
   {
     id: "2",
-    profilePicture: require("../assets/photo6.jpg"),
+    profilePicture: require("../assets/cameraMan.jpg"),
     username: "user2",
     description: "I need a photographer for my upcoming event.",
     date: "2024-03-15",
@@ -51,7 +51,7 @@ const GigCard = ({ item }) => {
     </View>
   );
 };
-export default function Bookings({ navigation }) {
+export default function Gigs({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <FlatList

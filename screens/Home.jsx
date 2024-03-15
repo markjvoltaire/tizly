@@ -32,6 +32,7 @@ export default function Home({ navigation }) {
     const fetchData = async () => {
       try {
         const resp = await getRandomUser();
+
         setTrendingUsers(resp);
         const timeout = setTimeout(() => {
           setLoading(false);
@@ -140,7 +141,7 @@ export default function Home({ navigation }) {
 
           <Pressable
             style={{ marginLeft: "auto", marginRight: 18, top: 4 }}
-            onPress={() => console.log("Setting")}
+            onPress={() => navigation.navigate("Settings")}
           >
             <Image
               style={{
@@ -258,6 +259,9 @@ export default function Home({ navigation }) {
                   >
                     <Animated.View style={{ opacity: fadeAnim }}>
                       <TouchableOpacity
+                        onPress={() =>
+                          navigation.navigate("Category", { item })
+                        }
                         style={{
                           backgroundColor: "white",
                           alignItems: "center",
@@ -310,7 +314,11 @@ export default function Home({ navigation }) {
                 renderItem={({ item }) => (
                   <View>
                     <Animated.View style={{ opacity: fadeAnim }}>
-                      <TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() =>
+                          navigation.navigate("Offering", { item })
+                        }
+                      >
                         <Image
                           style={{
                             height: 150,
