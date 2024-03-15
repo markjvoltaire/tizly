@@ -299,7 +299,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   bookButton: {
-    backgroundColor: "#4B93FF",
+    backgroundColor: "#007AFF",
     paddingVertical: 10,
     paddingHorizontal: 10,
     borderRadius: 12,
