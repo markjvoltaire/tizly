@@ -4,6 +4,7 @@ export async function getRandomUser() {
   const response = await supabase
     .from("profiles")
     .select("*")
+    .eq("type", "business")
     .neq(
       "bannerImage",
       "https://ivxipgaauikqwyguqagw.supabase.co/storage/v1/object/public/profile-images/noProfileAVI.jpeg"

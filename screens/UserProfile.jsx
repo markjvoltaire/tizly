@@ -217,6 +217,9 @@ export default function UserProfile({ route, navigation }) {
             <FontAwesome name="star-half-full" size={16} color="gold" />
           )}
         </Text>
+        <TouchableOpacity style={styles.bookButton}>
+          <Text style={styles.bookButtonText}>Send Message</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -291,7 +294,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   bookButton: {
-    backgroundColor: "#4B93FF",
+    backgroundColor: "#007AFF",
     paddingVertical: 10,
     paddingHorizontal: 10,
     borderRadius: 12,
