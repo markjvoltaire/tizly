@@ -16,10 +16,10 @@
     ],
     "version": "40",
     "orientation": "portrait",
-    "icon": "./assets/blackLogo.png",
+    "icon": "./assets/newIcon.png",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/splashLogo.png",
+      "image": "./assets/splash2024.png",
       "resizeMode": "contain",
       "backgroundColor": "black"
     },
