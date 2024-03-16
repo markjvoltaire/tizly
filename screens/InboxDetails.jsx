@@ -1,10 +1,10 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 
-export default function Auth() {
+export default function InboxDetails() {
   return (
     <View>
-      <Text style={{ color: "white" }}>Auth</Text>
+      <Text>InboxDetails</Text>
     </View>
   );
 }
