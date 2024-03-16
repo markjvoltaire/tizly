@@ -23,7 +23,7 @@ export default function AppHeader({ navigation }) {
 
   return (
     <View style={styles.headerContainer}>
-      <Pressable onPress={() => navigation.navigate("FriendsList")}>
+      {/* <Pressable onPress={() => navigation.navigate("FriendsList")}>
         <Image
           style={styles.icon}
           source={
@@ -32,7 +32,7 @@ export default function AppHeader({ navigation }) {
               : require("../../assets/FriendsLight.png")
           }
         />
-      </Pressable>
+      </Pressable> */}
 
       <Text
         style={[
@@ -43,7 +43,7 @@ export default function AppHeader({ navigation }) {
         Tizly
       </Text>
 
-      <Pressable onPress={() => navigation.navigate("Settings")}>
+      {/* <Pressable onPress={() => navigation.navigate("Settings")}>
         <Image
           style={styles.icon}
           source={
@@ -52,7 +52,7 @@ export default function AppHeader({ navigation }) {
               : require("../../assets/SettingsLight.png")
           }
         />
-      </Pressable>
+      </Pressable> */}
     </View>
   );
 }
