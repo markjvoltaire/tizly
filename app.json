@@ -16,7 +16,7 @@
     ],
     "version": "40",
     "orientation": "portrait",
-    "icon": "./assets/newIcon.png",
+    "icon": "./assets/appIcon.png",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/splash2024.png",
