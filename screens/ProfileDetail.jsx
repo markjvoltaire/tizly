@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -8,8 +8,12 @@ import {
   Animated,
   FlatList,
   TouchableOpacity,
+  Pressable,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons"; // Import FontAwesome for icons
+import LottieView from "lottie-react-native";
+import { getPosts } from "../services/user";
+import { Video, AVPlaybackStatus } from "expo-av";
 
 // Reusable StarRating Component
 const StarRating = ({ rating }) => {
@@ -63,41 +67,90 @@ const ReviewSection = ({ reviews }) => {
 };
 
 // Bio Component
-const BioSection = ({ bio }) => {
+const BioSection = ({ bio, profileDetails }) => {
   return (
     <View style={styles.sectionContainer}>
-      {/* <Text style={styles.sectionHeader}>Bio</Text> */}
-      <Text style={styles.bioText}>{bio}</Text>
+      <Text style={styles.bioText}>{profileDetails.bio}</Text>
     </View>
   );
 };
 
 // Photo Grid Component
-const PhotoGrid = ({ photos }) => {
+const PhotoGrid = ({ photos, loadingGrid, profilePost, fadeAnim }) => {
   const renderItem = ({ item }) => (
-    <TouchableOpacity style={styles.photoItem}>
-      <Image source={{ uri: item }} style={styles.photoImage} />
-    </TouchableOpacity>
+    <Pressable style={styles.photoItem}>
+      <Animated.Image
+        source={{ uri: item.media }}
+        style={{
+          flex: 1,
+          borderRadius: 8,
+          backgroundColor: "grey",
+          opacity: fadeAnim,
+        }}
+      />
+    </Pressable>
   );
+
+  if (loadingGrid) {
+    return (
+      <View>
+        <LottieView
+          style={{
+            height: 130,
+            width: 130,
+
+            alignSelf: "center",
+          }}
+          source={require("../assets/lottie/grey-loader.json")}
+          autoPlay
+        />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.sectionContainer}>
       {/* <Text style={styles.sectionHeader}>Portfolio</Text> */}
-      <FlatList
-        data={photos}
-        renderItem={renderItem}
-        keyExtractor={(item, index) => index.toString()}
-        numColumns={3}
-        contentContainerStyle={styles.photoGridContainer}
-      />
+      {profilePost.length === 0 ? (
+        <Text
+          style={{
+            alignSelf: "center",
+            color: "grey",
+            fontFamily: "alata",
+            fontSize: 23,
+            bottom: 10,
+          }}
+        >
+          No Images Uploaded
+        </Text>
+      ) : (
+        <FlatList
+          data={profilePost}
+          renderItem={renderItem}
+          keyExtractor={(item, index) => index.toString()}
+          numColumns={3}
+          contentContainerStyle={styles.photoGridContainer}
+        />
+      )}
     </View>
   );
 };
 
 export default function ProfileDetail({ route, navigation }) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const [loadingGrid, setLoadingGrid] = useState(true);
+  const [profilePost, setProfilePost] = useState([]);
+  const profileDetails = route.params.item;
 
-  const profileDetails = route;
+  useEffect(() => {
+    const getUserInfo = async () => {
+      const resp = await getPosts(profileDetails.user_id);
+      setProfilePost(resp);
+
+      setLoadingGrid(false);
+    };
+    getUserInfo();
+  }, []);
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -142,16 +195,6 @@ export default function ProfileDetail({ route, navigation }) {
   const bio =
     "Miami-based photographer specializing in capturing the vibrant colors and energy of the city. With a keen eye for detail and a passion for storytelling, I aim to create stunning visuals that evoke emotion and capture the essence of each moment.";
 
-  // Sample photos
-  const photos = [
-    "https://res.cloudinary.com/doz01gvsj/image/upload/v1710390562/zyqtuhjr5bkm0nfjdol9.jpg",
-    "https://res.cloudinary.com/doz01gvsj/image/upload/v1710390562/utadsdu5c0so8y82qops.jpg",
-    "https://res.cloudinary.com/doz01gvsj/image/upload/v1710390562/llbndfabegq9bvsimskb.jpg",
-    "https://res.cloudinary.com/doz01gvsj/image/upload/v1710390562/ouwx9rs34ytxck9fe6w1.jpg",
-    "https://res.cloudinary.com/doz01gvsj/image/upload/v1710390562/icjhhp25f0glvgtpi0ze.jpg",
-    "https://res.cloudinary.com/doz01gvsj/image/upload/v1710390562/w7c4mnwdepivsmgwh1ao.jpg",
-  ];
-
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <FlatList
@@ -193,11 +236,16 @@ export default function ProfileDetail({ route, navigation }) {
             {/* Line Break */}
 
             {/* Bio Section */}
-            <BioSection bio={bio} />
+            <BioSection profileDetails={profileDetails} bio={bio} />
             {/* Line Break */}
             <View style={styles.lineBreak} />
             {/* Portfolio Section */}
-            <PhotoGrid photos={photos} />
+            <PhotoGrid
+              profileDetails={profileDetails}
+              profilePost={profilePost}
+              loadingGrid={loadingGrid}
+              fadeAnim={fadeAnim}
+            />
             {/* Line Break */}
             <View style={styles.lineBreak} />
             {/* Review Section */}

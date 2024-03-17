@@ -9,8 +9,10 @@ import {
   KeyboardAvoidingView,
   Platform,
   Keyboard,
+  SafeAreaView,
   Dimensions,
 } from "react-native";
+import { useUser } from "../context/UserContext";
 
 export default function InboxDetails() {
   const [messageText, setMessageText] = useState("");
@@ -65,6 +67,78 @@ export default function InboxDetails() {
   };
 
   const screenHeight = Dimensions.get("window").height;
+
+  const { user, setUser } = useUser(null);
+  console.log("user", user);
+
+  if (user === undefined) {
+    return (
+      <SafeAreaView
+        style={{
+          flex: 1,
+          backgroundColor: "#FFFFFF",
+          padding: 20,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <View style={{}}>
+          <Text
+            style={{
+              fontSize: 30,
+              fontFamily: "AirbnbCereal-Bold",
+              marginBottom: 20,
+            }}
+          >
+            inbox
+          </Text>
+          <Text
+            style={{
+              fontSize: 15,
+              fontFamily: "AirbnbCereal-Medium",
+              marginBottom: 10,
+
+              color: "#717171",
+            }}
+          >
+            Log in to see your send messages
+          </Text>
+          <Text
+            style={{
+              fontSize: 20,
+
+              marginBottom: 20,
+              color: "#717171",
+            }}
+          >
+            Once you login, you'll be able to send messages
+          </Text>
+
+          <TouchableOpacity
+            style={{
+              backgroundColor: "#007AFF",
+              paddingVertical: 12,
+              paddingHorizontal: 20,
+              borderRadius: 5,
+              alignSelf: "stretch",
+            }}
+          >
+            <Text
+              style={{
+                color: "#FFFFFF",
+                fontSize: 18,
+                fontWeight: "600",
+                fontFamily: "AirbnbCereal-Bold",
+                textAlign: "center",
+              }}
+            >
+              Log In
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <KeyboardAvoidingView

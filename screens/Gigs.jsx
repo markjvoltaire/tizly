@@ -37,18 +37,22 @@ const gigsData = [
 
 // Component for rendering each gig card
 
-const GigCard = ({ item }) => {
+const GigCard = ({ item, navigation }) => {
   return (
-    <View style={styles.card}>
+    <>
       <Image source={item.profilePicture} style={styles.profilePicture} />
-      <View style={styles.cardContent}>
-        <Text style={styles.username}>{item.username}</Text>
-        <Text style={styles.category}>{item.category}</Text>
-        <Text style={styles.description}>{item.description}</Text>
-        <Text style={styles.taskDescription}>{item.taskDescription}</Text>
-        <Text style={styles.date}>{item.date}</Text>
-      </View>
-    </View>
+      <Pressable onPress={() => navigation.navigate("Offering")}>
+        <View style={styles.card}>
+          <View style={styles.cardContent}>
+            <Text style={styles.username}>{item.username}</Text>
+            <Text style={styles.category}>{item.category}</Text>
+            <Text style={styles.description}>{item.description}</Text>
+            <Text style={styles.taskDescription}>{item.taskDescription}</Text>
+            <Text style={styles.date}>{item.date}</Text>
+          </View>
+        </View>
+      </Pressable>
+    </>
   );
 };
 export default function Gigs({ navigation }) {
@@ -57,7 +61,9 @@ export default function Gigs({ navigation }) {
       <FlatList
         showsVerticalScrollIndicator={false}
         data={gigsData}
-        renderItem={({ item }) => <GigCard item={item} />}
+        renderItem={({ item }) => (
+          <GigCard navigation={navigation} item={item} />
+        )}
         keyExtractor={(item) => item.id}
       />
     </SafeAreaView>
@@ -82,12 +88,12 @@ const styles = StyleSheet.create({
     padding: 15,
   },
   profilePicture: {
-    width: "100%",
-    height: 200,
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
+    width: 40,
+    height: 40,
+    borderRadius: 100,
     resizeMode: "cover",
     backgroundColor: "grey",
+    marginBottom: 10,
   },
   username: {
     fontSize: 16,

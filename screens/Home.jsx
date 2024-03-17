@@ -303,7 +303,7 @@ export default function Home({ navigation }) {
                   fontSize: 22,
                 }}
               >
-                New Experiences
+                Gigs Near You
               </Text>
               <FlatList
                 style={{ marginBottom: 50 }}

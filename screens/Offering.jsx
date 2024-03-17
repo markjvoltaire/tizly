@@ -8,8 +8,11 @@ import {
   SafeAreaView,
   TouchableOpacity,
 } from "react-native";
+import { useUser } from "../context/UserContext";
 
 export default function Offering() {
+  const { user, setUser } = useUser(null);
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.container}>
@@ -52,9 +55,9 @@ const styles = StyleSheet.create({
     paddingBottom: 60, // Added padding to accommodate button
   },
   profileImage: {
-    width: "100%",
-    height: 200,
-    borderRadius: 10,
+    width: 50,
+    height: 50,
+    borderRadius: 100,
     marginBottom: 20,
     backgroundColor: "grey",
   },

@@ -13,6 +13,7 @@ export default function App() {
   const [auth, setAuth] = useState(null);
   const [fontsLoaded] = useFonts({
     alata: require("./assets/fonts/Alata.ttf"),
+
     // Add more fonts if needed
   });
 

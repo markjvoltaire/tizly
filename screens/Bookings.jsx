@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   Pressable,
 } from "react-native";
+import { useUser } from "../context/UserContext";
 
 // Sample data for gigs
 const gigsData = [
@@ -52,6 +53,76 @@ const GigCard = ({ item }) => {
   );
 };
 export default function Bookings({ navigation }) {
+  const { user, setUser } = useUser(null);
+
+  if (user === undefined) {
+    return (
+      <SafeAreaView
+        style={{
+          flex: 1,
+          backgroundColor: "#FFFFFF",
+          padding: 20,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <View style={{}}>
+          <Text
+            style={{
+              fontSize: 30,
+              fontFamily: "AirbnbCereal-Bold",
+              marginBottom: 20,
+            }}
+          >
+            bookings
+          </Text>
+          <Text
+            style={{
+              fontSize: 15,
+              fontFamily: "AirbnbCereal-Medium",
+              marginBottom: 10,
+
+              color: "#717171",
+            }}
+          >
+            Log in to see your bookings
+          </Text>
+          <Text
+            style={{
+              fontSize: 20,
+
+              marginBottom: 20,
+              color: "#717171",
+            }}
+          >
+            Once you login, you'll find your bookings here
+          </Text>
+
+          <TouchableOpacity
+            style={{
+              backgroundColor: "#007AFF",
+              paddingVertical: 12,
+              paddingHorizontal: 20,
+              borderRadius: 5,
+              alignSelf: "stretch",
+            }}
+          >
+            <Text
+              style={{
+                color: "#FFFFFF",
+                fontSize: 18,
+                fontWeight: "600",
+                fontFamily: "AirbnbCereal-Bold",
+                textAlign: "center",
+              }}
+            >
+              Log In
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
   return (
     <SafeAreaView style={styles.container}>
       <FlatList

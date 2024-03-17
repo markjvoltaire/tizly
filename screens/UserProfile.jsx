@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -10,6 +10,9 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons"; // Import FontAwesome for icons
+import { getPosts } from "../services/user";
+import { useUser } from "../context/UserContext";
+import LottieView from "lottie-react-native";
 
 // Reusable StarRating Component
 const StarRating = ({ rating }) => {
@@ -73,31 +76,149 @@ const BioSection = ({ bio }) => {
 };
 
 // Photo Grid Component
-const PhotoGrid = ({ photos }) => {
+const PhotoGrid = ({ photos, loadingGrid, profilePost, fadeAnim }) => {
   const renderItem = ({ item }) => (
-    <TouchableOpacity style={styles.photoItem}>
-      <Image source={{ uri: item }} style={styles.photoImage} />
-    </TouchableOpacity>
+    <Pressable style={styles.photoItem}>
+      <Animated.Image
+        source={{ uri: item.media }}
+        style={{
+          flex: 1,
+          borderRadius: 8,
+          backgroundColor: "grey",
+          opacity: fadeAnim,
+        }}
+      />
+    </Pressable>
   );
+
+  if (loadingGrid) {
+    return (
+      <View>
+        <LottieView
+          style={{
+            height: 130,
+            width: 130,
+
+            alignSelf: "center",
+          }}
+          source={require("../assets/lottie/grey-loader.json")}
+          autoPlay
+        />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.sectionContainer}>
       {/* <Text style={styles.sectionHeader}>Portfolio</Text> */}
-      <FlatList
-        data={photos}
-        renderItem={renderItem}
-        keyExtractor={(item, index) => index.toString()}
-        numColumns={3}
-        contentContainerStyle={styles.photoGridContainer}
-      />
+      {profilePost.length === 0 ? (
+        <Text
+          style={{
+            alignSelf: "center",
+            color: "grey",
+            fontFamily: "alata",
+            fontSize: 23,
+            bottom: 10,
+          }}
+        >
+          No Images Uploaded
+        </Text>
+      ) : (
+        <FlatList
+          data={profilePost}
+          renderItem={renderItem}
+          keyExtractor={(item, index) => index.toString()}
+          numColumns={3}
+          contentContainerStyle={styles.photoGridContainer}
+        />
+      )}
     </View>
   );
 };
 
 export default function UserProfile({ route, navigation }) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const [loadingGrid, setLoadingGrid] = useState(true);
+  const [profilePost, setProfilePost] = useState([]);
+  const { user, setUser } = useUser(null);
+  console.log("user", user);
+  if (user === undefined) {
+    return (
+      <SafeAreaView
+        style={{
+          flex: 1,
+          backgroundColor: "#FFFFFF",
+          padding: 20,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <View style={{}}>
+          <Text
+            style={{
+              fontSize: 30,
+              fontFamily: "AirbnbCereal-Bold",
+              marginBottom: 20,
+            }}
+          >
+            profile
+          </Text>
+          <Text
+            style={{
+              fontSize: 15,
+              fontFamily: "AirbnbCereal-Medium",
+              marginBottom: 10,
 
-  const profileDetails = route;
+              color: "#717171",
+            }}
+          >
+            Log in to see your profile
+          </Text>
+          <Text
+            style={{
+              fontSize: 20,
+
+              marginBottom: 20,
+              color: "#717171",
+            }}
+          >
+            Once you login, you'll be able to see your profile here
+          </Text>
+
+          <TouchableOpacity
+            style={{
+              backgroundColor: "#007AFF",
+              paddingVertical: 12,
+              paddingHorizontal: 20,
+              borderRadius: 5,
+              alignSelf: "stretch",
+            }}
+          >
+            <Text
+              style={{
+                color: "#FFFFFF",
+                fontSize: 18,
+                fontWeight: "600",
+                fontFamily: "AirbnbCereal-Bold",
+                textAlign: "center",
+              }}
+            >
+              Log In
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  useEffect(() => {
+    const getUserInfo = async () => {
+      const resp = await getPosts(user.user_id);
+      setProfilePost(resp);
+      setLoadingGrid(false);
+    };
+    getUserInfo();
+  }, []);
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -142,15 +263,7 @@ export default function UserProfile({ route, navigation }) {
   const bio =
     "Miami-based photographer specializing in capturing the vibrant colors and energy of the city. With a keen eye for detail and a passion for storytelling, I aim to create stunning visuals that evoke emotion and capture the essence of each moment.";
 
-  // Sample photos
-  const photos = [
-    "https://res.cloudinary.com/doz01gvsj/image/upload/v1710390562/zyqtuhjr5bkm0nfjdol9.jpg",
-    "https://res.cloudinary.com/doz01gvsj/image/upload/v1710390562/utadsdu5c0so8y82qops.jpg",
-    "https://res.cloudinary.com/doz01gvsj/image/upload/v1710390562/llbndfabegq9bvsimskb.jpg",
-    "https://res.cloudinary.com/doz01gvsj/image/upload/v1710390562/ouwx9rs34ytxck9fe6w1.jpg",
-    "https://res.cloudinary.com/doz01gvsj/image/upload/v1710390562/icjhhp25f0glvgtpi0ze.jpg",
-    "https://res.cloudinary.com/doz01gvsj/image/upload/v1710390562/w7c4mnwdepivsmgwh1ao.jpg",
-  ];
+  //
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
@@ -194,10 +307,15 @@ export default function UserProfile({ route, navigation }) {
 
             {/* Bio Section */}
             <BioSection bio={bio} />
+
             {/* Line Break */}
             <View style={styles.lineBreak} />
             {/* Portfolio Section */}
-            <PhotoGrid photos={photos} />
+            <PhotoGrid
+              loadingGrid={loadingGrid}
+              fadeAnim={fadeAnim}
+              profilePost={profilePost}
+            />
             {/* Line Break */}
             <View style={styles.lineBreak} />
             {/* Review Section */}
@@ -206,21 +324,6 @@ export default function UserProfile({ route, navigation }) {
         )}
         keyExtractor={(item, index) => index.toString()}
       />
-      {/* Fixed bar at the bottom */}
-      <View style={styles.bottomBar}>
-        <Text style={styles.priceText}>
-          Average Rating:{" "}
-          {[...Array(Math.floor(averageRating()))].map((_, index) => (
-            <FontAwesome key={index} name="star" size={16} color="gold" />
-          ))}
-          {averageRating() % 1 >= 0.5 && (
-            <FontAwesome name="star-half-full" size={16} color="gold" />
-          )}
-        </Text>
-        <TouchableOpacity style={styles.bookButton}>
-          <Text style={styles.bookButtonText}>Send Message</Text>
-        </TouchableOpacity>
-      </View>
     </SafeAreaView>
   );
 }

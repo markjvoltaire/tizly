@@ -66,6 +66,7 @@ export async function getPosts(userid) {
     .from("post")
     .select("*")
     .eq("user_id", userid)
+    .eq("mediaType", "image")
     .order("id", { ascending: false });
 
   return post;

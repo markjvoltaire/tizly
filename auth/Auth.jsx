@@ -105,17 +105,7 @@ export default function Auth() {
   const InboxStack = () => {
     return (
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen
-          name="Inbox"
-          component={Inbox}
-          options={{
-            tabBarVisible: false,
-            headerShown: true,
-            headerTitle: "Message Thread", // Customizing the header title
-            headerBackTitle: "Back", // Customizing the back button text
-            headerTintColor: "black", // Changing the color of the back button text
-          }}
-        />
+        <Stack.Screen name="Inbox" component={Inbox} options={{}} />
 
         <Stack.Screen
           name="InboxDetails"
@@ -153,7 +143,7 @@ export default function Auth() {
           options={{
             tabBarVisible: false,
             headerShown: true,
-            headerTitle: "Gig", // Customizing the header title
+            headerTitle: "Gig Details", // Customizing the header title
             headerBackTitle: "Back", // Customizing the back button text
             headerTintColor: "black", // Changing the color of the back button text
           }}
@@ -165,17 +155,7 @@ export default function Auth() {
   const BookingsStack = () => {
     return (
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen
-          name="Bookings"
-          component={Bookings}
-          options={{
-            tabBarVisible: false,
-            headerShown: true,
-            headerTitle: "Your Bookings", // Customizing the header title
-            headerBackTitle: "Back", // Customizing the back button text
-            headerTintColor: "black", // Changing the color of the back button text
-          }}
-        />
+        <Stack.Screen name="Bookings" component={Bookings} />
       </Stack.Navigator>
     );
   };
