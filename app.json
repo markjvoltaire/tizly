@@ -14,7 +14,7 @@
         }
       ]
     ],
-    "version": "41",
+    "version": "42",
     "orientation": "portrait",
     "icon": "./assets/appIcon.png",
     "userInterfaceStyle": "automatic",
@@ -30,7 +30,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.markjvoltaire.TizlyNative",
-      "buildNumber": "160",
+      "buildNumber": "161",
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "Allow access to photos to upload photos from your library."
       }

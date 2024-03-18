@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -10,19 +10,56 @@ import {
   Button,
   Modal,
   TextInput,
+  Alert,
 } from "react-native";
 import { useUser } from "../context/UserContext";
+import { supabase } from "../services/supabase";
+import { getUser } from "../services/user";
 
 const Inbox = ({ navigation }) => {
-  const { user, setUser } = useUser(null);
+  const { user, setUser } = useUser();
   const [modalVisible, setModalVisible] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handleLogin = () => {
+  async function getUser(userid) {
+    const resp = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("user_id", userid)
+      .single()
+      .limit(1);
+
+    return resp;
+  }
+
+  async function loginWithEmail() {
+    // setModalLoader(true);
+    const { user, error } = await supabase.auth.signIn({
+      email,
+      password,
+    });
+    if (error) {
+      Alert.alert(error.message);
+    } else {
+      const resp = await getUser(user.id);
+      supabase.auth.setAuth(user.access_token);
+      console.log("resp", resp);
+      setUser(resp.body);
+    }
+  }
+
+  const handleLoginModal = () => {
     setModalVisible(true);
     // Add your login logic here
   };
 
-  if (user === undefined) {
+  const logUserIn = () => {
+    loginWithEmail();
+    // Add your login logic here
+  };
+
+  if (!user) {
     return (
       <SafeAreaView
         style={{
@@ -41,7 +78,7 @@ const Inbox = ({ navigation }) => {
               marginBottom: 20,
             }}
           >
-            inbox
+            Inbox
           </Text>
           <Text
             style={{
@@ -72,7 +109,7 @@ const Inbox = ({ navigation }) => {
               borderRadius: 5,
               alignSelf: "stretch",
             }}
-            onPress={handleLogin}
+            onPress={handleLoginModal}
           >
             <Text
               style={{
@@ -138,7 +175,7 @@ const Inbox = ({ navigation }) => {
               }}
               placeholderTextColor="grey"
               placeholder="Email"
-              // value={email}
+              value={email}
               onChangeText={(text) => setEmail(text)}
             />
             <TextInput
@@ -158,7 +195,7 @@ const Inbox = ({ navigation }) => {
               placeholderTextColor="grey"
               placeholder="Password"
               secureTextEntry
-              // value={password}
+              value={password}
               onChangeText={(text) => setPassword(text)}
             />
             <TouchableOpacity
@@ -169,7 +206,7 @@ const Inbox = ({ navigation }) => {
                 borderRadius: 5,
                 alignSelf: "stretch",
               }}
-              onPress={handleLogin}
+              onPress={logUserIn}
             >
               <Text
                 style={{

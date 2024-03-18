@@ -26,6 +26,32 @@ export default function Auth() {
   const [loading, setLoading] = useState(true);
   const { user, setUser } = useUser();
 
+  useEffect(() => {
+    const fetchUserById = async () => {
+      try {
+        const userId = supabase.auth.currentUser?.id;
+        if (!userId) return; // Handle the case where userId is null
+
+        const { data: userData, error } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("user_id", userId)
+          .single();
+
+        if (userData) {
+          console.log("userData", userData);
+          setUser(userData);
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserById();
+  }, []);
+
   const HomeStack = () => {
     return (
       <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -105,7 +131,17 @@ export default function Auth() {
   const InboxStack = () => {
     return (
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Inbox" component={Inbox} options={{}} />
+        <Stack.Screen
+          name="Inbox"
+          component={Inbox}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Inbox", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
 
         <Stack.Screen
           name="InboxDetails"
@@ -155,7 +191,17 @@ export default function Auth() {
   const BookingsStack = () => {
     return (
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Bookings" component={Bookings} />
+        <Stack.Screen
+          name="Bookings"
+          component={Bookings}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Bookings", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
       </Stack.Navigator>
     );
   };

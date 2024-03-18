@@ -69,7 +69,6 @@ export default function InboxDetails() {
   const screenHeight = Dimensions.get("window").height;
 
   const { user, setUser } = useUser(null);
-  console.log("user", user);
 
   if (user === undefined) {
     return (

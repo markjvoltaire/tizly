@@ -8,11 +8,16 @@ import {
   Animated,
   FlatList,
   TouchableOpacity,
+  Pressable,
+  Modal,
+  TextInput,
+  Button,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons"; // Import FontAwesome for icons
 import { getPosts } from "../services/user";
 import { useUser } from "../context/UserContext";
 import LottieView from "lottie-react-native";
+import { supabase } from "../services/supabase";
 
 // Reusable StarRating Component
 const StarRating = ({ rating }) => {
@@ -76,7 +81,7 @@ const BioSection = ({ bio }) => {
 };
 
 // Photo Grid Component
-const PhotoGrid = ({ photos, loadingGrid, profilePost, fadeAnim }) => {
+const PhotoGrid = ({ photos, loadingGrid, profilePost, fadeAnim, loading }) => {
   const renderItem = ({ item }) => (
     <Pressable style={styles.photoItem}>
       <Animated.Image
@@ -110,8 +115,7 @@ const PhotoGrid = ({ photos, loadingGrid, profilePost, fadeAnim }) => {
 
   return (
     <View style={styles.sectionContainer}>
-      {/* <Text style={styles.sectionHeader}>Portfolio</Text> */}
-      {profilePost.length === 0 ? (
+      {!profilePost.length ? (
         <Text
           style={{
             alignSelf: "center",
@@ -140,9 +144,71 @@ export default function UserProfile({ route, navigation }) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const [loadingGrid, setLoadingGrid] = useState(true);
   const [profilePost, setProfilePost] = useState([]);
-  const { user, setUser } = useUser(null);
-  console.log("user", user);
-  if (user === undefined) {
+  const [loading, setLoading] = useState(true);
+  const { user, setUser } = useUser();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  async function getUser(userid) {
+    const resp = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("user_id", userid)
+      .single()
+      .limit(1);
+
+    return resp;
+  }
+
+  async function loginWithEmail() {
+    // setModalLoader(true);
+    const { user, error } = await supabase.auth.signIn({
+      email,
+      password,
+    });
+    if (error) {
+      Alert.alert(error.message);
+    } else {
+      const resp = await getUser(user.id);
+      supabase.auth.setAuth(user.access_token);
+      console.log("resp", resp);
+      setUser(resp.body);
+    }
+  }
+
+  const logUserIn = () => {
+    loginWithEmail();
+    // Add your login logic here
+  };
+
+  const handleLoginModal = () => {
+    setModalVisible(true);
+    // Add your login logic here
+  };
+
+  useEffect(() => {
+    const getUserInfo = async () => {
+      console.log("user", user);
+      if (!user) return;
+
+      const resp = await getPosts(user.user_id);
+      setProfilePost(resp);
+      setLoadingGrid(false);
+      setLoading(false);
+    };
+    getUserInfo();
+  }, []);
+
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 1000, // Adjust the duration as needed
+      useNativeDriver: true,
+    }).start();
+  }, [fadeAnim]);
+
+  if (!user) {
     return (
       <SafeAreaView
         style={{
@@ -161,14 +227,13 @@ export default function UserProfile({ route, navigation }) {
               marginBottom: 20,
             }}
           >
-            profile
+            Profile
           </Text>
           <Text
             style={{
               fontSize: 15,
               fontFamily: "AirbnbCereal-Medium",
               marginBottom: 10,
-
               color: "#717171",
             }}
           >
@@ -182,7 +247,7 @@ export default function UserProfile({ route, navigation }) {
               color: "#717171",
             }}
           >
-            Once you login, you'll be able to see your profile here
+            Once you login, you'll find your profile here
           </Text>
 
           <TouchableOpacity
@@ -193,6 +258,7 @@ export default function UserProfile({ route, navigation }) {
               borderRadius: 5,
               alignSelf: "stretch",
             }}
+            onPress={handleLoginModal}
           >
             <Text
               style={{
@@ -207,26 +273,127 @@ export default function UserProfile({ route, navigation }) {
             </Text>
           </TouchableOpacity>
         </View>
+        <Modal
+          animationType="slide"
+          visible={modalVisible}
+          onRequestClose={() => {
+            setModalVisible(!modalVisible);
+          }}
+        >
+          <View
+            style={{
+              margin: 20,
+              backgroundColor: "white",
+              borderRadius: 10,
+              top: 200,
+              padding: 20,
+              alignItems: "center",
+              shadowColor: "#000",
+              shadowOffset: {
+                width: 0,
+                height: 2,
+              },
+              shadowOpacity: 0.25,
+              shadowRadius: 4,
+              elevation: 5,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 20,
+                marginBottom: 15,
+                textAlign: "center",
+                fontWeight: "600",
+              }}
+            >
+              Login or Sign Up
+            </Text>
+            <TextInput
+              style={{
+                height: 40,
+                width: "100%",
+                borderColor: "gray",
+                borderWidth: 1,
+                borderRadius: 12,
+                marginBottom: 10,
+                paddingHorizontal: 10,
+                fontFamily: "alata",
+                borderWidth: 1,
+                borderColor: "#BBBBBB",
+                backgroundColor: "#F3F3F9",
+              }}
+              placeholderTextColor="grey"
+              placeholder="Email"
+              value={email}
+              onChangeText={(text) => setEmail(text)}
+            />
+            <TextInput
+              style={{
+                height: 40,
+                width: "100%",
+                borderColor: "gray",
+                borderWidth: 1,
+                borderRadius: 10,
+                marginBottom: 10,
+                paddingHorizontal: 10,
+                fontFamily: "alata",
+                borderWidth: 1,
+                borderColor: "#BBBBBB",
+                backgroundColor: "#F3F3F9",
+              }}
+              placeholderTextColor="grey"
+              placeholder="Password"
+              secureTextEntry
+              value={password}
+              onChangeText={(text) => setPassword(text)}
+            />
+            <TouchableOpacity
+              style={{
+                backgroundColor: "#007AFF",
+                paddingVertical: 12,
+                paddingHorizontal: 20,
+                borderRadius: 5,
+                alignSelf: "stretch",
+              }}
+              onPress={logUserIn}
+            >
+              <Text
+                style={{
+                  color: "#FFFFFF",
+                  fontSize: 18,
+                  fontWeight: "600",
+                  fontFamily: "AirbnbCereal-Bold",
+                  textAlign: "center",
+                }}
+              >
+                Log In
+              </Text>
+            </TouchableOpacity>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginTop: 10,
+              }}
+            >
+              <Text style={{ marginRight: 5 }}>Don't have an account?</Text>
+              <Button
+                title="Sign Up"
+                onPress={() => {
+                  // Add your sign up functionality here
+                }}
+              />
+            </View>
+            <Button
+              title="Not Yet"
+              onPress={() => setModalVisible(!modalVisible)}
+              color="grey"
+            />
+          </View>
+        </Modal>
       </SafeAreaView>
     );
   }
-
-  useEffect(() => {
-    const getUserInfo = async () => {
-      const resp = await getPosts(user.user_id);
-      setProfilePost(resp);
-      setLoadingGrid(false);
-    };
-    getUserInfo();
-  }, []);
-
-  useEffect(() => {
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 1000, // Adjust the duration as needed
-      useNativeDriver: true,
-    }).start();
-  }, [fadeAnim]);
 
   // Sample reviews data
   const reviews = [
@@ -290,11 +457,11 @@ export default function UserProfile({ route, navigation }) {
                   opacity: fadeAnim,
                   backgroundColor: "grey",
                 }}
-                source={require("../assets/dj.jpg")}
+                source={{ uri: user.profileimage }}
               />
               <View>
                 <Text style={{ fontWeight: "600", fontSize: 22 }}>
-                  Mark Voltaire
+                  {user.displayName}
                 </Text>
                 <Text
                   style={{ fontWeight: "600", fontSize: 15, color: "grey" }}
@@ -315,6 +482,7 @@ export default function UserProfile({ route, navigation }) {
               loadingGrid={loadingGrid}
               fadeAnim={fadeAnim}
               profilePost={profilePost}
+              loading={loading}
             />
             {/* Line Break */}
             <View style={styles.lineBreak} />
