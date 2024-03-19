@@ -86,7 +86,7 @@ const BioSection = ({ user, navigation }) => {
       <TouchableOpacity
         onPress={() => navigation.navigate("EditProfile")}
         style={{
-          backgroundColor: "#0095f6",
+          backgroundColor: "#007AFF",
           borderRadius: 5,
           paddingVertical: 8,
           paddingHorizontal: 15,
@@ -475,11 +475,11 @@ export default function UserProfile({ route, navigation }) {
                 <Text style={{ fontWeight: "600", fontSize: 22 }}>
                   {user.displayName}
                 </Text>
-                <Text
+                {/* <Text
                   style={{ fontWeight: "600", fontSize: 15, color: "grey" }}
                 >
                   Photographer
-                </Text>
+                </Text> */}
               </View>
             </View>
             {/* Line Break */}

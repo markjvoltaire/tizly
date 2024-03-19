@@ -26,8 +26,11 @@ export default function EditProfile({ navigation }) {
   const [type, setType] = useState(user.type);
   const [bio, setBio] = useState(user.bio);
   const [imagePreview, setImagePreview] = useState(user.profileimage);
+  const [displayname, setDisplayname] = useState(user.displayName);
 
   const [uploadingAvi, setUploadinAvi] = useState(false);
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const onDismissSnackbar = () => setSnackbarVisible(false);
 
   const dismissKeyboard = () => {
     Keyboard.dismiss();
@@ -35,6 +38,7 @@ export default function EditProfile({ navigation }) {
 
   const handleSave = () => {
     // Implement save logic here
+    updateUserInfo();
   };
 
   const pickProfileImage = async () => {
@@ -142,6 +146,27 @@ export default function EditProfile({ navigation }) {
     setUploadinAvi(false);
   };
 
+  async function updateUserInfo() {
+    const userId = supabase.auth.currentUser.id;
+    const res = await supabase
+      .from("profiles")
+      .update({
+        displayName: displayname,
+        bio: bio,
+      })
+      .eq("user_id", userId);
+
+    if (res.error === null) {
+      Alert.alert("Your changes were saved");
+      setUser(res.body[0]);
+    } else {
+      console.log("ERROR", res.error);
+      Alert.alert("Something Went Wrong");
+    }
+
+    return res;
+  }
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
@@ -162,20 +187,20 @@ export default function EditProfile({ navigation }) {
 
           {/* Name Input */}
           <TextInput
-            value={user.displayName}
-            onChangeText={setName}
+            value={displayname}
+            onChangeText={setDisplayname}
             placeholderTextColor="#999"
             style={styles.input}
             placeholder="Name"
           />
 
-          <TextInput
+          {/* <TextInput
             value={location}
             onChangeText={setLocation}
             placeholderTextColor="#999"
             style={styles.input}
             placeholder="Location"
-          />
+          /> */}
 
           {/* Type (Business or Individual) */}
           <TextInput
@@ -212,7 +237,7 @@ export default function EditProfile({ navigation }) {
             fontWeight: "600",
           }}
         >
-          Updating Profile Image
+          Updating Profile
         </Text>
         <LottieView
           style={{
@@ -269,12 +294,12 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   bioInput: {
-    height: 60,
+    height: 70,
     textAlignVertical: "top",
   },
   saveButton: {
-    backgroundColor: "#318bfb",
-    borderRadius: 25,
+    backgroundColor: "#007AFF",
+    borderRadius: 12,
     paddingVertical: 15,
     paddingHorizontal: 30,
     alignItems: "center",
