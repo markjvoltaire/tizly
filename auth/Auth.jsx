@@ -19,6 +19,7 @@ import Category from "../screens/Category";
 import Offering from "../screens/Offering";
 import Gigs from "../screens/Gigs";
 import Settings from "../screens/Settings";
+import EditProfile from "../screens/EditProfile";
 
 export default function Auth() {
   const Stack = createNativeStackNavigator();
@@ -80,6 +81,18 @@ export default function Auth() {
             tabBarVisible: false,
             headerShown: true,
             headerTitle: "Gig Information", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+
+        <Stack.Screen
+          name="EditProfile"
+          component={EditProfile}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Edit Profile", // Customizing the header title
             headerBackTitle: "Back", // Customizing the back button text
             headerTintColor: "black", // Changing the color of the back button text
           }}
@@ -215,6 +228,18 @@ export default function Auth() {
           options={{
             tabBarVisible: false,
 
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+
+        <Stack.Screen
+          name="EditProfile"
+          component={EditProfile}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Edit Profile", // Customizing the header title
             headerBackTitle: "Back", // Customizing the back button text
             headerTintColor: "black", // Changing the color of the back button text
           }}

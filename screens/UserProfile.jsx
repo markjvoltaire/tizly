@@ -71,11 +71,30 @@ const ReviewSection = ({ reviews }) => {
 };
 
 // Bio Component
-const BioSection = ({ bio }) => {
+const BioSection = ({ user, navigation }) => {
   return (
-    <View style={styles.sectionContainer}>
-      {/* <Text style={styles.sectionHeader}>Bio</Text> */}
-      <Text style={styles.bioText}>{bio}</Text>
+    <View
+      style={{
+        paddingHorizontal: 20,
+        paddingTop: 10,
+        paddingBottom: 20,
+        borderBottomWidth: 1,
+        borderBottomColor: "#ddd",
+      }}
+    >
+      <Text style={{ fontSize: 16, marginBottom: 10 }}>{user.bio}</Text>
+      <TouchableOpacity
+        onPress={() => navigation.navigate("EditProfile")}
+        style={{
+          backgroundColor: "#0095f6",
+          borderRadius: 5,
+          paddingVertical: 8,
+          paddingHorizontal: 15,
+          alignSelf: "flex-start",
+        }}
+      >
+        <Text style={{ color: "white", fontWeight: "bold" }}>Edit Profile</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -103,7 +122,6 @@ const PhotoGrid = ({ photos, loadingGrid, profilePost, fadeAnim, loading }) => {
           style={{
             height: 130,
             width: 130,
-
             alignSelf: "center",
           }}
           source={require("../assets/lottie/grey-loader.json")}
@@ -189,7 +207,6 @@ export default function UserProfile({ route, navigation }) {
 
   useEffect(() => {
     const getUserInfo = async () => {
-      console.log("user", user);
       if (!user) return;
 
       const resp = await getPosts(user.user_id);
@@ -208,6 +225,7 @@ export default function UserProfile({ route, navigation }) {
     }).start();
   }, [fadeAnim]);
 
+  // IF NO USER IS LOGGED IN
   if (!user) {
     return (
       <SafeAreaView
@@ -426,12 +444,6 @@ export default function UserProfile({ route, navigation }) {
     return totalRating / reviews.length;
   };
 
-  // Sample bio for a Miami photographer
-  const bio =
-    "Miami-based photographer specializing in capturing the vibrant colors and energy of the city. With a keen eye for detail and a passion for storytelling, I aim to create stunning visuals that evoke emotion and capture the essence of each moment.";
-
-  //
-
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <FlatList
@@ -444,7 +456,7 @@ export default function UserProfile({ route, navigation }) {
               style={{
                 flexDirection: "row",
                 alignItems: "center",
-                paddingLeft: 10,
+                paddingLeft: 15,
                 paddingTop: 10,
               }}
             >
@@ -473,10 +485,10 @@ export default function UserProfile({ route, navigation }) {
             {/* Line Break */}
 
             {/* Bio Section */}
-            <BioSection bio={bio} />
+            <BioSection navigation={navigation} user={user} />
 
             {/* Line Break */}
-            <View style={styles.lineBreak} />
+            {/* <View style={styles.lineBreak} /> */}
             {/* Portfolio Section */}
             <PhotoGrid
               loadingGrid={loadingGrid}
