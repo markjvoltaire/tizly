@@ -1,19 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { useFonts } from "expo-font";
+
 import { supabase } from "./services/supabase";
 import { UserProvider } from "./context/UserContext";
-import NoAuth from "./auth/NoAuth";
 import Auth from "./auth/Auth";
-import { useFonts } from "expo-font";
 
 export default function App() {
   const [auth, setAuth] = useState(null);
   const [fontsLoaded] = useFonts({
     alata: require("./assets/fonts/Alata.ttf"),
-
     // Add more fonts if needed
   });
 
@@ -41,14 +38,7 @@ export default function App() {
   if (!fontsLoaded) {
     // You can return a loading indicator or placeholder until fonts are loaded
     return (
-      <View
-        style={{
-          alignItems: "center",
-          justifyContent: "center",
-          flex: 1,
-          backgroundColor: "white",
-        }}
-      >
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" />
       </View>
     );
@@ -62,7 +52,3 @@ export default function App() {
     </UserProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  // Add any additional styles if needed
-});

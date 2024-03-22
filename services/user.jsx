@@ -165,12 +165,14 @@ export async function uploadStatus(description) {
 }
 
 export async function deletePost(post) {
+  console.log("post", post);
   const userId = supabase.auth.currentUser.id;
   const resp = await supabase
     .from("post")
     .delete()
     .eq("user_id", userId)
     .eq("id", post.id);
+  console.log("res", res);
 
   const res = await supabase
     .from("notifications")

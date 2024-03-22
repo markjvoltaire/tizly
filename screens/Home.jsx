@@ -8,16 +8,19 @@ import {
   Modal,
   ActivityIndicator,
   SafeAreaView,
-  TextInput,
+  Linking,
   TouchableOpacity,
   Animated,
   FlatList,
   ScrollView,
-  Pressable, // Import ScrollView
+  Pressable,
+  Button, // Import ScrollView
 } from "react-native";
-import { useScrollToTop } from "@react-navigation/native"; // Import useScrollToTop
+import { useFocusEffect, useScrollToTop } from "@react-navigation/native"; // Import useScrollToTop
 import { supabase } from "../services/supabase";
 import { getRandomUser } from "../services/user";
+import * as Location from "expo-location";
+import LottieView from "lottie-react-native";
 
 export default function Home({ navigation }) {
   let height = Dimensions.get("window").height;
@@ -27,6 +30,76 @@ export default function Home({ navigation }) {
   const [trendingUsers, setTrendingUsers] = useState([]);
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scrollViewRef = useRef(); // Ref for ScrollView
+
+  const [location, setLocation] = useState();
+  const [address, setAddress] = useState();
+  const [city, setCity] = useState();
+  const [isLoading, setIsLoading] = useState(true); // Introducing loading state
+  const [allowLocation, setAllowLocation] = useState();
+
+  const handleOpenSettings = () => {
+    Linking.openSettings();
+  };
+
+  const reverseGeocode = async (currentLocation) => {
+    try {
+      const { coords } = currentLocation;
+      const reverseGeocodedAddress = await Location.reverseGeocodeAsync({
+        longitude: coords.longitude,
+        latitude: coords.latitude,
+      });
+
+      const { isoCountryCode, city } = reverseGeocodedAddress[0];
+      // console.log("Reverse Geocoded:", isoCountryCode);
+      setCity(city); // Assuming `setCity` is defined elsewhere
+      setIsLoading(false); // Set loading state to false when done
+    } catch (error) {
+      console.error("Error during reverse geocoding:", error);
+      setIsLoading(false); // Set loading state to false when done
+    }
+  };
+  useFocusEffect(
+    React.useCallback(() => {
+      const getPermissions = async () => {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+          console.log("Please grant location permissions");
+          setAllowLocation(false);
+          setIsLoading(false); // Set loading state to false when done
+          return;
+        } else {
+          setAllowLocation(true);
+        }
+
+        let currentLocation = await Location.getCurrentPositionAsync({});
+        setLocation(currentLocation);
+        // console.log("Location:", currentLocation);
+        reverseGeocode(currentLocation);
+      };
+
+      getPermissions(); // Call getPermissions when screen is focused
+    }, [])
+  );
+
+  useEffect(() => {
+    const getPermissions = async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        // console.log("Please grant location permissions");
+        setAllowLocation(false);
+        setIsLoading(false); // Set loading state to false when done
+        return;
+      } else {
+        setAllowLocation(true);
+      }
+
+      let currentLocation = await Location.getCurrentPositionAsync({});
+      setLocation(currentLocation);
+      // console.log("Location:", currentLocation);
+      reverseGeocode(currentLocation);
+    };
+    getPermissions();
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -111,7 +184,81 @@ export default function Home({ navigation }) {
           backgroundColor: "white",
         }}
       >
-        <ActivityIndicator size="large" />
+        <LottieView
+          style={{
+            height: 500,
+            width: 500,
+            alignSelf: "center",
+          }}
+          source={require("../assets/lottie/location.json")}
+          autoPlay
+        />
+        <Text style={{ fontFamily: "alata" }}>Loading</Text>
+      </View>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <View
+        style={{
+          alignItems: "center",
+          justifyContent: "center",
+          flex: 1,
+          backgroundColor: "white",
+        }}
+      >
+        <LottieView
+          style={{
+            height: 500,
+            width: 500,
+            alignSelf: "center",
+          }}
+          source={require("../assets/lottie/location.json")}
+          autoPlay
+        />
+        <Text style={{ fontFamily: "alata" }}>Searching For Locals</Text>
+      </View>
+    );
+  }
+
+  if (allowLocation === false) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "#fafafa",
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 20,
+            textAlign: "center",
+            color: "#333",
+            fontFamily: "Arial",
+            marginBottom: 20,
+          }}
+        >
+          Location Access Disabled
+        </Text>
+        <Text
+          style={{
+            fontSize: 16,
+            textAlign: "center",
+            color: "#666",
+            fontFamily: "Arial",
+            marginBottom: 30,
+          }}
+        >
+          To use this feature, enable location access in your device settings.
+        </Text>
+        <Button
+          title="Open Settings"
+          onPress={handleOpenSettings}
+          color="#ff5f5f"
+        />
       </View>
     );
   }
@@ -127,17 +274,19 @@ export default function Home({ navigation }) {
     >
       <SafeAreaView style={{ flex: 1 }}>
         <View style={{ flexDirection: "row", paddingBottom: 10 }}>
-          <Image
-            style={{
-              height: 30,
-              width: 30,
-              left: 15,
-              resizeMode: "contain",
-              marginRight: 20,
-            }}
-            source={require("../assets/Location.png")}
-          />
-          <Text style={{ top: 6, fontFamily: "alata" }}>Miami</Text>
+          <Pressable style={{ flexDirection: "row" }}>
+            <Image
+              style={{
+                height: 30,
+                width: 30,
+                left: 15,
+                resizeMode: "contain",
+                marginRight: 20,
+              }}
+              source={require("../assets/Location.png")}
+            />
+            <Text style={{ top: 6, fontFamily: "alata" }}>{city}</Text>
+          </Pressable>
 
           <Pressable
             style={{ marginLeft: "auto", marginRight: 18, top: 4 }}
@@ -182,7 +331,7 @@ export default function Home({ navigation }) {
                   bottom: 25,
                 }}
               >
-                Trending In Miami
+                Trending In {city}
               </Text>
               <FlatList
                 showsHorizontalScrollIndicator={false}

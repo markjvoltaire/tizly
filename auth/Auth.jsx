@@ -17,9 +17,10 @@ import Search from "../screens/Search";
 import InboxDetails from "../screens/InboxDetails";
 import Category from "../screens/Category";
 import Offering from "../screens/Offering";
-import Gigs from "../screens/Gigs";
 import Settings from "../screens/Settings";
 import EditProfile from "../screens/EditProfile";
+import Post from "../screens/Post";
+import PostDetail from "../screens/PostDetail";
 
 export default function Auth() {
   const Stack = createNativeStackNavigator();
@@ -171,16 +172,16 @@ export default function Auth() {
     );
   };
 
-  const GigsStack = () => {
+  const PostStack = () => {
     return (
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen
           name="Post"
-          component={Gigs}
+          component={Post}
           options={{
             tabBarVisible: false,
             headerShown: true,
-            headerTitle: "Gigs Near You", // Customizing the header title
+            headerTitle: "Post", // Customizing the header title
             headerBackTitle: "Back", // Customizing the back button text
             headerTintColor: "black", // Changing the color of the back button text
           }}
@@ -228,6 +229,18 @@ export default function Auth() {
           options={{
             tabBarVisible: false,
 
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+
+        <Stack.Screen
+          name="PostDetail"
+          component={PostDetail}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "", // Customizing the header title
             headerBackTitle: "Back", // Customizing the back button text
             headerTintColor: "black", // Changing the color of the back button text
           }}
@@ -334,12 +347,12 @@ export default function Auth() {
                 color: focused ? "black" : "grey",
               }}
             >
-              Gigs
+              Post
             </Text>
           ),
         }}
-        name="GigsStack"
-        component={GigsStack}
+        name="PostStack"
+        component={PostStack}
       />
 
       <Tab.Screen

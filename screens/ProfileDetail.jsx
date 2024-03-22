@@ -366,6 +366,7 @@ const styles = StyleSheet.create({
     height: 30,
     borderRadius: 15,
     marginRight: 10,
+    backgroundColor: "grey",
   },
   profileName: {
     fontWeight: "600",

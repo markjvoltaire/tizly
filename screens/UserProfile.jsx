@@ -49,7 +49,7 @@ const StarRating = ({ rating }) => {
 const ReviewSection = ({ reviews }) => {
   return (
     <View style={styles.sectionContainer}>
-      <Text style={styles.sectionHeader}>Reviews</Text>
+      <Text style={styles.sectionHeader}>Services</Text>
       {reviews.map((review, index) => (
         <View key={index} style={styles.reviewItem}>
           <View style={styles.reviewHeader}>
@@ -87,9 +87,9 @@ const BioSection = ({ user, navigation }) => {
         onPress={() => navigation.navigate("EditProfile")}
         style={{
           backgroundColor: "#007AFF",
-          borderRadius: 5,
+          borderRadius: 10,
           paddingVertical: 8,
-          paddingHorizontal: 15,
+          paddingHorizontal: 20,
           alignSelf: "flex-start",
         }}
       >
@@ -100,9 +100,19 @@ const BioSection = ({ user, navigation }) => {
 };
 
 // Photo Grid Component
-const PhotoGrid = ({ photos, loadingGrid, profilePost, fadeAnim, loading }) => {
+const PhotoGrid = ({
+  photos,
+  loadingGrid,
+  profilePost,
+  fadeAnim,
+  loading,
+  navigation,
+}) => {
   const renderItem = ({ item }) => (
-    <Pressable style={styles.photoItem}>
+    <Pressable
+      onPress={() => navigation.navigate("PostDetail", { item })}
+      style={styles.photoItem}
+    >
       <Animated.Image
         source={{ uri: item.media }}
         style={{
@@ -439,11 +449,6 @@ export default function UserProfile({ route, navigation }) {
     },
   ];
 
-  const averageRating = () => {
-    const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
-    return totalRating / reviews.length;
-  };
-
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <FlatList
@@ -495,6 +500,7 @@ export default function UserProfile({ route, navigation }) {
               fadeAnim={fadeAnim}
               profilePost={profilePost}
               loading={loading}
+              navigation={navigation}
             />
             {/* Line Break */}
             <View style={styles.lineBreak} />
