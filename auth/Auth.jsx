@@ -12,7 +12,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import ProfileDetail from "../screens/ProfileDetail";
 import Inbox from "../screens/Inbox";
-import Bookings from "../screens/Bookings";
+import Gigs from "../screens/Gigs";
 import Search from "../screens/Search";
 import InboxDetails from "../screens/InboxDetails";
 import Category from "../screens/Category";
@@ -21,10 +21,15 @@ import Settings from "../screens/Settings";
 import EditProfile from "../screens/EditProfile";
 import Post from "../screens/Post";
 import PostDetail from "../screens/PostDetail";
+import PostGig from "../screens/PostGig";
+import GigSearch from "../screens/GigSearch";
+import GigList from "../screens/GigList";
+import SelectGig from "../screens/SelectGig";
 
 export default function Auth() {
   const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
+
   const [loading, setLoading] = useState(true);
   const { user, setUser } = useUser();
 
@@ -206,12 +211,55 @@ export default function Auth() {
     return (
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen
-          name="Bookings"
-          component={Bookings}
+          name="Gigs"
+          component={Gigs}
           options={{
-            tabBarVisible: false,
             headerShown: true,
-            headerTitle: "Bookings", // Customizing the header title
+            headerTitle: "Gigs", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+
+        <Stack.Screen
+          name="GigList"
+          component={GigList}
+          options={{
+            headerShown: true,
+            headerTitle: "Gigs", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+
+        <Stack.Screen
+          name="PostGig"
+          component={PostGig}
+          options={{
+            headerShown: true,
+            headerTitle: "Post Gig", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+
+        <Stack.Screen
+          name="SelectGig"
+          component={SelectGig}
+          options={{
+            headerShown: true,
+            headerTitle: "What service do you need?", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+
+        <Stack.Screen
+          name="GigSearch"
+          component={GigSearch}
+          options={{
+            headerShown: true,
+            headerTitle: "Gigs", // Customizing the header title
             headerBackTitle: "Back", // Customizing the back button text
             headerTintColor: "black", // Changing the color of the back button text
           }}
@@ -378,7 +426,7 @@ export default function Auth() {
                 color: focused ? "black" : "grey",
               }}
             >
-              Bookings
+              Gigs
             </Text>
           ),
         }}
