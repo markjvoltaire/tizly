@@ -165,7 +165,6 @@ export async function uploadStatus(description) {
 }
 
 export async function deletePost(post) {
-  console.log("post", post);
   const userId = supabase.auth.currentUser.id;
   const resp = await supabase
     .from("post")

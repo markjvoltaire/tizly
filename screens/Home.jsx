@@ -369,7 +369,7 @@ export default function Home({ navigation }) {
                           color: "grey",
                         }}
                       >
-                        {item.type}
+                        {item.profession}
                       </Text>
                     </TouchableOpacity>
                   </Animated.View>

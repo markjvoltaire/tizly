@@ -12,6 +12,7 @@ import {
   Modal,
   TextInput,
   Button,
+  Alert,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons"; // Import FontAwesome for icons
 import { getPosts } from "../services/user";
@@ -480,11 +481,11 @@ export default function UserProfile({ route, navigation }) {
                 <Text style={{ fontWeight: "600", fontSize: 22 }}>
                   {user.displayName}
                 </Text>
-                {/* <Text
+                <Text
                   style={{ fontWeight: "600", fontSize: 15, color: "grey" }}
                 >
-                  Photographer
-                </Text> */}
+                  {user.profession}
+                </Text>
               </View>
             </View>
             {/* Line Break */}

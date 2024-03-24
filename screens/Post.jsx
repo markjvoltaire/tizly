@@ -14,7 +14,7 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import { useUser } from "../context/UserContext";
 import { supabase } from "../services/supabase";
-import { getUser } from "../services/user";
+
 import LottieView from "lottie-react-native";
 
 export default function Post() {
@@ -25,6 +25,17 @@ export default function Post() {
   const [password, setPassword] = useState("");
   const [uploading, setUploading] = useState(false);
   const [postInfo, setPostInfo] = useState();
+
+  async function getUser(userid) {
+    const resp = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("user_id", userid)
+      .single()
+      .limit(1);
+
+    return resp;
+  }
 
   const pickImage = async () => {
     let photo = await ImagePicker.launchImageLibraryAsync({
@@ -67,9 +78,12 @@ export default function Post() {
       email,
       password,
     });
+    console.log("email", email);
+    console.log("password", password);
     if (error) {
       Alert.alert(error.message);
     } else {
+      console.log("user", user.id);
       const resp = await getUser(user.id);
       console.log("resp", resp);
       supabase.auth.setAuth(user.access_token);

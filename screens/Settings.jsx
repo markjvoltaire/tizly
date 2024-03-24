@@ -8,6 +8,7 @@ import {
   TextInput,
   Button,
   Alert,
+  Switch,
 } from "react-native";
 import { supabase } from "../services/supabase";
 import { useUser } from "../context/UserContext";
@@ -29,6 +30,26 @@ export default function Settings({ navigation }) {
       .limit(1);
 
     return resp;
+  }
+
+  async function editAccountType() {
+    const userId = supabase.auth.currentUser.id;
+
+    const res = await supabase
+      .from("profiles")
+      .update({
+        type: user.type === "business" ? "personal" : "business",
+      })
+      .eq("user_id", userId);
+
+    if (res.error === null) {
+      setUser(res.body[0]);
+    } else {
+      console.log("ERROR", res.error);
+      Alert.alert("Something Went Wrong");
+    }
+
+    return res;
   }
 
   async function loginWithEmail() {
@@ -82,22 +103,29 @@ export default function Settings({ navigation }) {
     user ? handleLogOut() : handleLogIn();
   };
 
-  console.log("user", user);
-
   return (
     <View style={styles.container}>
       {/* Example settings options */}
-      <TouchableOpacity style={styles.optionContainer}>
-        <Text style={styles.optionText}>Notification Settings</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.optionContainer}>
-        <Text style={styles.optionText}>Account Settings</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.optionContainer}>
-        <Text style={styles.optionText}>Privacy Settings</Text>
-      </TouchableOpacity>
+      {user && (
+        <TouchableOpacity
+          onPress={() => navigation.navigate("EditProfile")}
+          style={styles.optionContainer}
+        >
+          <Text style={styles.optionText}>Edit Profile</Text>
+        </TouchableOpacity>
+      )}
+      {user && (
+        <TouchableOpacity
+          onPress={() => editAccountType()}
+          style={styles.optionContainer}
+        >
+          <Text style={styles.optionText}>
+            {user.type === "personal"
+              ? "Switch To Business Account"
+              : "Switch To Personal Account"}
+          </Text>
+        </TouchableOpacity>
+      )}
 
       {/* Log out button */}
       <TouchableOpacity style={styles.logoutButton} onPress={handleAuth}>
