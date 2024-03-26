@@ -186,12 +186,14 @@ export async function reportPostById(post) {
   const resp = await supabase.from("reports").insert([
     {
       postId: post.id,
-      creatorId: post.user_id,
-      userId: userId.userId,
+      gigPoster: post.user_id,
+      userId: userId,
       commentId: "THIS IS A POST REPORT",
       comment: "THIS IS A POST REPORT",
     },
   ]);
+
+  console.log("resp", resp);
   return resp;
 }
 

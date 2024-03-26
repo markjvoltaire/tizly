@@ -10,13 +10,19 @@ import {
 import { supabase } from "../services/supabase";
 import LottieView from "lottie-react-native";
 import { useUser } from "../context/UserContext";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 export default function PostGig({ route, navigation }) {
   const [taskDescription, setTaskDescription] = React.useState("");
+  const [taskDate, setTaskDate] = React.useState("");
   const [uploading, setUploading] = useState(false);
   const [uploadComplete, setUploadComplete] = useState(false);
-  const { user } = useUser();
-  console.log("user", user);
+
+  const [date, setDate] = useState(new Date());
+
+  const onChange = (e, selectedDate) => {
+    setDate(selectedDate);
+  };
 
   async function uploadGig() {
     setUploading(true);
@@ -26,6 +32,7 @@ export default function PostGig({ route, navigation }) {
         user_id: userId,
         taskDescription: taskDescription, // Use the current value of the description state
         category: route.params,
+        taskDate: taskDate,
       };
       const resp = await supabase.from("gigs").insert([newGig]);
 
@@ -84,6 +91,27 @@ export default function PostGig({ route, navigation }) {
         placeholder="Describe your task..."
         value={taskDescription}
         onChangeText={(text) => setTaskDescription(text)}
+      />
+      <TextInput
+        style={{
+          height: 60,
+          width: "100%",
+          borderColor: "gray",
+          borderWidth: 1,
+          borderRadius: 12,
+          marginBottom: 40,
+          paddingHorizontal: 10,
+          fontFamily: "alata",
+          borderWidth: 1,
+          borderColor: "#BBBBBB",
+          backgroundColor: "#F3F3F9",
+        }}
+        placeholder="MM/DD/YYYY"
+        placeholderTextColor="grey"
+        keyboardType="numeric"
+        maxLength={8} // MM/DD/YYYY has 10 characters
+        value={taskDate}
+        onChangeText={(text) => setTaskDate(text)}
       />
 
       <TouchableOpacity style={styles.button} onPress={handleSubmit}>

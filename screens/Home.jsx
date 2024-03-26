@@ -50,6 +50,7 @@ export default function Home({ navigation }) {
       });
 
       const { isoCountryCode, city } = reverseGeocodedAddress[0];
+      console.log("reverseGeocodedAddress", reverseGeocodedAddress[0]);
       // console.log("Reverse Geocoded:", isoCountryCode);
       setCity(city); // Assuming `setCity` is defined elsewhere
       setIsLoading(false); // Set loading state to false when done
@@ -94,6 +95,7 @@ export default function Home({ navigation }) {
       }
 
       let currentLocation = await Location.getCurrentPositionAsync({});
+
       setLocation(currentLocation);
       // console.log("Location:", currentLocation);
       reverseGeocode(currentLocation);

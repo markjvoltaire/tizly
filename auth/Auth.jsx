@@ -25,6 +25,7 @@ import PostGig from "../screens/PostGig";
 import GigSearch from "../screens/GigSearch";
 import GigList from "../screens/GigList";
 import SelectGig from "../screens/SelectGig";
+import GigDetails from "../screens/GigDetails";
 
 export default function Auth() {
   const Stack = createNativeStackNavigator();
@@ -238,6 +239,17 @@ export default function Auth() {
           options={{
             headerShown: true,
             headerTitle: "Post Gig", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+
+        <Stack.Screen
+          name="GigDetails"
+          component={GigDetails}
+          options={{
+            headerShown: true,
+            headerTitle: "Gig Details", // Customizing the header title
             headerBackTitle: "Back", // Customizing the back button text
             headerTintColor: "black", // Changing the color of the back button text
           }}

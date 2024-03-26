@@ -6,6 +6,7 @@ import { useFonts } from "expo-font";
 import { supabase } from "./services/supabase";
 import { UserProvider } from "./context/UserContext";
 import Auth from "./auth/Auth";
+import { LocationProvider } from "./context/LocationContext";
 
 export default function App() {
   const [auth, setAuth] = useState(null);

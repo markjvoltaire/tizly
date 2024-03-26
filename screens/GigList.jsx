@@ -16,7 +16,7 @@ import * as Location from "expo-location";
 import { useFocusEffect } from "@react-navigation/native";
 import LottieView from "lottie-react-native";
 import { supabase } from "../services/supabase";
-import { getUser } from "../services/user";
+import { getUser, reportPostById } from "../services/user";
 import { useUser } from "../context/UserContext";
 
 export default function GigList({ navigation }) {
@@ -89,6 +89,39 @@ export default function GigList({ navigation }) {
     );
   };
 
+  const reportPost = (item) => {
+    Alert.alert(
+      "Report Post",
+      "Are you sure you want to report this Post?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Report",
+          onPress: async () => {
+            try {
+              // Your code to report the Post goes here
+              // For example, you might want to call an API endpoint to report the post
+              await reportPostById(item);
+              // Show a success message
+              Alert.alert(
+                "Report Sent",
+                "Your report has been sent. Thank you for your feedback."
+              );
+
+              // Perform any other actions after reporting
+            } catch (error) {
+              console.error("Error reporting post:", error);
+            }
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
   const GigCard = ({ item, navigation }) => {
     return (
       <>
@@ -98,14 +131,16 @@ export default function GigList({ navigation }) {
             source={require("../assets/More.png")}
           />
         </TouchableOpacity>
-        <View style={styles.infoContainer}>
-          <Text style={styles.title}>{item.category}</Text>
-          <Text style={styles.location}>Location: Miami, Fl</Text>
-          <View style={styles.separator}></View>
-          <Text style={styles.description}>{item.taskDescription}</Text>
-          <View style={styles.separator}></View>
-          <Text style={styles.date}>Date Needed: April 5, 2024</Text>
-        </View>
+        <Pressable onPress={() => navigation.navigate("GigDetails", item)}>
+          <View style={styles.infoContainer}>
+            <Text style={styles.title}>{item.category}</Text>
+            <Text style={styles.location}>Location: Miami, Fl</Text>
+            <View style={styles.separator}></View>
+            <Text style={styles.description}>{item.taskDescription}</Text>
+            <View style={styles.separator}></View>
+            <Text style={styles.date}>Date Needed: April 5, 2024</Text>
+          </View>
+        </Pressable>
       </>
     );
   };
@@ -177,7 +212,16 @@ export default function GigList({ navigation }) {
           backgroundColor: "white",
         }}
       >
-        <ActivityIndicator color="grey" />
+        <LottieView
+          style={{
+            height: 500,
+            width: 500,
+            alignSelf: "center",
+          }}
+          source={require("../assets/lottie/location.json")}
+          autoPlay
+        />
+        <Text style={{ fontFamily: "alata" }}>Loading</Text>
       </View>
     );
   }
