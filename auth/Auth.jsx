@@ -226,7 +226,7 @@ export default function Auth() {
           component={GigList}
           options={{
             headerShown: true,
-            headerTitle: "Gigs", // Customizing the header title
+            headerTitle: "Gig List", // Customizing the header title
             headerBackTitle: "Back", // Customizing the back button text
             headerTintColor: "black", // Changing the color of the back button text
           }}
@@ -248,7 +248,7 @@ export default function Auth() {
           component={SelectGig}
           options={{
             headerShown: true,
-            headerTitle: "What service do you need?", // Customizing the header title
+            headerTitle: "Select a category", // Customizing the header title
             headerBackTitle: "Back", // Customizing the back button text
             headerTintColor: "black", // Changing the color of the back button text
           }}

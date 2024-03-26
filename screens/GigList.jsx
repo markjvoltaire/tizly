@@ -1,13 +1,305 @@
-import { StyleSheet, Text, View } from "react-native";
-import React from "react";
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+  SafeAreaView,
+  ScrollView,
+  Image,
+  TouchableOpacity,
+  FlatList,
+  Pressable,
+  Alert,
+} from "react-native";
+import * as Location from "expo-location";
+import { useFocusEffect } from "@react-navigation/native";
+import LottieView from "lottie-react-native";
+import { supabase } from "../services/supabase";
+import { getUser } from "../services/user";
+import { useUser } from "../context/UserContext";
 
-export default function GigList({ route }) {
-  console.log("route", route.params);
+export default function GigList({ navigation }) {
+  const [loading, setLoading] = useState(true);
+  const [city, setCity] = useState();
+  const [isLoading, setIsLoading] = useState(true);
+  const [allowLocation, setAllowLocation] = useState();
+  const [location, setLocation] = useState();
+  const [gigList, setGigList] = useState([]);
+  const { user, setUser } = useUser();
+  const [refreshing, setRefreshing] = useState(false);
+
+  async function deleteGig(item) {
+    const userId = supabase.auth.currentUser.id;
+    const resp = await supabase
+      .from("gigs")
+      .delete()
+      .eq("user_id", userId)
+      .eq("id", item.id);
+    console.log("resp", resp);
+
+    return resp;
+  }
+
+  const handleRefresh = async () => {
+    setRefreshing(true); // Set refreshing to true when refreshing starts
+    await getGigs(city); // Fetch gigs again
+  };
+
+  const handleOptionPress = (item) => {
+    item.user_id === user.user_id
+      ? handleCommentDelete(item)
+      : reportPost(item);
+  };
+
+  const handleCommentDelete = (item) => {
+    Alert.alert(
+      "Delete Gig",
+      "Are you sure you want to delete this gig?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          onPress: async () => {
+            try {
+              // Your code to delete the post from the backend goes here
+              // For example, you might want to call an API endpoint to delete the post
+              await deleteGig(item);
+              // Assuming the comment is deleted successfully, update the postList
+              setGigList((prevPost) =>
+                prevPost.filter((postItem) => postItem.id !== item.id)
+              );
+
+              Alert.alert(
+                "Gig Deleted",
+                "Your gig post listing has been has been deleted."
+              );
+
+              // Show a success message or perform any other actions after deletion
+            } catch (error) {
+              console.error("Error deleting comment:", error);
+            }
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
+  const GigCard = ({ item, navigation }) => {
+    return (
+      <>
+        <TouchableOpacity onPress={() => handleOptionPress(item)}>
+          <Image
+            style={{ width: 50, height: 50 }}
+            source={require("../assets/More.png")}
+          />
+        </TouchableOpacity>
+        <View style={styles.infoContainer}>
+          <Text style={styles.title}>{item.category}</Text>
+          <Text style={styles.location}>Location: Miami, Fl</Text>
+          <View style={styles.separator}></View>
+          <Text style={styles.description}>{item.taskDescription}</Text>
+          <View style={styles.separator}></View>
+          <Text style={styles.date}>Date Needed: April 5, 2024</Text>
+        </View>
+      </>
+    );
+  };
+
+  const reverseGeocode = async (currentLocation) => {
+    try {
+      const { coords } = currentLocation;
+      const reverseGeocodedAddress = await Location.reverseGeocodeAsync({
+        longitude: coords.longitude,
+        latitude: coords.latitude,
+      });
+
+      const { isoCountryCode, city, region } = reverseGeocodedAddress[0];
+      console.log("region", region);
+      console.log("Reverse Geocoded:", isoCountryCode);
+      setCity(city);
+      console.log("city", city);
+      setIsLoading(false);
+      await getGigs(city); // Call getGigs after setting the city
+    } catch (error) {
+      console.error("Error during reverse geocoding:", error);
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const getPermissions = async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        setAllowLocation(false);
+        setIsLoading(false);
+        return;
+      } else {
+        setAllowLocation(true);
+      }
+
+      let currentLocation = await Location.getCurrentPositionAsync({});
+      setLocation(currentLocation);
+      await reverseGeocode(currentLocation);
+    };
+
+    getPermissions();
+  }, []);
+
+  const getGigs = async (city) => {
+    try {
+      const { body: resp } = await supabase
+        .from("gigs")
+        .select("*")
+        .order("created_at", { ascending: false });
+      //   console.log("city FROM FUNCTION", city);
+      setGigList(resp);
+      setLoading(false);
+      setRefreshing(false);
+      //   console.log("resp", resp);
+      return resp;
+    } catch (error) {
+      console.error("Error fetching gigs:", error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <View
+        style={{
+          alignItems: "center",
+          justifyContent: "center",
+          flex: 1,
+          backgroundColor: "white",
+        }}
+      >
+        <ActivityIndicator color="grey" />
+      </View>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <View
+        style={{
+          alignItems: "center",
+          justifyContent: "center",
+          flex: 1,
+          backgroundColor: "white",
+        }}
+      >
+        <ActivityIndicator color="grey" />
+      </View>
+    );
+  }
+
   return (
     <View style={{ backgroundColor: "white", flex: 1 }}>
-      <Text>{route.params}</Text>
+      <FlatList
+        showsVerticalScrollIndicator={false}
+        data={gigList}
+        refreshing={refreshing} // Pass refreshing state to FlatList
+        onRefresh={handleRefresh} // Pass refresh function to FlatList
+        renderItem={({ item }) => (
+          <View
+            style={{
+              paddingBottom: 60,
+              width: 360,
+              alignSelf: "center",
+              top: 20,
+            }}
+          >
+            <GigCard navigation={navigation} item={item} />
+          </View>
+        )}
+        keyExtractor={(item) => item.id}
+      />
     </View>
   );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#fff", // Instagram typically uses a white background
+  },
+  container: {
+    flexGrow: 1,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 60, // Added padding to accommodate button
+  },
+  profileImage: {
+    width: 30,
+    height: 30,
+    borderRadius: 100,
+    marginBottom: 20,
+    backgroundColor: "grey",
+
+    marginRight: 10,
+  },
+  infoContainer: {
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: "700",
+    marginBottom: 10,
+    color: "#333", // Instagram typically uses a dark gray for text color
+  },
+  location: {
+    fontSize: 16,
+    color: "#555",
+    marginBottom: 10,
+  },
+  separator: {
+    height: 0.4,
+    backgroundColor: "#ccc",
+    marginVertical: 10,
+  },
+  description: {
+    fontSize: 18,
+    marginBottom: 10,
+    color: "#333",
+  },
+  requirement: {
+    fontSize: 18,
+    marginBottom: 10,
+    color: "#333",
+  },
+  date: {
+    fontSize: 18,
+    marginBottom: 10,
+    color: "#333",
+  },
+  button: {
+    backgroundColor: "#007AFF", // Instagram typically uses blue for buttons
+    borderRadius: 10,
+    paddingVertical: 15,
+    alignItems: "center",
+    justifyContent: "center",
+    position: "absolute",
+    bottom: 20,
+    left: 20,
+    right: 20,
+  },
+  buttonText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#fff",
+  },
+});

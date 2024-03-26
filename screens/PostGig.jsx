@@ -1,17 +1,25 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   Text,
   View,
   TextInput,
   TouchableOpacity,
+  Modal,
 } from "react-native";
 import { supabase } from "../services/supabase";
+import LottieView from "lottie-react-native";
+import { useUser } from "../context/UserContext";
 
-export default function PostGig({ route }) {
+export default function PostGig({ route, navigation }) {
   const [taskDescription, setTaskDescription] = React.useState("");
+  const [uploading, setUploading] = useState(false);
+  const [uploadComplete, setUploadComplete] = useState(false);
+  const { user } = useUser();
+  console.log("user", user);
 
   async function uploadGig() {
+    setUploading(true);
     const userId = supabase.auth.currentUser.id;
     try {
       const newGig = {
@@ -20,14 +28,29 @@ export default function PostGig({ route }) {
         category: route.params,
       };
       const resp = await supabase.from("gigs").insert([newGig]);
-      console.log("resp", resp);
+
+      await new Promise((resolve) =>
+        setTimeout(() => {
+          setUploadComplete(true);
+          resolve();
+        }, 2000)
+      ); // 4000 milliseconds = 4 seconds
+
+      await new Promise((resolve) =>
+        setTimeout(() => {
+          setUploading(false);
+          setUploadComplete(false);
+          navigation.navigate("Gigs");
+          resolve();
+        }, 2000)
+      ); // 2000 milliseconds = 2 seconds
+
       return resp;
     } catch (error) {
       console.error("Error submitting comment:", error);
       throw error;
     }
   }
-
   console.log("route", route.params);
 
   const handleSubmit = () => {
@@ -66,6 +89,33 @@ export default function PostGig({ route }) {
       <TouchableOpacity style={styles.button} onPress={handleSubmit}>
         <Text style={styles.buttonText}>Post Gig</Text>
       </TouchableOpacity>
+      <Modal animationType="slide" visible={uploading}>
+        <Text
+          style={{
+            color: "black",
+            top: uploadComplete === true ? 180 : 290,
+            fontSize: 20,
+            alignSelf: "center",
+            fontWeight: "600",
+          }}
+        >
+          {uploadComplete === true ? "Upload complete." : "Uploading Your Gig"}
+        </Text>
+        <LottieView
+          style={{
+            height: uploadComplete === true ? 300 : 530,
+            width: 530,
+            top: 200,
+            alignSelf: "center",
+          }}
+          source={
+            uploadComplete === true
+              ? require("../assets/lottie/greenCheck.json")
+              : require("../assets/lottie/airplaneLoading.json")
+          }
+          autoPlay
+        />
+      </Modal>
     </View>
   );
 }

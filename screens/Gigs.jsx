@@ -33,6 +33,7 @@ const gigsData = [
       "Share a task you require assistance with, and receive offers from individuals willing to take care of it for you.",
     screen: "SelectGig",
   },
+
   // Add more gigs as needed
 ];
 
@@ -286,7 +287,9 @@ export default function Gigs({ navigation }) {
         showsVerticalScrollIndicator={false}
         data={gigsData}
         renderItem={({ item }) => (
-          <GigCard navigation={navigation} item={item} />
+          <View style={{ paddingBottom: 40 }}>
+            <GigCard navigation={navigation} item={item} />
+          </View>
         )}
         keyExtractor={(item) => item.id}
       />
