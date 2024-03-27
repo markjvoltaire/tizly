@@ -7,14 +7,15 @@ import {
 } from "react-native";
 import React from "react";
 
-export default function GigDetails({ route }) {
+export default function GigDetails({ route, navigation }) {
   const handleApplyNow = () => {
     // Implement the logic for applying to the gig here
     // For example, you can navigate to another screen for applying
+    navigation.navigate("InboxDetails");
     console.log("Apply button pressed!");
   };
 
-  console.log("route", route.params.created_at);
+  console.log("route", route.params);
 
   return (
     <View style={styles.container}>
@@ -22,14 +23,14 @@ export default function GigDetails({ route }) {
         <Text style={styles.title}>{route.params.category}</Text>
         <Text style={styles.location}>Location: Miami, FL</Text>
         <View style={styles.separator}></View>
+        <Text style={styles.title}>Description:</Text>
         <Text style={styles.detail}>{route.params.taskDescription}</Text>
         <View style={styles.separator}></View>
-        <Text style={styles.detail}>
-          Date Posted: {formatDate(route.params.created_at)}
-        </Text>
+        <Text style={styles.title}>Date:</Text>
+        <Text style={styles.detail}> {route.params.taskDate}</Text>
       </View>
       <TouchableOpacity style={styles.applyButton} onPress={handleApplyNow}>
-        <Text style={styles.applyButtonText}>Send Offer</Text>
+        <Text style={styles.applyButtonText}>Send Message</Text>
       </TouchableOpacity>
     </View>
   );

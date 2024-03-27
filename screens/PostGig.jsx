@@ -11,17 +11,29 @@ import { supabase } from "../services/supabase";
 import LottieView from "lottie-react-native";
 import { useUser } from "../context/UserContext";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import DatePicker from "react-native-modern-datepicker";
 
 export default function PostGig({ route, navigation }) {
   const [taskDescription, setTaskDescription] = React.useState("");
   const [taskDate, setTaskDate] = React.useState("");
   const [uploading, setUploading] = useState(false);
   const [uploadComplete, setUploadComplete] = useState(false);
-
   const [date, setDate] = useState(new Date());
+  const [formattedDate, setFormattedDate] = useState("");
 
   const onChange = (e, selectedDate) => {
+    const options = {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+    };
+    const newFormattedDate = selectedDate.toLocaleString(undefined, options);
     setDate(selectedDate);
+    setFormattedDate(newFormattedDate); // Store the formatted date in state
+    console.log("date", newFormattedDate);
   };
 
   async function uploadGig() {
@@ -30,9 +42,9 @@ export default function PostGig({ route, navigation }) {
     try {
       const newGig = {
         user_id: userId,
-        taskDescription: taskDescription, // Use the current value of the description state
+        taskDescription: taskDescription,
         category: route.params,
-        taskDate: taskDate,
+        taskDate: formattedDate,
       };
       const resp = await supabase.from("gigs").insert([newGig]);
 
@@ -41,16 +53,16 @@ export default function PostGig({ route, navigation }) {
           setUploadComplete(true);
           resolve();
         }, 2000)
-      ); // 4000 milliseconds = 4 seconds
+      );
 
       await new Promise((resolve) =>
         setTimeout(() => {
           setUploading(false);
           setUploadComplete(false);
-          navigation.navigate("Gigs");
+          navigation.goBack();
           resolve();
         }, 2000)
-      ); // 2000 milliseconds = 2 seconds
+      );
 
       return resp;
     } catch (error) {
@@ -58,14 +70,11 @@ export default function PostGig({ route, navigation }) {
       throw error;
     }
   }
-  console.log("route", route.params);
 
   const handleSubmit = () => {
-    // Handle submission of the gig post
     console.log("Task Category:", route.params);
     console.log("Task Description:", taskDescription);
     uploadGig();
-    // Additional logic for submitting the post
   };
 
   return (
@@ -73,12 +82,12 @@ export default function PostGig({ route, navigation }) {
       <Text style={styles.headerText}>Post a Gig</Text>
       <TextInput
         style={{
-          height: 140,
+          height: 100,
           width: "100%",
           borderColor: "gray",
           borderWidth: 1,
           borderRadius: 12,
-          marginBottom: 40,
+          marginBottom: 20,
           paddingHorizontal: 10,
           fontFamily: "alata",
           borderWidth: 1,
@@ -92,28 +101,25 @@ export default function PostGig({ route, navigation }) {
         value={taskDescription}
         onChangeText={(text) => setTaskDescription(text)}
       />
-      <TextInput
-        style={{
-          height: 60,
-          width: "100%",
-          borderColor: "gray",
-          borderWidth: 1,
-          borderRadius: 12,
-          marginBottom: 40,
-          paddingHorizontal: 10,
-          fontFamily: "alata",
-          borderWidth: 1,
-          borderColor: "#BBBBBB",
-          backgroundColor: "#F3F3F9",
-        }}
-        placeholder="MM/DD/YYYY"
-        placeholderTextColor="grey"
-        keyboardType="numeric"
-        maxLength={8} // MM/DD/YYYY has 10 characters
-        value={taskDate}
-        onChangeText={(text) => setTaskDate(text)}
+      <DateTimePicker
+        value={date}
+        mode={"datetime"}
+        is24Hour={true}
+        onChange={onChange}
+        style={{ alignSelf: "center", marginBottom: 20 }}
+        themeVariant="light"
+        positiveButtonLabel="OK!"
       />
-
+      <Text
+        style={{
+          alignSelf: "center",
+          fontWeight: "700",
+          fontSize: 15,
+          marginBottom: 30,
+        }}
+      >
+        Gig Date: {formattedDate}
+      </Text>
       <TouchableOpacity style={styles.button} onPress={handleSubmit}>
         <Text style={styles.buttonText}>Post Gig</Text>
       </TouchableOpacity>
@@ -158,18 +164,6 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 10,
-  },
-  categoryText: {
-    fontSize: 18,
-    marginBottom: 10,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 20,
-    textAlignVertical: "top",
   },
   button: {
     backgroundColor: "#007bff",

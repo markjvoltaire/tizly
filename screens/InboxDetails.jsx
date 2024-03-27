@@ -1,225 +1,158 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
+  SafeAreaView,
   StyleSheet,
-  Text,
   View,
-  ScrollView,
+  Dimensions,
   TextInput,
-  TouchableOpacity,
+  FlatList,
+  Text,
   KeyboardAvoidingView,
   Platform,
+  RefreshControl,
+  Alert,
+  Pressable,
+  TouchableOpacity,
+  Image,
+  ActivityIndicator,
+  useColorScheme,
   Keyboard,
-  SafeAreaView,
-  Dimensions,
+  TouchableWithoutFeedback,
 } from "react-native";
+
 import { useUser } from "../context/UserContext";
+import { supabase } from "../services/supabase";
 
-export default function InboxDetails() {
-  const [messageText, setMessageText] = useState("");
-  const [messages, setMessages] = useState([
-    {
-      sender: "User",
-      text: "Hey there! I'm interested in learning more about the services your business offers. Can you provide me with some information?",
-    },
-    {
-      sender: "Business",
-      text: "Hello! Thank you for reaching out. We offer a variety of services tailored to meet your needs. Could you please specify which services you are interested in so I can provide you with more detailed information?",
-    },
-    {
-      sender: "User",
-      text: "Sure! I'm particularly interested in your graphic design services. Can you tell me more about what you offer in that area?",
-    },
-    {
-      sender: "Business",
-      text: "Absolutely! Our graphic design services encompass logo design, branding, digital illustrations, and print media design. We work closely with our clients to ensure that the designs align with their vision and brand identity. Would you like to schedule a consultation to discuss your specific requirements further?",
-    },
-    {
-      sender: "User",
-      text: "That sounds great! I'd love to schedule a consultation. Can you provide me with some available dates and times?",
-    },
-    {
-      sender: "Business",
-      text: "Of course! We have availability next week on Monday, Wednesday, and Friday between 9 am and 5 pm. Please let me know which day and time works best for you, and we'll get it scheduled.",
-    },
-    {
-      sender: "User",
-      text: "Monday at 10 am works for me. Can you confirm that appointment?",
-    },
-    {
-      sender: "Business",
-      text: "Absolutely! Your appointment for a consultation on Monday at 10 am is confirmed. We look forward to discussing your graphic design needs further. If you have any other questions in the meantime, feel free to reach out.",
-    },
-    {
-      sender: "User",
-      text: "Great, thank you! I'm excited to chat more about how your services can benefit my business.",
-    },
-    {
-      sender: "Business",
-      text: "The pleasure is ours! We're here to help in any way we can. See you on Monday at 10 am!",
-    },
-  ]);
+export default function InboxDetails({ route }) {
+  const screenWidth = Dimensions.get("window").width;
+  const screenHeight = Dimensions.get("window").height;
+  const { user } = useUser();
+  const scheme = useColorScheme();
 
-  const sendMessage = () => {
-    if (messageText.trim() !== "") {
-      setMessages([...messages, { sender: "User", text: messageText.trim() }]);
-      setMessageText("");
-    }
+  const [comment, setComment] = useState("");
+  const [commentList, setCommentList] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [userDetails, setUserDetails] = useState();
+
+  const handleScreenPress = () => {
+    Keyboard.dismiss();
   };
 
-  const screenHeight = Dimensions.get("window").height;
-
-  const { user, setUser } = useUser(null);
-
-  if (user === undefined) {
+  if (loading) {
     return (
-      <SafeAreaView
+      <View
         style={{
+          backgroundColor: scheme === "light" ? "white" : "#111111",
           flex: 1,
-          backgroundColor: "#FFFFFF",
-          padding: 20,
-          justifyContent: "center",
-          alignItems: "center",
         }}
       >
-        <View style={{}}>
-          <Text
-            style={{
-              fontSize: 30,
-              fontFamily: "AirbnbCereal-Bold",
-              marginBottom: 20,
-            }}
-          >
-            inbox
-          </Text>
-          <Text
-            style={{
-              fontSize: 15,
-              fontFamily: "AirbnbCereal-Medium",
-              marginBottom: 10,
-
-              color: "#717171",
-            }}
-          >
-            Log in to see your send messages
-          </Text>
-          <Text
-            style={{
-              fontSize: 20,
-
-              marginBottom: 20,
-              color: "#717171",
-            }}
-          >
-            Once you login, you'll be able to send messages
-          </Text>
-
-          <TouchableOpacity
-            style={{
-              backgroundColor: "#007AFF",
-              paddingVertical: 12,
-              paddingHorizontal: 20,
-              borderRadius: 5,
-              alignSelf: "stretch",
-            }}
-          >
-            <Text
-              style={{
-                color: "#FFFFFF",
-                fontSize: 18,
-                fontWeight: "600",
-                fontFamily: "AirbnbCereal-Bold",
-                textAlign: "center",
-              }}
-            >
-              Log In
-            </Text>
-          </TouchableOpacity>
+        <View style={{ top: screenHeight * 0.3 }}>
+          <ActivityIndicator size="large" />
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === "ios" ? "padding" : null}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 0 : -200}
+    <SafeAreaView
+      style={{
+        flex: 1,
+        backgroundColor: "white",
+      }}
     >
-      <View style={[styles.container, { height: screenHeight }]}>
-        <ScrollView contentContainerStyle={styles.messagesContainer}>
-          {messages.map((message, index) => (
-            <Message key={index} sender={message.sender}>
-              {message.text}
-            </Message>
-          ))}
-          <View style={{ height: 100 }} />
-        </ScrollView>
-      </View>
-    </KeyboardAvoidingView>
+      <TouchableWithoutFeedback onPress={handleScreenPress}>
+        <View style={styles.flex1}>
+          <KeyboardAvoidingView
+            style={styles.flex1}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            keyboardVerticalOffset={Platform.OS === "ios" ? 130 : 0}
+          >
+            <View style={styles.flex1}></View>
+
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                paddingHorizontal: 16,
+                paddingVertical: 8,
+                backgroundColor: "white",
+              }}
+            >
+              <TextInput
+                placeholderTextColor="#080A0B"
+                style={styles.commentInput}
+                placeholder="Say Something"
+                value={comment}
+                onChangeText={(text) => setComment(text)}
+              />
+
+              <Pressable
+                style={{
+                  backgroundColor: "#007AFF", // Blue color
+                  width: screenWidth * 0.25,
+                  height: screenHeight * 0.04,
+                  justifyContent: "center",
+                  borderRadius: 10,
+                }}
+                onPress={() => handleCommentSubmit()}
+              >
+                <Text
+                  style={{
+                    color: "white",
+                    fontFamily: "Poppins-Bold",
+                    alignSelf: "center",
+                    fontWeight: "800",
+                  }}
+                >
+                  Send
+                </Text>
+              </Pressable>
+            </View>
+          </KeyboardAvoidingView>
+        </View>
+      </TouchableWithoutFeedback>
+    </SafeAreaView>
   );
 }
-
-const Message = ({ sender, children }) => {
-  const messageStyle =
-    sender === "User" ? styles.userMessage : styles.businessMessage;
-  return (
-    <View style={[styles.messageContainer, messageStyle]}>
-      <Text style={styles.sender}>{sender}:</Text>
-      <Text>{children}</Text>
-    </View>
-  );
-};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "white",
   },
-  messagesContainer: {
-    flexGrow: 1,
-    padding: 20,
+  header: {
+    fontFamily: "Poppins-Black",
+    fontSize: 20,
+    left: 5,
+    paddingBottom: Dimensions.get("window").height * 0.02,
   },
-  messageContainer: {
-    marginBottom: 10,
-    padding: 10,
-    borderRadius: 10,
-  },
-  userMessage: {
-    backgroundColor: "#e0e0e0",
-    alignSelf: "flex-start",
-  },
-  businessMessage: {
-    backgroundColor: "#c8e6c9",
-    alignSelf: "flex-end",
-  },
-  sender: {
-    fontWeight: "bold",
-    marginBottom: 5,
+  flex1: {
+    flex: 1,
+    paddingBottom: 16,
   },
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    justifyContent: "space-between",
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    backgroundColor: "#fff",
     borderTopWidth: 1,
     borderTopColor: "#ccc",
   },
-  textInput: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 20,
-    paddingHorizontal: 15,
-    marginRight: 10,
-  },
-  sendButton: {
-    backgroundColor: "#007bff",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 20,
-  },
-  sendButtonText: {
-    color: "#fff",
-    fontWeight: "bold",
+  commentInput: {
+    alignSelf: "center",
+    paddingLeft: 8,
+    borderColor: "black",
+    borderWidth: 0.3,
+    borderRadius: 12,
+    backgroundColor: "#F3F3F9",
+    width: 250,
+    height: 40,
+    fontFamily: "Poppins-SemiBold",
+    fontSize: 10,
+    justifyContent: "center",
   },
 });

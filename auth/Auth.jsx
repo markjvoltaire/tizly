@@ -182,24 +182,22 @@ export default function Auth() {
     return (
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen
-          name="Post"
-          component={Post}
+          name="SelectGig"
+          component={SelectGig}
           options={{
-            tabBarVisible: false,
             headerShown: true,
-            headerTitle: "Post", // Customizing the header title
+            headerTitle: "Select a category", // Customizing the header title
             headerBackTitle: "Back", // Customizing the back button text
             headerTintColor: "black", // Changing the color of the back button text
           }}
         />
 
         <Stack.Screen
-          name="Offering"
-          component={Offering}
+          name="PostGig"
+          component={PostGig}
           options={{
-            tabBarVisible: false,
             headerShown: true,
-            headerTitle: "Gig Details", // Customizing the header title
+            headerTitle: "Post Gig", // Customizing the header title
             headerBackTitle: "Back", // Customizing the back button text
             headerTintColor: "black", // Changing the color of the back button text
           }}
@@ -212,33 +210,11 @@ export default function Auth() {
     return (
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen
-          name="Gigs"
-          component={Gigs}
-          options={{
-            headerShown: true,
-            headerTitle: "Gigs", // Customizing the header title
-            headerBackTitle: "Back", // Customizing the back button text
-            headerTintColor: "black", // Changing the color of the back button text
-          }}
-        />
-
-        <Stack.Screen
           name="GigList"
           component={GigList}
           options={{
             headerShown: true,
             headerTitle: "Gig List", // Customizing the header title
-            headerBackTitle: "Back", // Customizing the back button text
-            headerTintColor: "black", // Changing the color of the back button text
-          }}
-        />
-
-        <Stack.Screen
-          name="PostGig"
-          component={PostGig}
-          options={{
-            headerShown: true,
-            headerTitle: "Post Gig", // Customizing the header title
             headerBackTitle: "Back", // Customizing the back button text
             headerTintColor: "black", // Changing the color of the back button text
           }}
@@ -256,22 +232,24 @@ export default function Auth() {
         />
 
         <Stack.Screen
-          name="SelectGig"
-          component={SelectGig}
+          name="Inbox"
+          component={Inbox}
           options={{
+            tabBarVisible: false,
             headerShown: true,
-            headerTitle: "Select a category", // Customizing the header title
+            headerTitle: "Inbox", // Customizing the header title
             headerBackTitle: "Back", // Customizing the back button text
             headerTintColor: "black", // Changing the color of the back button text
           }}
         />
 
         <Stack.Screen
-          name="GigSearch"
-          component={GigSearch}
+          name="InboxDetails"
+          component={InboxDetails}
           options={{
+            tabBarVisible: false,
             headerShown: true,
-            headerTitle: "Gigs", // Customizing the header title
+            headerTitle: "Message Thread", // Customizing the header title
             headerBackTitle: "Back", // Customizing the back button text
             headerTintColor: "black", // Changing the color of the back button text
           }}
@@ -288,7 +266,6 @@ export default function Auth() {
           component={UserProfile}
           options={{
             tabBarVisible: false,
-
             headerBackTitle: "Back", // Customizing the back button text
             headerTintColor: "black", // Changing the color of the back button text
           }}

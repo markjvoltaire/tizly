@@ -73,29 +73,6 @@ export default function SelectGig({ navigation }) {
             </View>
           ))}
         </View>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={{
-            backgroundColor: "#007AFF",
-            width: 270,
-            height: 50,
-            justifyContent: "center", // Align text vertically
-            alignItems: "center", // Align text horizontally
-            alignSelf: "center",
-            borderRadius: 10,
-          }}
-        >
-          <Text
-            style={{
-              color: "white",
-              textAlign: "center",
-              fontSize: 18,
-              fontWeight: "bold",
-            }}
-          >
-            Cancel
-          </Text>
-        </TouchableOpacity>
       </View>
     </View>
   );

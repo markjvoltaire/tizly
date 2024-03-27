@@ -11,6 +11,8 @@ import {
   FlatList,
   Pressable,
   Alert,
+  RefreshControl,
+  Dimensions,
 } from "react-native";
 import * as Location from "expo-location";
 import { useFocusEffect } from "@react-navigation/native";
@@ -28,6 +30,8 @@ export default function GigList({ navigation }) {
   const [gigList, setGigList] = useState([]);
   const { user, setUser } = useUser();
   const [refreshing, setRefreshing] = useState(false);
+  const screenWidth = Dimensions.get("window").width;
+  const screenHeight = Dimensions.get("window").height;
 
   async function deleteGig(item) {
     const userId = supabase.auth.currentUser.id;
@@ -127,7 +131,7 @@ export default function GigList({ navigation }) {
       <>
         <TouchableOpacity onPress={() => handleOptionPress(item)}>
           <Image
-            style={{ width: 50, height: 50 }}
+            style={{ width: 50, height: 50, left: screenWidth * 0.8 }}
             source={require("../assets/More.png")}
           />
         </TouchableOpacity>
@@ -136,9 +140,11 @@ export default function GigList({ navigation }) {
             <Text style={styles.title}>{item.category}</Text>
             <Text style={styles.location}>Location: Miami, Fl</Text>
             <View style={styles.separator}></View>
+            <Text style={styles.title}>Description:</Text>
             <Text style={styles.description}>{item.taskDescription}</Text>
             <View style={styles.separator}></View>
-            <Text style={styles.date}>Date Needed: April 5, 2024</Text>
+            <Text style={styles.title}>Date:</Text>
+            <Text style={styles.date}>{item.taskDate}</Text>
           </View>
         </Pressable>
       </>
@@ -243,25 +249,42 @@ export default function GigList({ navigation }) {
 
   return (
     <View style={{ backgroundColor: "white", flex: 1 }}>
-      <FlatList
-        showsVerticalScrollIndicator={false}
-        data={gigList}
-        refreshing={refreshing} // Pass refreshing state to FlatList
-        onRefresh={handleRefresh} // Pass refresh function to FlatList
-        renderItem={({ item }) => (
-          <View
-            style={{
-              paddingBottom: 60,
-              width: 360,
-              alignSelf: "center",
-              top: 20,
-            }}
-          >
-            <GigCard navigation={navigation} item={item} />
-          </View>
-        )}
-        keyExtractor={(item) => item.id}
-      />
+      {gigList.length === 0 ? (
+        <ScrollView
+          style={{ flex: 1 }}
+          contentContainerStyle={{
+            alignItems: "center",
+            alignContent: "center",
+          }}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+          }
+        >
+          <Text style={{ top: 100, fontFamily: "alata" }}>
+            Currently, there are no gigs available in your area.
+          </Text>
+        </ScrollView>
+      ) : (
+        <FlatList
+          showsVerticalScrollIndicator={false}
+          data={gigList}
+          refreshing={refreshing} // Pass refreshing state to FlatList
+          onRefresh={handleRefresh} // Pass refresh function to FlatList
+          renderItem={({ item }) => (
+            <View
+              style={{
+                paddingBottom: 60,
+                width: 360,
+                alignSelf: "center",
+                top: 20,
+              }}
+            >
+              <GigCard navigation={navigation} item={item} />
+            </View>
+          )}
+          keyExtractor={(item) => item.id}
+        />
+      )}
     </View>
   );
 }
