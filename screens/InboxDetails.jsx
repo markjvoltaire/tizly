@@ -1,146 +1,305 @@
 import React, { useEffect, useState } from "react";
 import {
-  SafeAreaView,
   StyleSheet,
-  View,
-  Dimensions,
-  TextInput,
-  FlatList,
   Text,
+  View,
+  ScrollView,
+  TextInput,
+  TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
+  Keyboard,
+  SafeAreaView,
+  Dimensions,
+  Pressable,
   RefreshControl,
   Alert,
-  Pressable,
-  TouchableOpacity,
-  Image,
   ActivityIndicator,
-  useColorScheme,
-  Keyboard,
-  TouchableWithoutFeedback,
 } from "react-native";
-
 import { useUser } from "../context/UserContext";
 import { supabase } from "../services/supabase";
 
 export default function InboxDetails({ route }) {
-  const screenWidth = Dimensions.get("window").width;
-  const screenHeight = Dimensions.get("window").height;
-  const { user } = useUser();
-  const scheme = useColorScheme();
-
-  const [comment, setComment] = useState("");
-  const [commentList, setCommentList] = useState([]);
+  const profileDetails = route.params.profileDetails;
   const [refreshing, setRefreshing] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [userDetails, setUserDetails] = useState();
+  const [messageText, setMessageText] = useState("");
+  const [messages, setMessages] = useState([]);
+  const screenHeight = Dimensions.get("window").height;
+  const screenWidth = Dimensions.get("window").width;
+  const [loading, setLoading] = useState(true);
+  const { user } = useUser();
 
-  const handleScreenPress = () => {
-    Keyboard.dismiss();
+  async function getMessages() {
+    try {
+      const userId = supabase.auth.currentUser.id;
+      const resp = await supabase
+        .from("messages")
+        .select("*")
+        .in("sender", [profileDetails.user_id, userId]) // Separate strings for each field
+        .in("receiver", [profileDetails.user_id, userId])
+        .order("created_at", { ascending: true });
+
+      // Assuming your response structure is like { data: [], error: null }
+      if (resp.error) {
+        throw new Error(resp.error.message);
+      }
+
+      return resp.data; // Assuming data is where the actual message data is stored
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+      return []; // or handle error as per your application's requirement
+    }
+  }
+  const sendMessage = async () => {
+    const userId = supabase.auth.currentUser.id;
+
+    if (messageText.trim() !== "") {
+      const res = await supabase.from("messages").insert([
+        {
+          sender: userId,
+          receiver: profileDetails.user_id,
+          message: messageText,
+        },
+      ]);
+      if (res.error === null) {
+        setMessages([
+          ...messages,
+          { sender: userId, message: messageText.trim() },
+        ]);
+        console.log("messages", messages);
+        setMessageText("");
+      } else {
+        Alert.alert("An error has occured please try again");
+      }
+    } else {
+      Alert.alert("Please enter a message before sending.");
+    }
   };
+
+  const handleRefresh = async () => {
+    setRefreshing(true); // Set refreshing to true when refreshing starts
+    setRefreshing(false);
+  };
+
+  if (user === undefined) {
+    return (
+      <SafeAreaView
+        style={{
+          flex: 1,
+          backgroundColor: "#FFFFFF",
+          padding: 20,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <View style={{}}>
+          <Text
+            style={{
+              fontSize: 30,
+              fontFamily: "AirbnbCereal-Bold",
+              marginBottom: 20,
+            }}
+          >
+            inbox
+          </Text>
+          <Text
+            style={{
+              fontSize: 15,
+              fontFamily: "AirbnbCereal-Medium",
+              marginBottom: 10,
+
+              color: "#717171",
+            }}
+          >
+            Log in to see your send messages
+          </Text>
+          <Text
+            style={{
+              fontSize: 20,
+
+              marginBottom: 20,
+              color: "#717171",
+            }}
+          >
+            Once you login, you'll be able to send messages
+          </Text>
+
+          <TouchableOpacity
+            style={{
+              backgroundColor: "#007AFF",
+              paddingVertical: 12,
+              paddingHorizontal: 20,
+              borderRadius: 5,
+              alignSelf: "stretch",
+            }}
+          >
+            <Text
+              style={{
+                color: "#FFFFFF",
+                fontSize: 18,
+                fontWeight: "600",
+                fontFamily: "AirbnbCereal-Bold",
+                textAlign: "center",
+              }}
+            >
+              Log In
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  useEffect(() => {
+    const retrieveMessages = async () => {
+      const resp = await getMessages();
+      setMessages(resp);
+      setLoading(false);
+    };
+    retrieveMessages();
+  }, []);
 
   if (loading) {
     return (
       <View
         style={{
-          backgroundColor: scheme === "light" ? "white" : "#111111",
           flex: 1,
+          backgroundColor: "white",
+          justifyContent: "center",
+          alignItems: "center",
         }}
       >
-        <View style={{ top: screenHeight * 0.3 }}>
-          <ActivityIndicator size="large" />
-        </View>
+        <ActivityIndicator size="large" />
       </View>
     );
   }
-
   return (
-    <SafeAreaView
-      style={{
-        flex: 1,
-        backgroundColor: "white",
-      }}
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : null}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 100 : -200}
     >
-      <TouchableWithoutFeedback onPress={handleScreenPress}>
-        <View style={styles.flex1}>
-          <KeyboardAvoidingView
-            style={styles.flex1}
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            keyboardVerticalOffset={Platform.OS === "ios" ? 130 : 0}
+      <View style={[styles.container, { height: screenHeight }]}>
+        {messages.length === 0 ? (
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
+              />
+            }
+            contentContainerStyle={styles.messagesContainer}
           >
-            <View style={styles.flex1}></View>
-
             <View
               style={{
-                flexDirection: "row",
+                flex: 1,
+                justifyContent: "center",
                 alignItems: "center",
-                justifyContent: "space-between",
-                paddingHorizontal: 16,
-                paddingVertical: 8,
-                backgroundColor: "white",
               }}
             >
-              <TextInput
-                placeholderTextColor="#080A0B"
-                style={styles.commentInput}
-                placeholder="Say Something"
-                value={comment}
-                onChangeText={(text) => setComment(text)}
-              />
-
-              <Pressable
-                style={{
-                  backgroundColor: "#007AFF", // Blue color
-                  width: screenWidth * 0.25,
-                  height: screenHeight * 0.04,
-                  justifyContent: "center",
-                  borderRadius: 10,
-                }}
-                onPress={() => handleCommentSubmit()}
-              >
-                <Text
-                  style={{
-                    color: "white",
-                    fontFamily: "Poppins-Bold",
-                    alignSelf: "center",
-                    fontWeight: "800",
-                  }}
-                >
-                  Send
-                </Text>
-              </Pressable>
+              <Text style={{ fontFamily: "alata", fontSize: 16 }}>
+                Be the first to start the conversation
+              </Text>
             </View>
-          </KeyboardAvoidingView>
+          </ScrollView>
+        ) : (
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
+              />
+            }
+            contentContainerStyle={styles.messagesContainer}
+          >
+            {messages.map((message, index) => (
+              <Message
+                message={message}
+                user={user}
+                profileDetails={profileDetails}
+                key={index}
+                sender={message.sender}
+              >
+                {message.message}
+              </Message>
+            ))}
+            <View style={{ height: 100 }} />
+          </ScrollView>
+        )}
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            paddingHorizontal: 16,
+            paddingVertical: 8,
+            backgroundColor: "white",
+          }}
+        >
+          <TextInput
+            placeholderTextColor="#080A0B"
+            style={styles.commentInput}
+            placeholder="Add a message "
+            multiline
+            value={messageText}
+            onChangeText={(text) => setMessageText(text)}
+          />
+
+          <Pressable
+            onPress={() => sendMessage()}
+            style={{
+              backgroundColor: "#007AFF",
+              width: screenWidth * 0.25,
+              height: screenHeight * 0.04,
+              justifyContent: "center",
+              borderRadius: 10,
+            }}
+          >
+            <Text
+              style={{
+                color: "white",
+                fontWeight: "800",
+                alignSelf: "center",
+              }}
+            >
+              Send
+            </Text>
+          </Pressable>
         </View>
-      </TouchableWithoutFeedback>
-    </SafeAreaView>
+      </View>
+    </KeyboardAvoidingView>
   );
 }
+
+const Message = ({ sender, children, message, user }) => {
+  const date = new Date(message.created_at);
+  const formattedDate = date.toLocaleString();
+
+  const messageStyle =
+    sender === user.user_id ? styles.userMessage : styles.businessMessage;
+  return (
+    <>
+      <Pressable onLongPress={() => console.log("Hello")}>
+        <View style={[styles.messageContainer, messageStyle]}>
+          <Text style={{ color: sender === user.user_id ? null : "white" }}>
+            {children}
+          </Text>
+        </View>
+      </Pressable>
+    </>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "white",
   },
-  header: {
-    fontFamily: "Poppins-Black",
-    fontSize: 20,
-    left: 5,
-    paddingBottom: Dimensions.get("window").height * 0.02,
-  },
-  flex1: {
-    flex: 1,
-    paddingBottom: 16,
-  },
-  inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    backgroundColor: "#fff",
-    borderTopWidth: 1,
-    borderTopColor: "#ccc",
+  messagesContainer: {
+    flexGrow: 1,
+    padding: 20,
   },
   commentInput: {
     alignSelf: "center",
@@ -152,7 +311,52 @@ const styles = StyleSheet.create({
     width: 250,
     height: 40,
     fontFamily: "Poppins-SemiBold",
-    fontSize: 10,
+    fontSize: 13,
+    paddingTop: 12,
     justifyContent: "center",
+  },
+  messageContainer: {
+    marginBottom: 20,
+    padding: 10,
+    borderRadius: 10,
+    width: 300,
+  },
+  userMessage: {
+    backgroundColor: "#e0e0e0",
+    alignSelf: "flex-end",
+  },
+  businessMessage: {
+    backgroundColor: "#029EF6",
+    alignSelf: "flex-start",
+  },
+  sender: {
+    fontWeight: "bold",
+    marginBottom: 5,
+  },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderTopWidth: 1,
+    borderTopColor: "#ccc",
+  },
+  textInput: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 20,
+    paddingHorizontal: 15,
+    marginRight: 10,
+  },
+  sendButton: {
+    backgroundColor: "#007bff",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+  },
+  sendButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
   },
 });

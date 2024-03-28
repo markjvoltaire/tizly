@@ -21,6 +21,7 @@ import { supabase } from "../services/supabase";
 import { getRandomUser } from "../services/user";
 import * as Location from "expo-location";
 import LottieView from "lottie-react-native";
+import { useUser } from "../context/UserContext";
 
 export default function Home({ navigation }) {
   let height = Dimensions.get("window").height;
@@ -36,6 +37,7 @@ export default function Home({ navigation }) {
   const [city, setCity] = useState();
   const [isLoading, setIsLoading] = useState(true); // Introducing loading state
   const [allowLocation, setAllowLocation] = useState();
+  const { user } = useUser();
 
   const handleOpenSettings = () => {
     Linking.openSettings();
@@ -344,7 +346,9 @@ export default function Home({ navigation }) {
                   <Animated.View style={{ opacity: fadeAnim }}>
                     <TouchableOpacity
                       onPress={() =>
-                        navigation.navigate("ProfileDetail", { item })
+                        item.user_id === user.user_id
+                          ? navigation.navigate("UserProfile")
+                          : navigation.navigate("ProfileDetail", { item })
                       }
                     >
                       <Image

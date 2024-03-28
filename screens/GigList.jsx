@@ -13,12 +13,15 @@ import {
   Alert,
   RefreshControl,
   Dimensions,
+  Modal,
+  TextInput,
+  Button,
 } from "react-native";
 import * as Location from "expo-location";
 import { useFocusEffect } from "@react-navigation/native";
 import LottieView from "lottie-react-native";
 import { supabase } from "../services/supabase";
-import { getUser, reportPostById } from "../services/user";
+import { reportPostById } from "../services/user";
 import { useUser } from "../context/UserContext";
 
 export default function GigList({ navigation }) {
@@ -32,6 +35,20 @@ export default function GigList({ navigation }) {
   const [refreshing, setRefreshing] = useState(false);
   const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;
+  const [modalVisible, setModalVisible] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  async function getUser(userid) {
+    const resp = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("user_id", userid)
+      .single()
+      .limit(1);
+
+    return resp;
+  }
 
   async function deleteGig(item) {
     const userId = supabase.auth.currentUser.id;
@@ -45,9 +62,41 @@ export default function GigList({ navigation }) {
     return resp;
   }
 
+  async function loginWithEmail() {
+    console.log("RUNNING");
+    // setModalLoader(true);
+    const { user, error } = await supabase.auth.signIn({
+      email,
+      password,
+    });
+    console.log("email", email);
+    console.log("password", password);
+    if (error) {
+      Alert.alert(error.message);
+    } else {
+      console.log("user", user.id);
+
+      const resp = await getUser(user.id);
+      console.log("resp", resp);
+      supabase.auth.setAuth(user.access_token);
+      console.log("resp", resp);
+      setUser(resp.body);
+    }
+  }
+
+  const logUserIn = () => {
+    loginWithEmail();
+    // Add your login logic here
+  };
+
   const handleRefresh = async () => {
     setRefreshing(true); // Set refreshing to true when refreshing starts
     await getGigs(city); // Fetch gigs again
+  };
+
+  const handleLoginModal = () => {
+    setModalVisible(true);
+    // Add your login logic here
   };
 
   const handleOptionPress = (item) => {
@@ -244,6 +293,194 @@ export default function GigList({ navigation }) {
       >
         <ActivityIndicator color="grey" />
       </View>
+    );
+  }
+
+  // IF NO USER IS LOGGED IN
+  if (!user) {
+    return (
+      <SafeAreaView
+        style={{
+          flex: 1,
+          backgroundColor: "#FFFFFF",
+          padding: 20,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <View style={{}}>
+          <Text
+            style={{
+              fontSize: 30,
+              fontFamily: "AirbnbCereal-Bold",
+              marginBottom: 20,
+            }}
+          >
+            Gigs
+          </Text>
+          <Text
+            style={{
+              fontSize: 15,
+              fontFamily: "AirbnbCereal-Medium",
+              marginBottom: 10,
+              color: "#717171",
+            }}
+          >
+            Log in to see gigs near you
+          </Text>
+          <Text
+            style={{
+              fontSize: 20,
+
+              marginBottom: 20,
+              color: "#717171",
+            }}
+          >
+            Once you login, you'll be able to see gigs in your area
+          </Text>
+
+          <TouchableOpacity
+            style={{
+              backgroundColor: "#007AFF",
+              paddingVertical: 12,
+              paddingHorizontal: 20,
+              borderRadius: 5,
+              alignSelf: "stretch",
+            }}
+            onPress={handleLoginModal}
+          >
+            <Text
+              style={{
+                color: "#FFFFFF",
+                fontSize: 18,
+                fontWeight: "600",
+                fontFamily: "AirbnbCereal-Bold",
+                textAlign: "center",
+              }}
+            >
+              Log In
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <Modal
+          animationType="slide"
+          visible={modalVisible}
+          onRequestClose={() => {
+            setModalVisible(!modalVisible);
+          }}
+        >
+          <View
+            style={{
+              margin: 20,
+              backgroundColor: "white",
+              borderRadius: 10,
+              top: 200,
+              padding: 20,
+              alignItems: "center",
+              shadowColor: "#000",
+              shadowOffset: {
+                width: 0,
+                height: 2,
+              },
+              shadowOpacity: 0.25,
+              shadowRadius: 4,
+              elevation: 5,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 20,
+                marginBottom: 15,
+                textAlign: "center",
+                fontWeight: "600",
+              }}
+            >
+              Login or Sign Up
+            </Text>
+            <TextInput
+              style={{
+                height: 40,
+                width: "100%",
+                borderColor: "gray",
+                borderWidth: 1,
+                borderRadius: 12,
+                marginBottom: 10,
+                paddingHorizontal: 10,
+                fontFamily: "alata",
+                borderWidth: 1,
+                borderColor: "#BBBBBB",
+                backgroundColor: "#F3F3F9",
+              }}
+              placeholderTextColor="grey"
+              placeholder="Email"
+              value={email}
+              onChangeText={(text) => setEmail(text)}
+            />
+            <TextInput
+              style={{
+                height: 40,
+                width: "100%",
+                borderColor: "gray",
+                borderWidth: 1,
+                borderRadius: 10,
+                marginBottom: 10,
+                paddingHorizontal: 10,
+                fontFamily: "alata",
+                borderWidth: 1,
+                borderColor: "#BBBBBB",
+                backgroundColor: "#F3F3F9",
+              }}
+              placeholderTextColor="grey"
+              placeholder="Password"
+              secureTextEntry
+              value={password}
+              onChangeText={(text) => setPassword(text)}
+            />
+            <TouchableOpacity
+              style={{
+                backgroundColor: "#007AFF",
+                paddingVertical: 12,
+                paddingHorizontal: 20,
+                borderRadius: 5,
+                alignSelf: "stretch",
+              }}
+              onPress={logUserIn}
+            >
+              <Text
+                style={{
+                  color: "#FFFFFF",
+                  fontSize: 18,
+                  fontWeight: "600",
+                  fontFamily: "AirbnbCereal-Bold",
+                  textAlign: "center",
+                }}
+              >
+                Log In
+              </Text>
+            </TouchableOpacity>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginTop: 10,
+              }}
+            >
+              <Text style={{ marginRight: 5 }}>Don't have an account?</Text>
+              <Button
+                title="Sign Up"
+                onPress={() => {
+                  // Add your sign up functionality here
+                }}
+              />
+            </View>
+            <Button
+              title="Not Yet"
+              onPress={() => setModalVisible(!modalVisible)}
+              color="grey"
+            />
+          </View>
+        </Modal>
+      </SafeAreaView>
     );
   }
 
