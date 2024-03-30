@@ -18,6 +18,7 @@ import {
 } from "react-native";
 import { useUser } from "../context/UserContext";
 import { supabase } from "../services/supabase";
+import { useFocusEffect, useScrollToTop } from "@react-navigation/native"; // Import useScrollToTop
 
 export default function InboxDetails({ route }) {
   const profileDetails = route.params.profileDetails;
@@ -168,6 +169,31 @@ export default function InboxDetails({ route }) {
       </SafeAreaView>
     );
   }
+
+  useFocusEffect(
+    React.useCallback(() => {
+      console.log("FOCUSED");
+      let isMounted = true;
+
+      const fetchData = async () => {
+        try {
+          const resp = await getMessages();
+          if (isMounted) {
+            setMessages(resp);
+          }
+        } catch (error) {
+          console.error("Error fetching messages:", error);
+        }
+      };
+
+      fetchData();
+
+      return () => {
+        isMounted = false;
+        console.log("NOT FOCUSED");
+      };
+    }, [])
+  );
 
   useEffect(() => {
     const retrieveMessages = async () => {
