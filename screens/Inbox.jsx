@@ -15,12 +15,16 @@ import {
 import { useUser } from "../context/UserContext";
 import { supabase } from "../services/supabase";
 import { getUser } from "../services/user";
+import InboxCard from "../component/InboxCard";
+import { useFocusEffect, useScrollToTop } from "@react-navigation/native"; // Import useScrollToTop
 
 const Inbox = ({ navigation }) => {
   const { user, setUser } = useUser();
   const [modalVisible, setModalVisible] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [inboxMessages, setInboxMessages] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
 
   async function getUser(userid) {
     const resp = await supabase
@@ -48,6 +52,82 @@ const Inbox = ({ navigation }) => {
       setUser(resp.body);
     }
   }
+
+  const handleRefresh = async () => {
+    const resp = await getLatestMessages();
+    setInboxMessages(resp);
+    console.log("REFRESHING");
+  };
+
+  async function getLatestMessages() {
+    try {
+      const userId = supabase.auth.currentUser.id;
+
+      // Fetch all messages for the user
+      const { data: allMessages, error: messagesError } = await supabase
+        .from("messages")
+        .select("*")
+        .like("threadID", `%${userId}%`)
+        .order("created_at", { ascending: false });
+
+      if (messagesError) {
+        throw new Error(messagesError.message);
+      }
+
+      // Create a map to store the latest message for each threadID
+      const latestMessagesMap = new Map();
+
+      // Iterate over all messages
+      for (const message of allMessages) {
+        // Check if threadID already exists in the map
+        if (!latestMessagesMap.has(message.threadID)) {
+          // If not, add the message
+          latestMessagesMap.set(message.threadID, message);
+        }
+      }
+
+      // Extract the latest messages from the map
+      const latestMessages = Array.from(latestMessagesMap.values());
+
+      return latestMessages;
+    } catch (error) {
+      console.error("Error fetching latest messages:", error);
+      return [];
+    }
+  }
+  useFocusEffect(
+    React.useCallback(() => {
+      console.log("FOCUSED");
+      let isMounted = true;
+
+      const fetchData = async () => {
+        try {
+          const resp = await getLatestMessages();
+          if (isMounted) {
+            setInboxMessages(resp);
+          }
+        } catch (error) {
+          console.error("Error fetching messages:", error);
+        }
+      };
+
+      fetchData();
+
+      return () => {
+        isMounted = false;
+        console.log("NOT FOCUSED");
+      };
+    }, [])
+  );
+  useEffect(() => {
+    const retrieveMessages = async () => {
+      const resp = await getLatestMessages();
+      setInboxMessages(resp);
+
+      // setLoading(false);
+    };
+    retrieveMessages();
+  }, []);
 
   const handleLoginModal = () => {
     setModalVisible(true);
@@ -245,47 +325,18 @@ const Inbox = ({ navigation }) => {
       </SafeAreaView>
     );
   }
-  const inboxMessages = [
-    {
-      id: 1,
-      sender: "John Doe",
-      subject: "Meeting Tomorrow",
-      profileImage: require("../assets/dj.jpg"),
-    },
-    {
-      id: 2,
-      sender: "Jane Smith",
-      subject: "Project Update",
-      profileImage: require("../assets/chef.jpg"),
-    },
-    {
-      id: 3,
-      sender: "Alice Johnson",
-      subject: "Regarding Budget",
-      profileImage: require("../assets/cameraMan.jpg"),
-    },
-    // Add more messages as needed
-  ];
 
   const renderInboxItem = ({ item }) => (
-    <TouchableOpacity
-      onPress={() => navigation.navigate("InboxDetails")}
-      style={styles.itemContainer}
-    >
-      <Image source={item.profileImage} style={styles.profileImage} />
-      <View style={styles.messageContainer}>
-        <View style={styles.messageHeader}>
-          <Text style={styles.sender}>{item.sender}</Text>
-          <Text style={styles.date}>1h</Text>
-        </View>
-        <Text style={styles.subject}>{item.subject}</Text>
-      </View>
-    </TouchableOpacity>
+    <View style={styles.itemContainer}>
+      <InboxCard navigation={navigation} user={user} item={item} />
+    </View>
   );
 
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
+        onRefresh={handleRefresh} // Pass refresh function to FlatList
+        refreshing={refreshing}
         data={inboxMessages}
         renderItem={renderInboxItem}
         keyExtractor={(item) => item.id.toString()}

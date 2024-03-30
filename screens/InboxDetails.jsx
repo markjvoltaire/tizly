@@ -27,7 +27,10 @@ export default function InboxDetails({ route }) {
   const screenHeight = Dimensions.get("window").height;
   const screenWidth = Dimensions.get("window").width;
   const [loading, setLoading] = useState(true);
+  const [isThereMessages, setIsThereMessages] = useState(false);
+  const [threadId, setThreadId] = useState();
   const { user } = useUser();
+  console.log("route", route);
 
   async function getMessages() {
     try {
@@ -44,6 +47,16 @@ export default function InboxDetails({ route }) {
         throw new Error(resp.error.message);
       }
 
+      if (resp.body.length === 0) {
+        console.log("NO MESSAGES");
+        setIsThereMessages(false);
+      } else {
+        console.log("resp", resp.body[0].threadID);
+        console.log("THERE IS MESSAGES");
+        setThreadId(resp.body[0].threadID);
+        setIsThereMessages(true);
+      }
+
       return resp.data; // Assuming data is where the actual message data is stored
     } catch (error) {
       console.error("Error fetching messages:", error);
@@ -52,6 +65,8 @@ export default function InboxDetails({ route }) {
   }
   const sendMessage = async () => {
     const userId = supabase.auth.currentUser.id;
+    const threadID = `${userId + profileDetails.user_id}`;
+    console.log("threadID", threadID);
 
     if (messageText.trim() !== "") {
       const res = await supabase.from("messages").insert([
@@ -59,6 +74,10 @@ export default function InboxDetails({ route }) {
           sender: userId,
           receiver: profileDetails.user_id,
           message: messageText,
+          threadID:
+            isThereMessages === false
+              ? userId + profileDetails.user_id
+              : threadId,
         },
       ]);
       if (res.error === null) {
