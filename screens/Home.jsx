@@ -469,11 +469,7 @@ export default function Home({ navigation }) {
                 renderItem={({ item }) => (
                   <View>
                     <Animated.View style={{ opacity: fadeAnim }}>
-                      <TouchableOpacity
-                        onPress={() =>
-                          navigation.navigate("Offering", { item })
-                        }
-                      >
+                      <TouchableOpacity>
                         <Image
                           style={{
                             height: 150,

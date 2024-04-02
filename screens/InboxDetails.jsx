@@ -20,7 +20,7 @@ import { useUser } from "../context/UserContext";
 import { supabase } from "../services/supabase";
 import { useFocusEffect, useScrollToTop } from "@react-navigation/native"; // Import useScrollToTop
 
-export default function InboxDetails({ route }) {
+export default function InboxDetails({ route, navigation }) {
   const profileDetails = route.params.profileDetails;
   const [refreshing, setRefreshing] = useState(false);
   const [messageText, setMessageText] = useState("");
@@ -72,6 +72,7 @@ export default function InboxDetails({ route }) {
     if (messageText.trim() !== "") {
       const res = await supabase.from("messages").insert([
         {
+          type: "message",
           sender: userId,
           receiver: profileDetails.user_id,
           message: messageText,
@@ -260,15 +261,18 @@ export default function InboxDetails({ route }) {
             contentContainerStyle={styles.messagesContainer}
           >
             {messages.map((message, index) => (
-              <Message
-                message={message}
-                user={user}
-                profileDetails={profileDetails}
-                key={index}
-                sender={message.sender}
-              >
-                {message.message}
-              </Message>
+              <>
+                <Message
+                  message={message}
+                  user={user}
+                  profileDetails={profileDetails}
+                  key={index}
+                  sender={message.sender}
+                  navigation={navigation}
+                >
+                  {message.message}
+                </Message>
+              </>
             ))}
             <View style={{ height: 100 }} />
           </ScrollView>
@@ -318,19 +322,118 @@ export default function InboxDetails({ route }) {
   );
 }
 
-const Message = ({ sender, children, message, user }) => {
+const Message = ({ sender, children, message, user, navigation }) => {
   const date = new Date(message.created_at);
-  const formattedDate = date.toLocaleString();
+  const currentDate = new Date();
+  const timeDifference = currentDate.getTime() - date.getTime();
+  const secondsDifference = Math.floor(timeDifference / 1000);
+  const minutesDifference = Math.floor(secondsDifference / 60);
+  const hoursDifference = Math.floor(minutesDifference / 60);
+  const daysDifference = Math.floor(hoursDifference / 24);
+
+  let formattedDate;
+
+  if (daysDifference > 7) {
+    const monthNames = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+
+    const month = date.getMonth();
+    const monthName = monthNames[month];
+    formattedDate = `${monthName} ${date.getDate()}, ${date.getFullYear()}`;
+  } else if (daysDifference > 0) {
+    formattedDate =
+      daysDifference === 1 ? "1 day ago" : `${daysDifference} days ago`;
+  } else if (hoursDifference > 0) {
+    formattedDate =
+      hoursDifference === 1 ? "1 hour ago" : `${hoursDifference} hours ago`;
+  } else if (minutesDifference > 0) {
+    formattedDate =
+      minutesDifference === 1
+        ? "1 minute ago"
+        : `${minutesDifference} minutes ago`;
+  } else {
+    formattedDate = "Just now";
+  }
 
   const messageStyle =
     sender === user.user_id ? styles.userMessage : styles.businessMessage;
-  return (
+  return message.type === "offering" ? (
+    <View style={[styles.messageContainer, messageStyle]}>
+      <Text
+        style={{
+          marginBottom: 10,
+          color: sender === user.user_id ? null : "white",
+          fontWeight: "600",
+        }}
+      >
+        New Offering
+      </Text>
+      <Text style={{ color: sender === user.user_id ? null : "white" }}>
+        {children}
+      </Text>
+      <Text
+        style={{
+          color: sender === user.user_id ? null : "white",
+          fontSize: 10,
+          fontFamily: "alata",
+          marginBottom: 30,
+        }}
+      >
+        {formattedDate}
+      </Text>
+      {/* Move time rendering here */}
+
+      <Pressable
+        onPress={() => navigation.navigate("OfferDetails")}
+        style={{
+          alignSelf: "center",
+          backgroundColor: "#007AFF",
+          width: 200,
+          height: 40,
+          justifyContent: "center",
+          borderRadius: 10,
+        }}
+      >
+        <Text
+          style={{
+            alignSelf: "center",
+            color: sender === user.user_id ? "white" : null,
+            fontWeight: "700",
+          }}
+        >
+          {sender === user.user_id ? "Manage Offer" : "View Offer"}
+        </Text>
+      </Pressable>
+    </View>
+  ) : (
     <>
       <Pressable onLongPress={() => console.log("Hello")}>
         <View style={[styles.messageContainer, messageStyle]}>
           <Text style={{ color: sender === user.user_id ? null : "white" }}>
             {children}
           </Text>
+          <Text
+            style={{
+              color: sender === user.user_id ? null : "white",
+              fontSize: 10,
+              fontFamily: "alata",
+            }}
+          >
+            {formattedDate}
+          </Text>
+          {/* Move time rendering here */}
         </View>
       </Pressable>
     </>

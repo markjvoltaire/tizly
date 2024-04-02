@@ -11,7 +11,7 @@ export default function GigDetails({ route, navigation }) {
   const handleApplyNow = () => {
     // Implement the logic for applying to the gig here
     // For example, you can navigate to another screen for applying
-    navigation.navigate("InboxDetails");
+    navigation.navigate("Offering", { route });
     console.log("Apply button pressed!");
   };
 
@@ -21,7 +21,7 @@ export default function GigDetails({ route, navigation }) {
     <View style={styles.container}>
       <View style={styles.infoContainer}>
         <Text style={styles.title}>{route.params.category}</Text>
-        <Text style={styles.location}>Location: Miami, FL</Text>
+        {/* <Text style={styles.location}>Location: Miami, FL</Text> */}
         <View style={styles.separator}></View>
         <Text style={styles.title}>Description:</Text>
         <Text style={styles.detail}>{route.params.taskDescription}</Text>
@@ -30,7 +30,7 @@ export default function GigDetails({ route, navigation }) {
         <Text style={styles.detail}> {route.params.taskDate}</Text>
       </View>
       <TouchableOpacity style={styles.applyButton} onPress={handleApplyNow}>
-        <Text style={styles.applyButtonText}>Send Message</Text>
+        <Text style={styles.applyButtonText}>Make Offer</Text>
       </TouchableOpacity>
     </View>
   );

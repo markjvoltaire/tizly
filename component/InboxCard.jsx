@@ -50,6 +50,8 @@ export default function InboxCard({ item, user, navigation }) {
     getProfileDetails();
   }, []);
 
+  console.log("item!", item);
+
   return (
     <TouchableOpacity
       style={styles.cardContainer}
@@ -79,10 +81,16 @@ export default function InboxCard({ item, user, navigation }) {
             {item.sender === currentUserId ? (
               <Text style={styles.currentUserMessage}>
                 <Text style={styles.currentUserText}>You:</Text>{" "}
-                <Text style={styles.message}>{item.message}</Text>
+                {item.type === "offering" ? (
+                  <Text style={styles.message}>Sent An Offer</Text>
+                ) : (
+                  <Text style={styles.message}>{item.message}</Text>
+                )}
               </Text>
             ) : (
-              <Text style={styles.message}>{item.message}</Text>
+              <>
+                <Text style={styles.message}>{item.message}</Text>
+              </>
             )}
           </View>
         </>
@@ -115,6 +123,7 @@ const styles = StyleSheet.create({
   },
   profileImage: {
     height: 60,
+    backgroundColor: "grey",
     width: 60,
     borderRadius: 30,
     marginRight: 15,

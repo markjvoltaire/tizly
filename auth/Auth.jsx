@@ -26,6 +26,7 @@ import GigSearch from "../screens/GigSearch";
 import GigList from "../screens/GigList";
 import SelectGig from "../screens/SelectGig";
 import GigDetails from "../screens/GigDetails";
+import OfferDetails from "../screens/OfferDetails";
 
 export default function Auth() {
   const Stack = createNativeStackNavigator();
@@ -73,6 +74,18 @@ export default function Auth() {
           name="Category"
           component={Category}
           options={{ tabBarVisible: false }} // Hide tab bar for this screen
+        />
+
+        <Stack.Screen
+          name="OfferDetails"
+          component={OfferDetails}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Offer Details", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
         />
 
         <Stack.Screen
@@ -158,6 +171,18 @@ export default function Auth() {
             tabBarVisible: false,
             headerShown: true,
             headerTitle: "Inbox", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+
+        <Stack.Screen
+          name="OfferDetails"
+          component={OfferDetails}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Offer Details", // Customizing the header title
             headerBackTitle: "Back", // Customizing the back button text
             headerTintColor: "black", // Changing the color of the back button text
           }}
@@ -250,6 +275,18 @@ export default function Auth() {
             tabBarVisible: false,
             headerShown: true,
             headerTitle: "Message Thread", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+
+        <Stack.Screen
+          name="Offering"
+          component={Offering}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Offering", // Customizing the header title
             headerBackTitle: "Back", // Customizing the back button text
             headerTintColor: "black", // Changing the color of the back button text
           }}

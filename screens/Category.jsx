@@ -46,7 +46,7 @@ export default function Category({ route }) {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <Text style={{ fontSize: 22, fontWeight: "600", marginLeft: 10 }}>
-        {route.params.item.profession} Service Providers
+        {route.params.item.profession}
       </Text>
       <FlatList
         style={{ top: 10 }}
