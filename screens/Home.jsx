@@ -345,11 +345,13 @@ export default function Home({ navigation }) {
                 renderItem={({ item, index }) => (
                   <Animated.View style={{ opacity: fadeAnim }}>
                     <TouchableOpacity
-                      onPress={() =>
-                        item.user_id === user.user_id
+                      onPress={() => {
+                        user === undefined
+                          ? navigation.navigate("ProfileDetail", { item })
+                          : item.user_id === user.user_id
                           ? navigation.navigate("UserProfile")
-                          : navigation.navigate("ProfileDetail", { item })
-                      }
+                          : navigation.navigate("ProfileDetail", { item });
+                      }}
                     >
                       <Image
                         style={{

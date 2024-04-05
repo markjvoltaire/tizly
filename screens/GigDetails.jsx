@@ -6,16 +6,17 @@ import {
   TouchableOpacity,
 } from "react-native";
 import React from "react";
+import { useUser } from "../context/UserContext";
 
 export default function GigDetails({ route, navigation }) {
+  const { user } = useUser();
+
   const handleApplyNow = () => {
-    // Implement the logic for applying to the gig here
-    // For example, you can navigate to another screen for applying
-    navigation.navigate("Offering", { route });
+    route.params.user_id === user.user_id
+      ? console.log("MY GIG")
+      : navigation.navigate("Offering", { route });
     console.log("Apply button pressed!");
   };
-
-  console.log("route", route.params);
 
   return (
     <View style={styles.container}>
@@ -30,7 +31,9 @@ export default function GigDetails({ route, navigation }) {
         <Text style={styles.detail}> {route.params.taskDate}</Text>
       </View>
       <TouchableOpacity style={styles.applyButton} onPress={handleApplyNow}>
-        <Text style={styles.applyButtonText}>Make Offer</Text>
+        <Text style={styles.applyButtonText}>
+          {route.params.user_id === user.user_id ? "Manage Gig" : "Make Offer"}
+        </Text>
       </TouchableOpacity>
     </View>
   );

@@ -54,6 +54,7 @@ export default function Offering({ route, navigation }) {
   }
 
   const sendOffer = async () => {
+    setUploading(true);
     const userId = supabase.auth.currentUser.id;
     const threadID = `${userId + route.params.route.params.user_id}`;
     console.log("threadID", threadID);
@@ -73,9 +74,24 @@ export default function Offering({ route, navigation }) {
         },
       ]);
       if (res.error === null) {
-        console.log("OFFER SENT");
+        await new Promise((resolve) =>
+          setTimeout(() => {
+            setUploadComplete(true);
+            resolve();
+          }, 2000)
+        );
+
+        await new Promise((resolve) =>
+          setTimeout(() => {
+            setUploading(false);
+            setUploadComplete(false);
+            navigation.goBack();
+            resolve();
+          }, 2000)
+        );
       } else {
         Alert.alert("An error has occured please try again");
+        setUploading(false);
       }
     } else {
       Alert.alert("Please enter a message before sending.");
@@ -151,7 +167,7 @@ export default function Offering({ route, navigation }) {
             fontWeight: "600",
           }}
         >
-          {uploadComplete === true ? "Upload complete." : "Uploading Your Gig"}
+          {uploadComplete === true ? "Offer Sent." : "Sending Your Offer"}
         </Text>
         <LottieView
           style={{

@@ -246,6 +246,18 @@ export default function Auth() {
         />
 
         <Stack.Screen
+          name="ProfileDetail"
+          component={ProfileDetail}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Profile Details", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+
+        <Stack.Screen
           name="GigDetails"
           component={GigDetails}
           options={{

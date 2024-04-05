@@ -23,6 +23,7 @@ import LottieView from "lottie-react-native";
 import { supabase } from "../services/supabase";
 import { reportPostById } from "../services/user";
 import { useUser } from "../context/UserContext";
+import GigCard from "../component/GigCard";
 
 export default function GigList({ navigation }) {
   const [loading, setLoading] = useState(true);
@@ -38,6 +39,7 @@ export default function GigList({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [userDetails, setUserDetails] = useState();
 
   async function getUser(userid) {
     const resp = await supabase
@@ -175,7 +177,7 @@ export default function GigList({ navigation }) {
     );
   };
 
-  const GigCard = ({ item, navigation }) => {
+  const GigCard2 = ({ item, navigation }) => {
     return (
       <>
         <TouchableOpacity onPress={() => handleOptionPress(item)}>
@@ -516,7 +518,7 @@ export default function GigList({ navigation }) {
                 top: 20,
               }}
             >
-              <GigCard navigation={navigation} item={item} />
+              <GigCard item={item} navigation={navigation} />
             </View>
           )}
           keyExtractor={(item) => item.id}

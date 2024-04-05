@@ -142,6 +142,8 @@ export default function ProfileDetail({ route, navigation }) {
   const [profilePost, setProfilePost] = useState([]);
   const profileDetails = route.params.item;
 
+  console.log("route", route);
+
   useEffect(() => {
     const getUserInfo = async () => {
       const resp = await getPosts(profileDetails.user_id);
@@ -229,7 +231,7 @@ export default function ProfileDetail({ route, navigation }) {
                 <Text
                   style={{ fontWeight: "600", fontSize: 15, color: "grey" }}
                 >
-                  Photographer
+                  {route.params.item.profession}
                 </Text>
               </View>
             </View>
