@@ -346,7 +346,7 @@ export default function Home({ navigation }) {
                   <Animated.View style={{ opacity: fadeAnim }}>
                     <TouchableOpacity
                       onPress={() => {
-                        user === undefined
+                        user === undefined || null
                           ? navigation.navigate("ProfileDetail", { item })
                           : item.user_id === user.user_id
                           ? navigation.navigate("UserProfile")

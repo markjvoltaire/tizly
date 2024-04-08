@@ -28,7 +28,7 @@ export default function EditProfile({ navigation }) {
   const [type, setType] = useState(user.type);
   const [bio, setBio] = useState(user.bio);
   const [imagePreview, setImagePreview] = useState(user.profileimage);
-  const [displayname, setDisplayname] = useState(user.displayName);
+  const [displayname, setDisplayname] = useState(user.username);
   const [selectedType, setSelectedType] = useState(user.profession);
   const [accountTypeModal, setAccountTypeModal] = useState(false);
   const [uploadingAvi, setUploadinAvi] = useState(false);
@@ -185,7 +185,7 @@ export default function EditProfile({ navigation }) {
     const res = await supabase
       .from("profiles")
       .update({
-        displayName: displayname,
+        username: displayname,
         bio: bio,
       })
       .eq("user_id", userId);

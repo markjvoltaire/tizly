@@ -27,6 +27,9 @@ import GigList from "../screens/GigList";
 import SelectGig from "../screens/SelectGig";
 import GigDetails from "../screens/GigDetails";
 import OfferDetails from "../screens/OfferDetails";
+import SignUp from "../screens/SignUp";
+import ProfileTypeSelect from "../screens/ProfileTypeSelect";
+import SelectBusinessType from "../screens/SelectBusinessType";
 
 export default function Auth() {
   const Stack = createNativeStackNavigator();
@@ -158,6 +161,42 @@ export default function Auth() {
             headerTintColor: "black", // Changing the color of the back button text
           }}
         />
+
+        <Stack.Screen
+          name="SignUp"
+          component={SignUp}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Sign Up", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+
+        <Stack.Screen
+          name="ProfileTypeSelect"
+          component={ProfileTypeSelect}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Sign Up", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+
+        <Stack.Screen
+          name="SelectBusinessType"
+          component={SelectBusinessType}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Select Your Profession", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
       </Stack.Navigator>
     );
   };
@@ -199,6 +238,41 @@ export default function Auth() {
             headerTintColor: "black", // Changing the color of the back button text
           }}
         />
+
+        <Stack.Screen
+          name="SignUp"
+          component={SignUp}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Sign Up", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+
+        <Stack.Screen
+          name="ProfileTypeSelect"
+          component={ProfileTypeSelect}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Sign Up", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+        <Stack.Screen
+          name="SelectBusinessType"
+          component={SelectBusinessType}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Select Your Profession", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
       </Stack.Navigator>
     );
   };
@@ -223,6 +297,30 @@ export default function Auth() {
           options={{
             headerShown: true,
             headerTitle: "Post Gig", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+
+        <Stack.Screen
+          name="ProfileTypeSelect"
+          component={ProfileTypeSelect}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Sign Up", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+
+        <Stack.Screen
+          name="SelectBusinessType"
+          component={SelectBusinessType}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Select Your Profession", // Customizing the header title
             headerBackTitle: "Back", // Customizing the back button text
             headerTintColor: "black", // Changing the color of the back button text
           }}
@@ -303,6 +401,48 @@ export default function Auth() {
             headerTintColor: "black", // Changing the color of the back button text
           }}
         />
+
+        <Stack.Screen
+          name="UserProfile"
+          component={UserProfile}
+          options={{ tabBarVisible: false }} // Hide tab bar for this screen
+        />
+
+        <Stack.Screen
+          name="SignUp"
+          component={SignUp}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Sign Up", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+
+        <Stack.Screen
+          name="ProfileTypeSelect"
+          component={ProfileTypeSelect}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Sign Up", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+
+        <Stack.Screen
+          name="SelectBusinessType"
+          component={SelectBusinessType}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Select Your Profession", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
       </Stack.Navigator>
     );
   };
@@ -339,6 +479,42 @@ export default function Auth() {
             tabBarVisible: false,
             headerShown: true,
             headerTitle: "Edit Profile", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+
+        <Stack.Screen
+          name="SignUp"
+          component={SignUp}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Sign Up", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+
+        <Stack.Screen
+          name="ProfileTypeSelect"
+          component={ProfileTypeSelect}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Sign Up", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+
+        <Stack.Screen
+          name="SelectBusinessType"
+          component={SelectBusinessType}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Select Your Profession", // Customizing the header title
             headerBackTitle: "Back", // Customizing the back button text
             headerTintColor: "black", // Changing the color of the back button text
           }}

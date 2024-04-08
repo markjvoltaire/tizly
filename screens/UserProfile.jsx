@@ -479,7 +479,7 @@ export default function UserProfile({ route, navigation }) {
               />
               <View>
                 <Text style={{ fontWeight: "600", fontSize: 22 }}>
-                  {user.displayName}
+                  {user.username}
                 </Text>
                 <Text
                   style={{ fontWeight: "600", fontSize: 15, color: "grey" }}

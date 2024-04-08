@@ -11,6 +11,8 @@ import {
   Modal,
   TextInput,
   Alert,
+  ScrollView,
+  RefreshControl,
 } from "react-native";
 import { useUser } from "../context/UserContext";
 import { supabase } from "../services/supabase";
@@ -25,6 +27,8 @@ const Inbox = ({ navigation }) => {
   const [password, setPassword] = useState("");
   const [inboxMessages, setInboxMessages] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
+
+  const screenName = "Inbox";
 
   async function getUser(userid) {
     const resp = await supabase
@@ -60,6 +64,12 @@ const Inbox = ({ navigation }) => {
   };
 
   async function getLatestMessages() {
+    // Check if user is not logged in
+    if (!supabase.auth.currentUser) {
+      console.error("User not logged in");
+      return [];
+    }
+
     try {
       const userId = supabase.auth.currentUser.id;
 
@@ -70,9 +80,9 @@ const Inbox = ({ navigation }) => {
         .like("threadID", `%${userId}%`)
         .order("created_at", { ascending: false });
 
-      if (messagesError) {
-        throw new Error(messagesError.message);
-      }
+      // if (messagesError) {
+      //   throw new Error(messagesError.message);
+      // }
 
       // Create a map to store the latest message for each threadID
       const latestMessagesMap = new Map();
@@ -95,6 +105,7 @@ const Inbox = ({ navigation }) => {
       return [];
     }
   }
+
   useFocusEffect(
     React.useCallback(() => {
       console.log("FOCUSED");
@@ -102,6 +113,9 @@ const Inbox = ({ navigation }) => {
 
       const fetchData = async () => {
         try {
+          if (user === null || undefined) {
+            return;
+          }
           const resp = await getLatestMessages();
           if (isMounted) {
             setInboxMessages(resp);
@@ -121,6 +135,9 @@ const Inbox = ({ navigation }) => {
   );
   useEffect(() => {
     const retrieveMessages = async () => {
+      if (user === null || undefined) {
+        return;
+      }
       const resp = await getLatestMessages();
       setInboxMessages(resp);
 
@@ -312,6 +329,8 @@ const Inbox = ({ navigation }) => {
                 title="Sign Up"
                 onPress={() => {
                   // Add your sign up functionality here
+                  setModalVisible(false);
+                  navigation.navigate("ProfileTypeSelect", { screenName });
                 }}
               />
             </View>
@@ -334,14 +353,27 @@ const Inbox = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <FlatList
-        onRefresh={handleRefresh} // Pass refresh function to FlatList
-        refreshing={refreshing}
-        data={inboxMessages}
-        renderItem={renderInboxItem}
-        keyExtractor={(item) => item.id.toString()}
-        style={styles.list}
-      />
+      {inboxMessages.length === 0 ? (
+        <ScrollView
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+          }
+          style={{ alignContent: "center" }}
+        >
+          <Text style={{ top: 100, alignSelf: "center" }}>
+            You currently have no messages
+          </Text>
+        </ScrollView>
+      ) : (
+        <FlatList
+          onRefresh={handleRefresh} // Pass refresh function to FlatList
+          refreshing={refreshing}
+          data={inboxMessages}
+          renderItem={renderInboxItem}
+          keyExtractor={(item) => item.id.toString()}
+          style={styles.list}
+        />
+      )}
     </SafeAreaView>
   );
 };

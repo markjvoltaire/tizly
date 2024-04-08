@@ -38,7 +38,7 @@ const GigCard = ({ navigation, item }) => {
     };
 
     getUserDetails();
-  }, []);
+  }, [item.user_id]); // Added dependency to avoid unnecessary re-renders
 
   const renderUserInfo = () => {
     if (isLoading) {
@@ -64,14 +64,12 @@ const GigCard = ({ navigation, item }) => {
     // Handle more press
   };
 
-  // Add something to the item object
   const newItem = {
     ...item,
-    profileimage: userDetails.profileimage,
-    username: userDetails.username,
-  };
-
-  console.log("userDetails", userDetails);
+    profileimage: userDetails?.profileimage,
+    username: userDetails?.username,
+    profession: userDetails?.profession,
+  }; // Fixed potential null error
 
   return (
     <View style={styles.container}>
