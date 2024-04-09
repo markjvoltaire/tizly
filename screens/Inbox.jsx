@@ -101,7 +101,6 @@ const Inbox = ({ navigation }) => {
   async function getLatestMessages() {
     // Check if user is not logged in
     if (!supabase.auth.currentUser) {
-      console.error("User not logged in");
       return [];
     }
 
@@ -170,7 +169,7 @@ const Inbox = ({ navigation }) => {
   );
   useEffect(() => {
     const retrieveMessages = async () => {
-      if (user === null || undefined) {
+      if (isLoggedIn === false) {
         return;
       }
       const resp = await getLatestMessages();
