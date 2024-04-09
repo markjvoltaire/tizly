@@ -246,6 +246,7 @@ export default function Settings({ navigation }) {
               flexDirection: "row",
               alignItems: "center",
               marginTop: 10,
+              marginBottom: 20,
             }}
           >
             <Text style={{ marginRight: 5 }}>Don't have an account?</Text>
@@ -256,6 +257,22 @@ export default function Settings({ navigation }) {
               }}
             />
           </View>
+
+          <TouchableOpacity
+            style={{
+              marginBottom: 10,
+              marginBottom: 20,
+            }}
+            onPress={() => {
+              // Add your forgot password functionality here
+              setModalVisible(false);
+              navigation.navigate("ResetPassword");
+            }}
+          >
+            <Text style={{ color: "#007AFF", fontSize: 16 }}>
+              Forgot Password?
+            </Text>
+          </TouchableOpacity>
           <Button
             title="Not Yet"
             onPress={() => setModalVisible(!modalVisible)}

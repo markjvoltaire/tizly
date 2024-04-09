@@ -193,6 +193,7 @@ export default function SelectGig({ navigation }) {
                 borderColor: "#BBBBBB",
                 backgroundColor: "#F3F3F9",
               }}
+              autoCapitalize={false}
               placeholderTextColor="grey"
               placeholder="Email"
               value={email}
@@ -212,6 +213,7 @@ export default function SelectGig({ navigation }) {
                 borderColor: "#BBBBBB",
                 backgroundColor: "#F3F3F9",
               }}
+              autoCapitalize={false}
               placeholderTextColor="grey"
               placeholder="Password"
               secureTextEntry

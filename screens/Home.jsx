@@ -43,6 +43,16 @@ export default function Home({ navigation }) {
     Linking.openSettings();
   };
 
+  const goToProfile = (item) => {
+    if (!user) {
+      navigation.navigate("ProfileDetail", { item });
+    } else if (item.user_id === user.user_id) {
+      navigation.navigate("UserProfile");
+    } else {
+      navigation.navigate("ProfileDetail", { item });
+    }
+  };
+
   const reverseGeocode = async (currentLocation) => {
     try {
       const { coords } = currentLocation;
@@ -344,15 +354,7 @@ export default function Home({ navigation }) {
                 keyExtractor={(item) => item.id}
                 renderItem={({ item, index }) => (
                   <Animated.View style={{ opacity: fadeAnim }}>
-                    <TouchableOpacity
-                      onPress={() => {
-                        user === undefined || null
-                          ? navigation.navigate("ProfileDetail", { item })
-                          : item.user_id === user.user_id
-                          ? navigation.navigate("UserProfile")
-                          : navigation.navigate("ProfileDetail", { item });
-                      }}
-                    >
+                    <TouchableOpacity onPress={() => goToProfile(item)}>
                       <Image
                         style={{
                           height: 100,
