@@ -40,6 +40,9 @@ export default function GigList({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [userDetails, setUserDetails] = useState();
+  const [isLoggedIn, setIsLoggedIn] = useState(!user ? false : true);
+
+  const screenName = "GigList";
 
   async function getUser(userid) {
     const resp = await supabase
@@ -299,7 +302,7 @@ export default function GigList({ navigation }) {
   }
 
   // IF NO USER IS LOGGED IN
-  if (!user) {
+  if (isLoggedIn === false) {
     return (
       <SafeAreaView
         style={{
@@ -465,6 +468,7 @@ export default function GigList({ navigation }) {
                 flexDirection: "row",
                 alignItems: "center",
                 marginTop: 10,
+                marginBottom: 20,
               }}
             >
               <Text style={{ marginRight: 5 }}>Don't have an account?</Text>
@@ -472,9 +476,27 @@ export default function GigList({ navigation }) {
                 title="Sign Up"
                 onPress={() => {
                   // Add your sign up functionality here
+                  setModalVisible(false);
+                  navigation.navigate("ProfileTypeSelect", { screenName });
                 }}
               />
             </View>
+
+            <TouchableOpacity
+              style={{
+                marginBottom: 10,
+                marginBottom: 20,
+              }}
+              onPress={() => {
+                // Add your forgot password functionality here
+                setModalVisible(false);
+                navigation.navigate("ResetPassword");
+              }}
+            >
+              <Text style={{ color: "#007AFF", fontSize: 16 }}>
+                Forgot Password?
+              </Text>
+            </TouchableOpacity>
             <Button
               title="Not Yet"
               onPress={() => setModalVisible(!modalVisible)}

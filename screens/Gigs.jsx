@@ -57,6 +57,9 @@ export default function Gigs({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(!user ? false : true);
+
+  const screenName = "Inbox";
 
   async function getUser(userid) {
     const resp = await supabase
@@ -95,7 +98,7 @@ export default function Gigs({ navigation }) {
     // Add your login logic here
   };
 
-  if (!user) {
+  if (isLoggedIn === false) {
     return (
       <SafeAreaView
         style={{

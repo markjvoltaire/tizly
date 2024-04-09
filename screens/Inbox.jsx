@@ -27,8 +27,14 @@ const Inbox = ({ navigation }) => {
   const [password, setPassword] = useState("");
   const [inboxMessages, setInboxMessages] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
-
+  const [forgotPassword, setForgotPassword] = useState(false);
+  const [state, setState] = useState("start");
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [otp, setOTP] = useState();
+  const [isLoggedIn, setIsLoggedIn] = useState(!user ? false : true);
   const screenName = "Inbox";
+
+  console.log("isLoggedIn", isLoggedIn);
 
   async function getUser(userid) {
     const resp = await supabase
@@ -39,6 +45,35 @@ const Inbox = ({ navigation }) => {
       .limit(1);
 
     return resp;
+  }
+
+  async function sendEmail() {
+    const { data, error } = await supabase.auth.api.resetPasswordForEmail(
+      forgotEmail
+    );
+
+    if (error) {
+      Alert.alert(error.message);
+    } else {
+      setState("awaitOTP");
+      Alert.alert(`A 6 Digit Code Has Been Sent To ${forgotEmail}`);
+    }
+  }
+
+  async function verifyOTP() {
+    const { data, error } = await supabase.auth.api.verifyOTP({
+      email: forgotEmail,
+      token: otp,
+      type: "recovery",
+    });
+
+    if (error) {
+      Alert.alert(error.message);
+    } else {
+      setUser(data);
+      setState("changePassword");
+      Alert.alert("OTP Verified! You Can Now Change Your Password");
+    }
   }
 
   async function loginWithEmail() {
@@ -156,7 +191,7 @@ const Inbox = ({ navigation }) => {
     // Add your login logic here
   };
 
-  if (!user) {
+  if (isLoggedIn === false) {
     return (
       <SafeAreaView
         style={{
@@ -295,6 +330,7 @@ const Inbox = ({ navigation }) => {
               value={password}
               onChangeText={(text) => setPassword(text)}
             />
+
             <TouchableOpacity
               style={{
                 backgroundColor: "#007AFF",
@@ -322,6 +358,7 @@ const Inbox = ({ navigation }) => {
                 flexDirection: "row",
                 alignItems: "center",
                 marginTop: 10,
+                marginBottom: 20,
               }}
             >
               <Text style={{ marginRight: 5 }}>Don't have an account?</Text>
@@ -334,6 +371,22 @@ const Inbox = ({ navigation }) => {
                 }}
               />
             </View>
+            <TouchableOpacity
+              style={{
+                marginBottom: 10,
+                marginBottom: 20,
+              }}
+              onPress={() => {
+                // Add your forgot password functionality here
+                setModalVisible(false);
+                navigation.navigate("ResetPassword");
+              }}
+            >
+              <Text style={{ color: "#007AFF", fontSize: 16 }}>
+                Forgot Password?
+              </Text>
+            </TouchableOpacity>
+
             <Button
               title="Not Yet"
               onPress={() => setModalVisible(!modalVisible)}

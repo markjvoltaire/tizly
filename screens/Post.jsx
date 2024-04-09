@@ -25,6 +25,7 @@ export default function Post() {
   const [password, setPassword] = useState("");
   const [uploading, setUploading] = useState(false);
   const [postInfo, setPostInfo] = useState();
+  const [isLoggedIn, setIsLoggedIn] = useState(!user ? false : true);
 
   async function getUser(userid) {
     const resp = await supabase
@@ -183,7 +184,7 @@ export default function Post() {
   }
 
   // IF NO USER IS LOGGED IN
-  if (!user) {
+  if (isLoggedIn === false) {
     return (
       <SafeAreaView
         style={{

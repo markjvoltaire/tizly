@@ -178,6 +178,9 @@ export default function UserProfile({ route, navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(!user ? false : true);
+
+  const screenName = "UserProfile";
 
   async function getUser(userid) {
     const resp = await supabase
@@ -237,7 +240,7 @@ export default function UserProfile({ route, navigation }) {
   }, [fadeAnim]);
 
   // IF NO USER IS LOGGED IN
-  if (!user) {
+  if (isLoggedIn === false) {
     return (
       <SafeAreaView
         style={{
@@ -403,6 +406,7 @@ export default function UserProfile({ route, navigation }) {
                 flexDirection: "row",
                 alignItems: "center",
                 marginTop: 10,
+                marginBottom: 20,
               }}
             >
               <Text style={{ marginRight: 5 }}>Don't have an account?</Text>
@@ -410,9 +414,26 @@ export default function UserProfile({ route, navigation }) {
                 title="Sign Up"
                 onPress={() => {
                   // Add your sign up functionality here
+                  setModalVisible(false);
+                  navigation.navigate("ProfileTypeSelect", { screenName });
                 }}
               />
             </View>
+            <TouchableOpacity
+              style={{
+                marginBottom: 10,
+                marginBottom: 20,
+              }}
+              onPress={() => {
+                // Add your forgot password functionality here
+                setModalVisible(false);
+                navigation.navigate("ResetPassword");
+              }}
+            >
+              <Text style={{ color: "#007AFF", fontSize: 16 }}>
+                Forgot Password?
+              </Text>
+            </TouchableOpacity>
             <Button
               title="Not Yet"
               onPress={() => setModalVisible(!modalVisible)}

@@ -30,6 +30,7 @@ import OfferDetails from "../screens/OfferDetails";
 import SignUp from "../screens/SignUp";
 import ProfileTypeSelect from "../screens/ProfileTypeSelect";
 import SelectBusinessType from "../screens/SelectBusinessType";
+import ResetPassword from "../screens/ResetPassword";
 
 export default function Auth() {
   const Stack = createNativeStackNavigator();
@@ -197,6 +198,18 @@ export default function Auth() {
             headerTintColor: "black", // Changing the color of the back button text
           }}
         />
+
+        <Stack.Screen
+          name="ResetPassword"
+          component={ResetPassword}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Password Reset", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
       </Stack.Navigator>
     );
   };
@@ -273,6 +286,18 @@ export default function Auth() {
             headerTintColor: "black", // Changing the color of the back button text
           }}
         />
+
+        <Stack.Screen
+          name="ResetPassword"
+          component={ResetPassword}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Password Reset", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
       </Stack.Navigator>
     );
   };
@@ -321,6 +346,17 @@ export default function Auth() {
             tabBarVisible: false,
             headerShown: true,
             headerTitle: "Select Your Profession", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+        <Stack.Screen
+          name="ResetPassword"
+          component={ResetPassword}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Password Reset", // Customizing the header title
             headerBackTitle: "Back", // Customizing the back button text
             headerTintColor: "black", // Changing the color of the back button text
           }}
@@ -443,6 +479,18 @@ export default function Auth() {
             headerTintColor: "black", // Changing the color of the back button text
           }}
         />
+
+        <Stack.Screen
+          name="ResetPassword"
+          component={ResetPassword}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Password Reset", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
       </Stack.Navigator>
     );
   };
@@ -515,6 +563,18 @@ export default function Auth() {
             tabBarVisible: false,
             headerShown: true,
             headerTitle: "Select Your Profession", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+
+        <Stack.Screen
+          name="ResetPassword"
+          component={ResetPassword}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Password Reset", // Customizing the header title
             headerBackTitle: "Back", // Customizing the back button text
             headerTintColor: "black", // Changing the color of the back button text
           }}
