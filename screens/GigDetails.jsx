@@ -30,11 +30,15 @@ export default function GigDetails({ route, navigation }) {
         <Text style={styles.title}>Date:</Text>
         <Text style={styles.detail}> {route.params.taskDate}</Text>
       </View>
-      <TouchableOpacity style={styles.applyButton} onPress={handleApplyNow}>
-        <Text style={styles.applyButtonText}>
-          {route.params.user_id === user.user_id ? "Manage Gig" : "Make Offer"}
-        </Text>
-      </TouchableOpacity>
+      {route.params.user_id === user.user_id ? null : (
+        <TouchableOpacity style={styles.applyButton} onPress={handleApplyNow}>
+          <Text style={styles.applyButtonText}>
+            {route.params.user_id === user.user_id
+              ? "Manage Gig"
+              : "Make Offer"}
+          </Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 }

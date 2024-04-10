@@ -262,6 +262,54 @@ export default function GigList({ navigation }) {
     }
   };
 
+  const renderItem = ({ item }) => {
+    return (
+      <View
+        style={{
+          marginBottom: 20,
+          backgroundColor: "#FFF",
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.25,
+          shadowRadius: 3.84,
+          elevation: 5,
+          margin: 10,
+          borderRadius: 10,
+        }}
+      >
+        <View style={{ flexDirection: "row", alignItems: "center", top: 10 }}>
+          <GigCard item={item} navigation={navigation} />
+          <TouchableOpacity onPress={() => handleOptionPress(item)}>
+            <View
+              style={{
+                borderRadius: 10,
+                marginRight: 10, // Added margin for spacing
+              }}
+            >
+              <Image
+                style={{ width: 40, height: 40 }}
+                source={require("../assets/More.png")}
+              />
+            </View>
+          </TouchableOpacity>
+        </View>
+        <Pressable onPress={() => navigation.navigate("GigDetails", item)}>
+          <View style={styles.infoContainer}>
+            <View style={styles.separator} />
+            <Text style={styles.title}>{item.category}</Text>
+            <Text style={styles.location}>Location: Miami, FL</Text>
+            <View style={styles.separator} />
+            <Text style={styles.title}>Description:</Text>
+            <Text style={styles.description}>{item.taskDescription}</Text>
+            <View style={styles.separator} />
+            <Text style={styles.title}>Date:</Text>
+            <Text style={styles.date}>{item.taskDate}</Text>
+          </View>
+        </Pressable>
+      </View>
+    );
+  };
+
   if (loading) {
     return (
       <View
@@ -533,19 +581,8 @@ export default function GigList({ navigation }) {
           data={gigList}
           refreshing={refreshing} // Pass refreshing state to FlatList
           onRefresh={handleRefresh} // Pass refresh function to FlatList
-          renderItem={({ item }) => (
-            <View
-              style={{
-                paddingBottom: 60,
-                width: 360,
-                alignSelf: "center",
-                top: 20,
-              }}
-            >
-              <GigCard item={item} navigation={navigation} />
-            </View>
-          )}
           keyExtractor={(item) => item.id}
+          renderItem={renderItem}
         />
       )}
     </View>
@@ -576,14 +613,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     padding: 20,
     borderRadius: 10,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
   },
   title: {
     fontSize: 18,
@@ -623,7 +652,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     position: "absolute",
-    bottom: 20,
+    top: 1,
     left: 20,
     right: 20,
   },

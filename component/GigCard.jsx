@@ -3,7 +3,6 @@ import {
   Image,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
   Dimensions,
   ActivityIndicator,
@@ -42,7 +41,7 @@ const GigCard = ({ navigation, item }) => {
 
   const renderUserInfo = () => {
     if (isLoading) {
-      return <ActivityIndicator size="small" color="#007AFF" />;
+      return <ActivityIndicator size="small" color="grey" />;
     } else {
       return (
         <>
@@ -56,14 +55,6 @@ const GigCard = ({ navigation, item }) => {
     }
   };
 
-  const handleOptionPress = () => {
-    // Handle option press
-  };
-
-  const handleMorePress = () => {
-    // Handle more press
-  };
-
   const newItem = {
     ...item,
     profileimage: userDetails?.profileimage,
@@ -72,7 +63,7 @@ const GigCard = ({ navigation, item }) => {
   }; // Fixed potential null error
 
   return (
-    <View style={styles.container}>
+    <View style={{}}>
       <Pressable
         onPress={() =>
           item.user_id === user.user_id
@@ -83,50 +74,16 @@ const GigCard = ({ navigation, item }) => {
       >
         {renderUserInfo()}
       </Pressable>
-
-      <TouchableOpacity onPress={handleOptionPress} style={styles.optionButton}>
-        <Image style={styles.moreIcon} source={require("../assets/More.png")} />
-      </TouchableOpacity>
-      <Pressable onPress={() => navigation.navigate("GigDetails", item)}>
-        <View style={styles.infoContainer}>
-          <Text style={styles.title}>{item.category}</Text>
-          <Text style={styles.location}>Location: Miami, FL</Text>
-          <View style={styles.separator} />
-          <Text style={styles.title}>Description:</Text>
-          <Text style={styles.description}>{item.taskDescription}</Text>
-          <View style={styles.separator} />
-          <Text style={styles.title}>Date:</Text>
-          <Text style={styles.date}>{item.taskDate}</Text>
-        </View>
-      </Pressable>
-      {/* {!isLoading && (
-        <TouchableOpacity style={styles.button} onPress={handleMorePress}>
-          <Text style={styles.buttonText}>
-            {user.user_id === item.user_id ? " Manage Offer" : "Make Offer"}
-          </Text>
-        </TouchableOpacity>
-      )} */}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    margin: 10,
-    borderRadius: 10,
-    backgroundColor: "#FFF",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
+  container: {},
   userContainer: {
     flexDirection: "row",
     alignItems: "center",
     padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#E0E0E0",
   },
   userImage: {
     width: 50,
