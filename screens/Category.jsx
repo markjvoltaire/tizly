@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   SafeAreaView,
   StyleSheet,
@@ -7,85 +7,69 @@ import {
   FlatList,
   Image,
   Pressable,
+  ActivityIndicator,
+  TouchableOpacity,
+  Dimensions,
 } from "react-native";
 
-export default function Category({ route }) {
-  // Sample data for profile cards
-  const profileData = [
-    {
-      id: 1,
-      name: "John Doe",
-      image: require("../assets/chef.jpg"),
-      description: "Experienced plumber",
-      rating: 4.5,
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      image: require("../assets/makeUp.jpg"),
-      description: "Skilled electrician",
-      rating: 5,
-    },
-    // Add more profile data as needed
-  ];
+import { supabase } from "../services/supabase";
+import UserCard from "../component/UserCard";
 
-  // Profile card component
-  const ProfileCard = ({ item }) => (
-    <Pressable onPress={() => console.log("hello")}>
-      <View style={styles.card}>
-        <Image source={item.image} style={styles.image} />
-        <View style={styles.details}>
-          <Text style={styles.name}>{item.name}</Text>
-          <Text style={styles.description}>{item.description}</Text>
-          <Text style={styles.rating}>Average Rating: {item.rating}</Text>
-        </View>
-      </View>
-    </Pressable>
-  );
+export default function Category({ route, navigation }) {
+  const [loading, setLoading] = useState(true); // State for loading
+  const [profileData, setProfileData] = useState([]); // State for profile data
+  const [data, setData] = useState([]);
+  const screenWidth = Dimensions.get("window").width;
+
+  async function getUsers(route) {
+    const resp = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("type", "business")
+      .eq("profession", route.params.item.profession);
+
+    return resp.body;
+  }
+
+  useEffect(() => {
+    // Simulate fetching data from API
+    const fetchData = async () => {
+      try {
+        const resp = await getUsers(route);
+        setProfileData(resp);
+        setLoading(false); // Set loading to false after data is fetched
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setLoading(false); // Set loading to false even if there's an error
+      }
+    };
+
+    fetchData();
+  }, []); // Empty dependency array ensures this effect runs only once on component mount
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <Text style={{ fontSize: 22, fontWeight: "600", marginLeft: 10 }}>
         {route.params.item.profession}
       </Text>
-      <FlatList
-        style={{ top: 10 }}
-        data={profileData}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => <ProfileCard item={item} />}
-      />
+      {loading ? (
+        <View style={{ alignSelf: "center", top: 100 }}>
+          <ActivityIndicator size="large" />
+        </View>
+      ) : (
+        <FlatList
+          style={{ top: 10, marginBottom: 10 }}
+          data={profileData}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <View style={{}}>
+              <UserCard navigation={navigation} item={item} />
+            </View>
+          )}
+        />
+      )}
     </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  card: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 10,
-    borderBottomWidth: 0.2,
-    borderBottomColor: "#ccc",
-  },
-  image: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    marginRight: 10,
-    backgroundColor: "grey",
-  },
-  details: {
-    flex: 1,
-  },
-  name: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  description: {
-    fontSize: 14,
-    color: "#555",
-  },
-  rating: {
-    fontSize: 14,
-    color: "#888",
-  },
-});
+const styles = StyleSheet.create({});

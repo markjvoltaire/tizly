@@ -61,10 +61,10 @@ export default function Home({ navigation }) {
         latitude: coords.latitude,
       });
 
-      const { isoCountryCode, city } = reverseGeocodedAddress[0];
-      console.log("reverseGeocodedAddress", reverseGeocodedAddress[0]);
+      const { isoCountryCode, city, subregion } = reverseGeocodedAddress[0];
+      // console.log("reverseGeocodedAddress", reverseGeocodedAddress[0]);
       // console.log("Reverse Geocoded:", isoCountryCode);
-      setCity(city); // Assuming `setCity` is defined elsewhere
+      setCity(subregion); // Assuming `setCity` is defined elsewhere
       setIsLoading(false); // Set loading state to false when done
     } catch (error) {
       console.error("Error during reverse geocoding:", error);
@@ -180,12 +180,18 @@ export default function Home({ navigation }) {
   ];
 
   const professions = [
-    { id: 1, profession: "catering" },
-    { id: 2, profession: "barbers" },
-    { id: 3, profession: "visual media" },
-    { id: 4, profession: "fitness" },
-    { id: 5, profession: "beauty" },
-    { id: 6, profession: "entertainment" },
+    { id: 1, profession: "Catering" },
+    { id: 2, profession: "Barber" },
+    { id: 3, profession: "Photographer" },
+    { id: 4, profession: "Fitness" },
+    { id: 5, profession: "Make Up Artist" },
+    { id: 6, profession: "Home Improvement" },
+    { id: 7, profession: "Visual Media" },
+    { id: 8, profession: "Hair Stylist" },
+    { id: 9, profession: "DJ" },
+    { id: 10, profession: "Mechanic" },
+    { id: 11, profession: "Bartender" },
+    { id: 12, profession: "Videographer" },
   ];
 
   if (loading) {
@@ -324,79 +330,19 @@ export default function Home({ navigation }) {
           style={{ flex: 1 }}
         >
           <View>
-            <View style={{ alignItems: "center" }}>
-              <TouchableOpacity
-                onPress={() => navigation.navigate("Search")}
-                style={{ bottom: 17, alignSelf: "center" }}
-              >
-                <Image
-                  style={{ height: 100, width: 360, resizeMode: "contain" }}
-                  source={require("../assets/searchIn.png")}
-                />
-              </TouchableOpacity>
-            </View>
             {/* Carousel */}
-            <View style={{ paddingBottom: 50 }}>
-              <Text
-                style={{
-                  fontWeight: "600",
-                  fontSize: 22,
-                  left: 18,
-                  bottom: 25,
-                }}
-              >
-                Trending In {city}
-              </Text>
-              <FlatList
-                showsHorizontalScrollIndicator={false}
-                horizontal
-                data={trendingUsers}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item, index }) => (
-                  <Animated.View style={{ opacity: fadeAnim }}>
-                    <TouchableOpacity onPress={() => goToProfile(item)}>
-                      <Image
-                        style={{
-                          height: 100,
-                          width: 100,
-                          resizeMode: "cover",
-                          marginHorizontal: 15,
-                          borderRadius: 160,
-                          backgroundColor: "grey",
-                        }} // Add marginHorizontal for spacing
-                        source={{ uri: item.profileimage }}
-                      />
-                      <Text
-                        style={{ alignSelf: "center", fontFamily: "alata" }}
-                      >
-                        {item.username}
-                      </Text>
-                      <Text
-                        style={{
-                          alignSelf: "center",
-                          fontFamily: "alata",
-                          fontSize: 12,
-                          color: "grey",
-                        }}
-                      >
-                        {item.profession}
-                      </Text>
-                    </TouchableOpacity>
-                  </Animated.View>
-                )}
-              />
-            </View>
 
             <View style={{ paddingBottom: 50 }}>
               <Text
                 style={{
                   fontWeight: "600",
                   left: 18,
-                  bottom: 25,
+                  marginBottom: 30,
                   fontSize: 22,
+                  top: 30,
                 }}
               >
-                Services
+                What service are you looking for?
               </Text>
               <View
                 style={{
@@ -404,7 +350,7 @@ export default function Home({ navigation }) {
                   flexWrap: "wrap",
                   paddingHorizontal: 10,
                   left: 5,
-                  top: 1,
+                  top: 50,
                 }}
               >
                 {professions.map((item) => (
@@ -424,7 +370,7 @@ export default function Home({ navigation }) {
                         style={{
                           backgroundColor: "white",
                           alignItems: "center",
-                          height: 30,
+                          height: 100,
                           justifyContent: "center",
                           borderRadius: 9,
                           shadowColor: "#000",
@@ -439,8 +385,8 @@ export default function Home({ navigation }) {
                       >
                         <Text
                           style={{
-                            fontSize: 15,
-                            fontFamily: "alata",
+                            fontSize: 14,
+                            fontWeight: "700",
                             color: "black",
                           }}
                         >
@@ -451,56 +397,6 @@ export default function Home({ navigation }) {
                   </View>
                 ))}
               </View>
-            </View>
-
-            <View>
-              <Text
-                style={{
-                  fontWeight: "600",
-                  left: 18,
-                  bottom: 25,
-                  fontSize: 22,
-                }}
-              >
-                Gigs Near You
-              </Text>
-              <FlatList
-                style={{ marginBottom: 50 }}
-                showsHorizontalScrollIndicator={false}
-                horizontal
-                data={classes}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => (
-                  <View>
-                    <Animated.View style={{ opacity: fadeAnim }}>
-                      <TouchableOpacity>
-                        <Image
-                          style={{
-                            height: 150,
-                            width: 260,
-                            resizeMode: "cover",
-                            marginHorizontal: 10,
-                            borderRadius: 16,
-                            backgroundColor: "grey",
-                          }} // Add marginHorizontal for spacing
-                          source={item.image}
-                        />
-                      </TouchableOpacity>
-                    </Animated.View>
-                    <View
-                      style={{
-                        width: width * 0.65,
-                        left: 12,
-                      }}
-                    >
-                      <Text style={{}}>{item.title}</Text>
-                      <Text style={{ color: "grey", fontFamily: "alata" }}>
-                        {item.name}
-                      </Text>
-                    </View>
-                  </View>
-                )}
-              />
             </View>
           </View>
         </ScrollView>

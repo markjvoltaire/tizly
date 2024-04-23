@@ -142,8 +142,6 @@ export default function ProfileDetail({ route, navigation }) {
   const [profilePost, setProfilePost] = useState([]);
   const profileDetails = route.params.item;
 
-  console.log("route", route);
-
   useEffect(() => {
     const getUserInfo = async () => {
       const resp = await getPosts(profileDetails.user_id);
@@ -258,22 +256,14 @@ export default function ProfileDetail({ route, navigation }) {
       />
       {/* Fixed bar at the bottom */}
       <View style={styles.bottomBar}>
-        <Text style={styles.priceText}>
-          Average Rating:{" "}
-          {[...Array(Math.floor(averageRating()))].map((_, index) => (
-            <FontAwesome key={index} name="star" size={16} color="gold" />
-          ))}
-          {averageRating() % 1 >= 0.5 && (
-            <FontAwesome name="star-half-full" size={16} color="gold" />
-          )}
-        </Text>
+        <Text style={styles.priceText}>$140 per hour</Text>
         <TouchableOpacity
           onPress={() =>
             navigation.navigate("InboxDetails", { profileDetails })
           }
           style={styles.bookButton}
         >
-          <Text style={styles.bookButtonText}>Send Message</Text>
+          <Text style={styles.bookButtonText}>Book</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -351,7 +341,7 @@ const styles = StyleSheet.create({
   bookButton: {
     backgroundColor: "#007AFF",
     paddingVertical: 10,
-    paddingHorizontal: 10,
+    paddingHorizontal: 30,
     borderRadius: 12,
   },
   bookButtonText: {

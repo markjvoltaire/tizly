@@ -11,10 +11,12 @@ import {
   TouchableOpacity,
   Text,
 } from "react-native";
+import UserSearch from "../component/UserSearch";
 
 export default function Search({ navigation }) {
   const textInputRef = useRef(null);
   const [showCategories, setShowCategories] = useState(true);
+  const [searchValue, setSearchValue] = useState("");
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -60,8 +62,10 @@ export default function Search({ navigation }) {
               placeholder="What service do you need?"
               placeholderTextColor="#8A8A8A"
               onChangeText={(text) => {
+                setSearchValue(text);
                 setShowCategories(text === "" ? true : false);
               }}
+              value={searchValue}
             />
             <Image
               source={require("../assets/searchGlass.png")}
@@ -70,7 +74,7 @@ export default function Search({ navigation }) {
           </View>
         </View>
 
-        {showCategories && (
+        {showCategories ? (
           <View style={styles.categoryContainer}>
             <Text style={styles.categoryTitle}>Categories</Text>
             {categories.map((category, index) => (
@@ -83,6 +87,8 @@ export default function Search({ navigation }) {
               </TouchableOpacity>
             ))}
           </View>
+        ) : (
+          <UserSearch navigation={navigation} searchValue={searchValue} />
         )}
       </SafeAreaView>
     </TouchableWithoutFeedback>
