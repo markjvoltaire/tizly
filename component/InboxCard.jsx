@@ -50,8 +50,6 @@ export default function InboxCard({ item, user, navigation }) {
     getProfileDetails();
   }, []);
 
-  console.log("item!", item);
-
   return (
     <TouchableOpacity
       style={styles.cardContainer}
@@ -133,7 +131,7 @@ const styles = StyleSheet.create({
   },
   username: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: "500",
     marginBottom: 5,
   },
   message: {

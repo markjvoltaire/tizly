@@ -13,12 +13,14 @@ import {
   TextInput,
   Button,
   Alert,
+  Dimensions,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons"; // Import FontAwesome for icons
 import { getPosts } from "../services/user";
 import { useUser } from "../context/UserContext";
 import LottieView from "lottie-react-native";
 import { supabase } from "../services/supabase";
+import ServicesList from "../component/ServicesList";
 
 // Reusable StarRating Component
 const StarRating = ({ rating }) => {
@@ -157,13 +159,16 @@ const PhotoGrid = ({
           No Images Uploaded
         </Text>
       ) : (
-        <FlatList
-          data={profilePost}
-          renderItem={renderItem}
-          keyExtractor={(item, index) => index.toString()}
-          numColumns={3}
-          contentContainerStyle={styles.photoGridContainer}
-        />
+        <>
+          <Text style={styles.header}>Portfolio</Text>
+          <FlatList
+            data={profilePost}
+            renderItem={renderItem}
+            keyExtractor={(item, index) => index.toString()}
+            numColumns={3}
+            contentContainerStyle={styles.photoGridContainer}
+          />
+        </>
       )}
     </View>
   );
@@ -179,6 +184,9 @@ export default function UserProfile({ route, navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(!user ? false : true);
+
+  const screenWidth = Dimensions.get("window").width;
+  const screenHeight = Dimensions.get("window").height;
 
   const screenName = "UserProfile";
 
@@ -447,32 +455,6 @@ export default function UserProfile({ route, navigation }) {
     );
   }
 
-  // Sample reviews data
-  const reviews = [
-    {
-      name: "John Doe",
-      profileImage:
-        "https://res.cloudinary.com/doz01gvsj/image/upload/v1710390562/ouwx9rs34ytxck9fe6w1.jpg",
-      text: "Great user!",
-      rating: 5,
-    },
-    {
-      name: "Jane Smith",
-      profileImage:
-        "https://res.cloudinary.com/doz01gvsj/image/upload/v1710390562/icjhhp25f0glvgtpi0ze.jpg",
-      text: "Very helpful.",
-      rating: 4,
-    },
-    {
-      name: "Alice Johnson",
-      profileImage:
-        "https://res.cloudinary.com/doz01gvsj/image/upload/v1710390562/zyqtuhjr5bkm0nfjdol9.jpg",
-
-      text: "Could improve communication.",
-      rating: 3,
-    },
-  ];
-
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <FlatList
@@ -483,7 +465,6 @@ export default function UserProfile({ route, navigation }) {
           <View>
             <View
               style={{
-                flexDirection: "row",
                 alignItems: "center",
                 paddingLeft: 15,
                 paddingTop: 10,
@@ -500,25 +481,67 @@ export default function UserProfile({ route, navigation }) {
                 }}
                 source={{ uri: user.profileimage }}
               />
-              <View>
-                <Text style={{ fontWeight: "600", fontSize: 22 }}>
-                  {user.username}
-                </Text>
+              <View style={{ marginBottom: 20 }}>
                 <Text
-                  style={{ fontWeight: "600", fontSize: 15, color: "grey" }}
+                  style={{ fontWeight: "600", fontSize: 22, marginBottom: 10 }}
+                >
+                  {user.displayName}
+                </Text>
+
+                <Text
+                  style={{
+                    fontWeight: "600",
+                    fontSize: 15,
+                    color: "grey",
+                    alignSelf: "center",
+                    marginBottom: 10,
+                  }}
                 >
                   {user.profession}
                 </Text>
+                <Text
+                  style={{
+                    fontWeight: "600",
+                    fontSize: 15,
+                    color: "grey",
+
+                    alignSelf: "center",
+                  }}
+                >
+                  📍{user.location}
+                </Text>
               </View>
+              <TouchableOpacity
+                onPress={() => navigation.navigate("EditProfile")}
+                style={{
+                  backgroundColor: "black",
+                  height: 50,
+                  width: screenWidth * 0.9,
+                  justifyContent: "center", // Center vertically
+                  alignItems: "center", // Center horizontally
+                  borderRadius: 10,
+                  marginBottom: 20,
+                }}
+              >
+                <Text
+                  style={{
+                    color: "white",
+                    fontWeight: "700",
+                  }}
+                >
+                  Edit Profile
+                </Text>
+              </TouchableOpacity>
             </View>
             {/* Line Break */}
 
-            {/* Bio Section */}
-            <BioSection navigation={navigation} user={user} />
-
             {/* Line Break */}
-            {/* <View style={styles.lineBreak} /> */}
-            {/* Portfolio Section */}
+            <View style={styles.lineBreak} />
+            {/* Services Section */}
+            <ServicesList user={user} />
+
+            <View style={styles.lineBreak} />
+
             <PhotoGrid
               loadingGrid={loadingGrid}
               fadeAnim={fadeAnim}
@@ -526,10 +549,6 @@ export default function UserProfile({ route, navigation }) {
               loading={loading}
               navigation={navigation}
             />
-            {/* Line Break */}
-            <View style={styles.lineBreak} />
-            {/* Review Section */}
-            <ReviewSection reviews={reviews} />
           </View>
         )}
         keyExtractor={(item, index) => index.toString()}
@@ -542,6 +561,11 @@ const styles = StyleSheet.create({
   sectionContainer: {
     paddingHorizontal: 20,
     marginTop: 10,
+  },
+  header: {
+    fontSize: 20,
+    fontWeight: "400",
+    marginBottom: 20,
   },
   sectionHeader: {
     fontSize: 20,
@@ -576,7 +600,7 @@ const styles = StyleSheet.create({
     backgroundColor: "grey",
   },
   lineBreak: {
-    borderBottomWidth: 0.4,
+    borderBottomWidth: 0.8,
     borderBottomColor: "lightgrey",
     marginHorizontal: 20,
     marginVertical: 10,

@@ -9,62 +9,13 @@ import {
   FlatList,
   TouchableOpacity,
   Pressable,
+  Dimensions,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons"; // Import FontAwesome for icons
 import LottieView from "lottie-react-native";
 import { getPosts } from "../services/user";
 import { Video, AVPlaybackStatus } from "expo-av";
-
-// Reusable StarRating Component
-const StarRating = ({ rating }) => {
-  const filledStars = Math.floor(rating);
-  const halfStars = rating - filledStars >= 0.5 ? 1 : 0;
-
-  const renderStars = () => {
-    const stars = [];
-    for (let i = 0; i < filledStars; i++) {
-      stars.push(<FontAwesome key={i} name="star" size={16} color="gold" />);
-    }
-    if (halfStars === 1) {
-      stars.push(
-        <FontAwesome
-          key={stars.length}
-          name="star-half-full"
-          size={16}
-          color="gold"
-        />
-      );
-    }
-    return stars;
-  };
-
-  return <View style={styles.starRating}>{renderStars()}</View>;
-};
-
-// Review Component
-const ReviewSection = ({ reviews }) => {
-  return (
-    <View style={styles.sectionContainer}>
-      <Text style={styles.sectionHeader}>Reviews</Text>
-      {reviews.map((review, index) => (
-        <View key={index} style={styles.reviewItem}>
-          <View style={styles.reviewHeader}>
-            <Image
-              source={{ uri: review.profileImage }}
-              style={styles.profileImage}
-            />
-            <Text style={styles.profileName}>{review.name}</Text>
-          </View>
-          <Text style={styles.reviewText}>{review.text}</Text>
-          <View style={styles.starRatingContainer}>
-            <StarRating rating={review.rating} />
-            <Text style={styles.reviewRating}>Rating: {review.rating}</Text>
-          </View>
-        </View>
-      ))}
-    </View>
-  );
-};
+import ServicesList from "../component/ServicesList";
 
 // Bio Component
 const BioSection = ({ bio, profileDetails }) => {
@@ -110,27 +61,29 @@ const PhotoGrid = ({ photos, loadingGrid, profilePost, fadeAnim }) => {
 
   return (
     <View style={styles.sectionContainer}>
-      {/* <Text style={styles.sectionHeader}>Portfolio</Text> */}
       {profilePost.length === 0 ? (
         <Text
           style={{
             alignSelf: "center",
             color: "grey",
-            fontFamily: "alata",
+
             fontSize: 23,
-            bottom: 10,
+            bottom: 5,
           }}
         >
           No Images Uploaded
         </Text>
       ) : (
-        <FlatList
-          data={profilePost}
-          renderItem={renderItem}
-          keyExtractor={(item, index) => index.toString()}
-          numColumns={3}
-          contentContainerStyle={styles.photoGridContainer}
-        />
+        <>
+          <Text style={styles.header}>Portfolio</Text>
+          <FlatList
+            data={profilePost}
+            renderItem={renderItem}
+            keyExtractor={(item, index) => index.toString()}
+            numColumns={3}
+            contentContainerStyle={styles.photoGridContainer}
+          />
+        </>
       )}
     </View>
   );
@@ -141,6 +94,8 @@ export default function ProfileDetail({ route, navigation }) {
   const [loadingGrid, setLoadingGrid] = useState(true);
   const [profilePost, setProfilePost] = useState([]);
   const profileDetails = route.params.item;
+  const screenWidth = Dimensions.get("window").width;
+  const screenHeight = Dimensions.get("window").height;
 
   useEffect(() => {
     const getUserInfo = async () => {
@@ -160,37 +115,6 @@ export default function ProfileDetail({ route, navigation }) {
     }).start();
   }, [fadeAnim]);
 
-  // Sample reviews data
-  const reviews = [
-    {
-      name: "John Doe",
-      profileImage:
-        "https://res.cloudinary.com/doz01gvsj/image/upload/v1710390562/ouwx9rs34ytxck9fe6w1.jpg",
-      text: "Great user!",
-      rating: 5,
-    },
-    {
-      name: "Jane Smith",
-      profileImage:
-        "https://res.cloudinary.com/doz01gvsj/image/upload/v1710390562/icjhhp25f0glvgtpi0ze.jpg",
-      text: "Very helpful.",
-      rating: 4,
-    },
-    {
-      name: "Alice Johnson",
-      profileImage:
-        "https://res.cloudinary.com/doz01gvsj/image/upload/v1710390562/zyqtuhjr5bkm0nfjdol9.jpg",
-
-      text: "Could improve communication.",
-      rating: 3,
-    },
-  ];
-
-  const averageRating = () => {
-    const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
-    return totalRating / reviews.length;
-  };
-
   // Sample bio for a Miami photographer
   const bio =
     "Miami-based photographer specializing in capturing the vibrant colors and energy of the city. With a keen eye for detail and a passion for storytelling, I aim to create stunning visuals that evoke emotion and capture the essence of each moment.";
@@ -205,7 +129,6 @@ export default function ProfileDetail({ route, navigation }) {
           <View>
             <View
               style={{
-                flexDirection: "row",
                 alignItems: "center",
                 paddingLeft: 10,
                 paddingTop: 10,
@@ -222,21 +145,61 @@ export default function ProfileDetail({ route, navigation }) {
                 }}
                 source={{ uri: route.params.item.profileimage }}
               />
-              <View>
-                <Text style={{ fontWeight: "600", fontSize: 22 }}>
-                  {route.params.item.username}
+              <View style={{ marginBottom: 20 }}>
+                <Text style={{ fontWeight: "800", fontSize: 22 }}>
+                  {route.params.item.displayName}
                 </Text>
                 <Text
-                  style={{ fontWeight: "600", fontSize: 15, color: "grey" }}
+                  style={{
+                    fontWeight: "600",
+                    fontSize: 15,
+                    color: "grey",
+                    alignSelf: "center",
+                  }}
                 >
                   {route.params.item.profession}
                 </Text>
+                <Text
+                  style={{
+                    fontWeight: "600",
+                    fontSize: 15,
+                    color: "grey",
+                    alignSelf: "center",
+                  }}
+                >
+                  📍 {route.params.item.location}
+                </Text>
               </View>
+              <TouchableOpacity
+                style={{
+                  backgroundColor: "black",
+                  height: 50,
+                  width: screenWidth * 0.9,
+                  justifyContent: "center", // Center vertically
+                  alignItems: "center", // Center horizontally
+                  borderRadius: 10,
+                  marginBottom: 20,
+                }}
+                onPress={() =>
+                  navigation.navigate("InboxDetails", { profileDetails })
+                }
+              >
+                <Text
+                  style={{
+                    color: "white",
+                    fontWeight: "700",
+                    fontSize: 16,
+                  }}
+                >
+                  Send Message
+                </Text>
+              </TouchableOpacity>
             </View>
             {/* Line Break */}
 
             {/* Bio Section */}
-            <BioSection profileDetails={profileDetails} bio={bio} />
+            <ServicesList />
+
             {/* Line Break */}
             <View style={styles.lineBreak} />
             {/* Portfolio Section */}
@@ -249,23 +212,10 @@ export default function ProfileDetail({ route, navigation }) {
             {/* Line Break */}
             <View style={styles.lineBreak} />
             {/* Review Section */}
-            <ReviewSection reviews={reviews} />
           </View>
         )}
         keyExtractor={(item, index) => index.toString()}
       />
-      {/* Fixed bar at the bottom */}
-      <View style={styles.bottomBar}>
-        <Text style={styles.priceText}>$140 per hour</Text>
-        <TouchableOpacity
-          onPress={() =>
-            navigation.navigate("InboxDetails", { profileDetails })
-          }
-          style={styles.bookButton}
-        >
-          <Text style={styles.bookButtonText}>Book</Text>
-        </TouchableOpacity>
-      </View>
     </SafeAreaView>
   );
 }
@@ -274,6 +224,11 @@ const styles = StyleSheet.create({
   sectionContainer: {
     paddingHorizontal: 20,
     marginTop: 10,
+  },
+  header: {
+    fontSize: 20,
+    fontWeight: "400",
+    marginBottom: 20,
   },
   sectionHeader: {
     fontSize: 20,
@@ -339,14 +294,14 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   bookButton: {
-    backgroundColor: "#007AFF",
+    backgroundColor: "black",
     paddingVertical: 10,
     paddingHorizontal: 30,
     borderRadius: 12,
   },
   bookButtonText: {
     color: "#fff",
-    fontWeight: "bold",
+    fontWeight: "500",
   },
   reviewHeader: {
     flexDirection: "row",

@@ -62,8 +62,9 @@ export default function Home({ navigation }) {
       });
 
       const { isoCountryCode, city, subregion } = reverseGeocodedAddress[0];
-      // console.log("reverseGeocodedAddress", reverseGeocodedAddress[0]);
-      // console.log("Reverse Geocoded:", isoCountryCode);
+      console.log("reverseGeocodedAddress", reverseGeocodedAddress[0]);
+      console.log("Reverse Geocoded:", isoCountryCode);
+      console.log("city", city);
       setCity(subregion); // Assuming `setCity` is defined elsewhere
       setIsLoading(false); // Set loading state to false when done
     } catch (error) {
@@ -109,7 +110,7 @@ export default function Home({ navigation }) {
       let currentLocation = await Location.getCurrentPositionAsync({});
 
       setLocation(currentLocation);
-      // console.log("Location:", currentLocation);
+      console.log("Location:", currentLocation);
       reverseGeocode(currentLocation);
     };
     getPermissions();

@@ -40,9 +40,6 @@ export default function UserCard({ item, navigation }) {
         <Pressable
           onPress={() => navigation.navigate("ProfileDetail", { item: item })}
         >
-          <View style={styles.imageContainer}>
-            <PhotoPan navigation={navigation} user={item} />
-          </View>
           <View style={styles.infoContainer}>
             <View style={styles.userInfo}>
               <Image
@@ -55,7 +52,6 @@ export default function UserCard({ item, navigation }) {
             <View style={styles.professionContainer}>
               <Text style={styles.profession}>{item.profession}</Text>
             </View>
-            <Text style={styles.price}>{user.price} / per hour</Text>
           </View>
         </Pressable>
       )}
@@ -110,7 +106,7 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: "500",
   },
   location: {
     fontSize: 14,

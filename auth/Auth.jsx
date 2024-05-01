@@ -603,7 +603,6 @@ export default function Auth() {
           tabBarLabel: ({ focused }) => (
             <Text
               style={{
-                fontFamily: "alata",
                 fontSize: 12,
                 color: focused ? "black" : "grey",
               }}
@@ -664,7 +663,6 @@ export default function Auth() {
           tabBarLabel: ({ focused }) => (
             <Text
               style={{
-                fontFamily: "alata",
                 fontSize: 12,
                 color: focused ? "black" : "grey",
               }}
@@ -695,7 +693,6 @@ export default function Auth() {
           tabBarLabel: ({ focused }) => (
             <Text
               style={{
-                fontFamily: "alata",
                 fontSize: 12,
                 color: focused ? "black" : "grey",
               }}
@@ -726,7 +723,6 @@ export default function Auth() {
           tabBarLabel: ({ focused }) => (
             <Text
               style={{
-                fontFamily: "alata",
                 fontSize: 12,
                 color: focused ? "black" : "grey",
               }}
