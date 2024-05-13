@@ -234,7 +234,6 @@ export default function Settings({ navigation }) {
                 color: "#FFFFFF",
                 fontSize: 18,
                 fontWeight: "600",
-                fontFamily: "AirbnbCereal-Bold",
                 textAlign: "center",
               }}
             >

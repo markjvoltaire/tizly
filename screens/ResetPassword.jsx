@@ -116,7 +116,6 @@ export default function ResetPassword({ navigation }) {
                     color: "#FFFFFF",
                     fontSize: 18,
                     fontWeight: "600",
-                    fontFamily: "AirbnbCereal-Bold",
                     textAlign: "center",
                   }}
                 >
@@ -161,7 +160,6 @@ export default function ResetPassword({ navigation }) {
                     color: "#FFFFFF",
                     fontSize: 18,
                     fontWeight: "600",
-                    fontFamily: "AirbnbCereal-Bold",
                     textAlign: "center",
                   }}
                 >
@@ -186,7 +184,6 @@ export default function ResetPassword({ navigation }) {
                   borderColor: "#DBDBDB",
                 }}
                 placeholderTextColor="grey"
-                autoCapitalize="none"
                 placeholder="Enter New Password"
                 value={forgotPassword}
                 onChangeText={setForgotPassword}
@@ -206,7 +203,6 @@ export default function ResetPassword({ navigation }) {
                     color: "#FFFFFF",
                     fontSize: 18,
                     fontWeight: "600",
-                    fontFamily: "AirbnbCereal-Bold",
                     textAlign: "center",
                   }}
                 >

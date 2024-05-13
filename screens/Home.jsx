@@ -22,6 +22,8 @@ import { getRandomUser } from "../services/user";
 import * as Location from "expo-location";
 import LottieView from "lottie-react-native";
 import { useUser } from "../context/UserContext";
+import MapView, { Marker } from "react-native-maps";
+import HomeCard from "../component/HomeCard";
 
 export default function Home({ navigation }) {
   let height = Dimensions.get("window").height;
@@ -43,16 +45,6 @@ export default function Home({ navigation }) {
     Linking.openSettings();
   };
 
-  const goToProfile = (item) => {
-    if (!user) {
-      navigation.navigate("ProfileDetail", { item });
-    } else if (item.user_id === user.user_id) {
-      navigation.navigate("UserProfile");
-    } else {
-      navigation.navigate("ProfileDetail", { item });
-    }
-  };
-
   const reverseGeocode = async (currentLocation) => {
     try {
       const { coords } = currentLocation;
@@ -61,10 +53,9 @@ export default function Home({ navigation }) {
         latitude: coords.latitude,
       });
 
-      const { isoCountryCode, city, subregion } = reverseGeocodedAddress[0];
-      console.log("reverseGeocodedAddress", reverseGeocodedAddress[0]);
-      console.log("Reverse Geocoded:", isoCountryCode);
-      console.log("city", city);
+      const { isoCountryCode, city, subregion, region } =
+        reverseGeocodedAddress[0];
+
       setCity(subregion); // Assuming `setCity` is defined elsewhere
       setIsLoading(false); // Set loading state to false when done
     } catch (error) {
@@ -110,7 +101,7 @@ export default function Home({ navigation }) {
       let currentLocation = await Location.getCurrentPositionAsync({});
 
       setLocation(currentLocation);
-      console.log("Location:", currentLocation);
+
       reverseGeocode(currentLocation);
     };
     getPermissions();
@@ -150,50 +141,6 @@ export default function Home({ navigation }) {
   useScrollToTop(scrollViewRef); // Hook up useScrollToTop to ScrollView
 
   // Mock data for carousel items
-
-  const classes = [
-    {
-      id: "1",
-      title: "Personal Training",
-      name: "Fit Wit Jess",
-      type: "fitness",
-      price: "$40",
-      image: require("../assets/trainer.jpg"),
-    },
-    {
-      id: "2",
-      title: "Photo Shoot",
-      name: "Voltaire Views",
-      type: "fitness",
-      price: "$250",
-
-      image: require("../assets/cameraMan.jpg"),
-    },
-    {
-      id: "3",
-      title: "Make Session",
-      name: "Ashley Beauty",
-      type: "Beauty",
-      price: "$175",
-
-      image: require("../assets/makeUp.jpg"),
-    },
-  ];
-
-  const professions = [
-    { id: 1, profession: "Catering" },
-    { id: 2, profession: "Barber" },
-    { id: 3, profession: "Photographer" },
-    { id: 4, profession: "Fitness" },
-    { id: 5, profession: "Make Up Artist" },
-    { id: 6, profession: "Home Improvement" },
-    { id: 7, profession: "Visual Media" },
-    { id: 8, profession: "Hair Stylist" },
-    { id: 9, profession: "DJ" },
-    { id: 10, profession: "Mechanic" },
-    { id: 11, profession: "Bartender" },
-    { id: 12, profession: "Videographer" },
-  ];
 
   if (loading) {
     return (
@@ -287,121 +234,27 @@ export default function Home({ navigation }) {
   return (
     <Animated.View
       style={{
-        // opacity: fadeAnim,
         flex: 1,
         backgroundColor: "white",
-        paddingBottom: 10,
       }}
     >
-      <SafeAreaView style={{ flex: 1 }}>
-        <View style={{ flexDirection: "row", paddingBottom: 10 }}>
-          <Pressable style={{ flexDirection: "row" }}>
-            <Image
-              style={{
-                height: 30,
-                width: 30,
-                left: 15,
-                resizeMode: "contain",
-                marginRight: 20,
-              }}
-              source={require("../assets/Location.png")}
-            />
-            <Text style={{ top: 6, fontFamily: "alata" }}>{city}</Text>
-          </Pressable>
-
-          <Pressable
-            style={{ marginLeft: "auto", marginRight: 18, top: 4 }}
-            onPress={() => navigation.navigate("Settings")}
-          >
-            <Image
-              style={{
-                height: 28,
-                width: 28,
-                resizeMode: "contain",
-                marginLeft: "auto",
-                marginRight: 12,
-              }}
-              source={require("../assets/Setting.png")}
-            />
-          </Pressable>
-        </View>
-        <ScrollView
-          ref={scrollViewRef}
-          showsVerticalScrollIndicator={false}
-          style={{ flex: 1 }}
-        >
-          <View>
-            {/* Carousel */}
-
-            <View style={{ paddingBottom: 50 }}>
-              <Text
-                style={{
-                  fontWeight: "600",
-                  left: 18,
-                  marginBottom: 30,
-                  fontSize: 22,
-                  top: 30,
-                }}
-              >
-                What service are you looking for?
-              </Text>
-              <View
-                style={{
-                  flexDirection: "row",
-                  flexWrap: "wrap",
-                  paddingHorizontal: 10,
-                  left: 5,
-                  top: 50,
-                }}
-              >
-                {professions.map((item) => (
-                  <View
-                    key={item.id}
-                    style={{
-                      flexBasis: "33.33%",
-                      marginBottom: 20,
-                      paddingRight: 10,
-                    }}
-                  >
-                    <Animated.View style={{ opacity: fadeAnim }}>
-                      <TouchableOpacity
-                        onPress={() =>
-                          navigation.navigate("Category", { item })
-                        }
-                        style={{
-                          backgroundColor: "white",
-                          alignItems: "center",
-                          height: 100,
-                          justifyContent: "center",
-                          borderRadius: 9,
-                          shadowColor: "#000",
-                          shadowOffset: {
-                            width: 0,
-                            height: 2,
-                          },
-                          shadowOpacity: 0.25,
-                          shadowRadius: 3.84,
-                          elevation: 5,
-                        }}
-                      >
-                        <Text
-                          style={{
-                            fontSize: 14,
-                            fontWeight: "700",
-                            color: "black",
-                          }}
-                        >
-                          {item.profession}
-                        </Text>
-                      </TouchableOpacity>
-                    </Animated.View>
-                  </View>
-                ))}
-              </View>
-            </View>
-          </View>
-        </ScrollView>
-      </SafeAreaView>
+      <MapView
+        style={{
+          zIndex: -1, // Ensure the map is behind other components
+          height: height * 0.6,
+          borderRadius: 5,
+        }}
+        showsUserLocation
+        showsMyLocationButton
+        provider="google"
+        initialRegion={{
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        }}
+      ></MapView>
+      <HomeCard location={location} city={city} navigation={navigation} />
     </Animated.View>
   );
 }

@@ -205,7 +205,6 @@ const Inbox = ({ navigation }) => {
           <Text
             style={{
               fontSize: 30,
-              fontFamily: "AirbnbCereal-Bold",
               marginBottom: 20,
             }}
           >
@@ -214,7 +213,6 @@ const Inbox = ({ navigation }) => {
           <Text
             style={{
               fontSize: 15,
-              fontFamily: "AirbnbCereal-Medium",
               marginBottom: 10,
               color: "#717171",
             }}
@@ -247,7 +245,6 @@ const Inbox = ({ navigation }) => {
                 color: "#FFFFFF",
                 fontSize: 18,
                 fontWeight: "600",
-                fontFamily: "AirbnbCereal-Bold",
                 textAlign: "center",
               }}
             >
@@ -345,7 +342,6 @@ const Inbox = ({ navigation }) => {
                   color: "#FFFFFF",
                   fontSize: 18,
                   fontWeight: "600",
-                  fontFamily: "AirbnbCereal-Bold",
                   textAlign: "center",
                 }}
               >

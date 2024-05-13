@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { supabase } from "../services/supabase";
 import { useUser } from "../context/UserContext";
+import LottieView from "lottie-react-native";
 
 const GigCard = ({ navigation, item }) => {
   const [userDetails, setUserDetails] = useState(null);
@@ -44,13 +45,61 @@ const GigCard = ({ navigation, item }) => {
       return <ActivityIndicator size="small" color="grey" />;
     } else {
       return (
-        <>
-          <Image
-            style={styles.userImage}
-            source={{ uri: userDetails?.profileimage }}
-          />
-          <Text style={styles.username}>{userDetails?.username}</Text>
-        </>
+        <View
+          style={{
+            borderRadius: 10,
+            backgroundColor: "white",
+            width: screenWidth * 0.95,
+            elevation: 5, // Add elevation for drop shadow
+            shadowColor: "#000", // Shadow color
+            shadowOffset: {
+              width: 0,
+              height: 2,
+            },
+            shadowOpacity: 0.25,
+            shadowRadius: 3.84,
+            marginBottom: 10, // Adjust margin to accommodate drop shadow
+            paddingHorizontal: 15, // Padding for inner content
+            paddingVertical: 10, // Padding for inner content
+          }}
+        >
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <Image
+              style={{ height: 80, width: 80, borderRadius: 10 }}
+              source={{ uri: userDetails.profileimage }}
+            />
+            <View style={{ marginLeft: 15 }}>
+              <Text
+                style={{ fontWeight: "bold", fontSize: 16, paddingBottom: 5 }}
+              >
+                Cliffs Auto Detailing
+              </Text>
+              <Text
+                style={{
+                  fontSize: 14,
+                  color: "#888",
+
+                  width: screenWidth * 0.7,
+                }}
+              >
+                Transforming rides one detail at a time! 🔧 Passionate about
+                perfection.
+              </Text>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Text
+                  style={{ fontSize: 14, paddingRight: 30, fontWeight: "600" }}
+                >
+                  From: $200
+                </Text>
+                <LottieView
+                  style={{ height: 40, width: 40 }}
+                  source={require("../assets/lottie/greenDot.json")}
+                />
+                <Text>Online Now</Text>
+              </View>
+            </View>
+          </View>
+        </View>
       );
     }
   };
@@ -65,11 +114,7 @@ const GigCard = ({ navigation, item }) => {
   return (
     <View style={{}}>
       <Pressable
-        onPress={() =>
-          item.user_id === user.user_id
-            ? navigation.navigate("UserProfile")
-            : navigation.navigate("ProfileDetail", { item: newItem })
-        }
+        onPress={() => navigation.navigate("ProfileDetail", { item: newItem })}
         style={styles.userContainer}
       >
         {renderUserInfo()}
@@ -80,10 +125,23 @@ const GigCard = ({ navigation, item }) => {
 
 const styles = StyleSheet.create({
   container: {},
-  userContainer: {
-    flexDirection: "row",
+
+  button: {
+    backgroundColor: "#007AFF",
+    borderRadius: 5,
+    paddingVertical: 10,
     alignItems: "center",
-    padding: 10,
+    justifyContent: "center",
+    marginTop: 10,
+  },
+  buttonText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#FFF",
+  },
+  userContainer: {
+    padding: 3,
+    alignSelf: "center",
   },
   userImage: {
     width: 50,

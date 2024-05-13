@@ -12,6 +12,7 @@ export default function App() {
   const [auth, setAuth] = useState(null);
   const [fontsLoaded] = useFonts({
     alata: require("./assets/fonts/Alata.ttf"),
+    gilroy: require("./assets/fonts/gilroy.ttf"),
     // Add more fonts if needed
   });
 
