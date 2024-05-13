@@ -246,7 +246,6 @@ export default function Home({ navigation }) {
         }}
         showsUserLocation
         showsMyLocationButton
-        provider="google"
         initialRegion={{
           latitude: location.coords.latitude,
           longitude: location.coords.longitude,
