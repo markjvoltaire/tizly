@@ -93,7 +93,7 @@ const HomeCard = ({ navigation, city, state }) => {
           color: "black",
         }}
       >
-        Good morning, {user.displayName}
+        Good morning, {user?.displayName}
       </Text>
       <UserCars city={city} state={state} navigation={navigation} />
     </Animated.View>

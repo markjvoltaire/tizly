@@ -303,47 +303,71 @@ export default function UserProfile({ route, navigation }) {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
-      <View
-        style={{
-          left: screenWidth * 0.06,
-          top: screenHeight * 0.03,
-          alignSelf: "center",
-        }}
-      >
-        <View style={{ paddingRight: 10 }}>
-          <Image
-            style={{ height: 45, width: 45, borderRadius: 100 }}
-            source={{ uri: user.profileimage }}
-          />
-        </View>
-        <View>
-          <Text style={{ alignSelf: "center" }}>{user.username}</Text>
-        </View>
+      <View style={{ alignItems: "center", marginTop: 20, marginBottom: 30 }}>
+        <Image
+          source={{ uri: user.profileimage }}
+          style={{ width: 100, height: 100, borderRadius: 50 }}
+        />
+        <Text style={{ marginTop: 10, fontSize: 18 }}>{user.username}</Text>
       </View>
+
+      <View style={{ marginTop: 30, paddingHorizontal: 20 }}>
+        <Text style={{ fontSize: 20, marginBottom: 10 }}>Account Settings</Text>
+        <TouchableOpacity style={{ marginBottom: 20 }}>
+          <Text style={{ fontSize: 16, color: "#1DA1F2" }}>Edit Profile</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={{ marginBottom: 30 }}>
+          <Text style={{ fontSize: 16, color: "#1DA1F2" }}>
+            Push Notifications
+          </Text>
+        </TouchableOpacity>
+        <Text style={{ fontSize: 20, marginBottom: 20 }}>Support</Text>
+        <TouchableOpacity style={{ marginBottom: 20 }}>
+          <Text style={{ fontSize: 16, color: "#1DA1F2" }}>Help</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={{ marginBottom: 10 }}>
+          <Text style={{ fontSize: 16, color: "#1DA1F2" }}>About</Text>
+        </TouchableOpacity>
+      </View>
+
       {/* Signout Button */}
-      <TouchableOpacity
-        style={{
-          backgroundColor: "#FF6347",
-          paddingVertical: 12,
-          paddingHorizontal: 20,
-          borderRadius: 5,
-          alignSelf: "center",
-          marginTop: 20,
-          top: 300,
-        }}
-        onPress={signOutUser}
-      >
-        <Text
+
+      <Pressable onPress={signOutUser}>
+        <View
           style={{
-            color: "#FFFFFF",
-            fontSize: 18,
-            fontWeight: "600",
-            textAlign: "center",
+            top: 40,
+            flexDirection: "row",
+            alignItems: "center",
+            width: 328,
+            height: 72,
+            backgroundColor: "white",
+            alignSelf: "center",
+            borderRadius: 16,
+            marginBottom: 20,
+            elevation: 5, // Add elevation for drop shadow
+            shadowColor: "#000", // Shadow color
+            shadowOffset: {
+              width: 0,
+              height: 2,
+            },
+            shadowOpacity: 0.25,
+            shadowRadius: 3.84,
           }}
         >
-          Sign Out
-        </Text>
-      </TouchableOpacity>
+          <View style={{ flex: 1 }}>
+            <Text
+              style={{
+                alignSelf: "center",
+                fontSize: 18,
+                fontWeight: "600",
+                textAlign: "center",
+              }}
+            >
+              Sign Out
+            </Text>
+          </View>
+        </View>
+      </Pressable>
     </SafeAreaView>
   );
 }
