@@ -5,44 +5,50 @@ import {
   Text,
   View,
   Dimensions,
-  Modal,
-  ActivityIndicator,
-  SafeAreaView,
   Linking,
   TouchableOpacity,
   Animated,
-  FlatList,
-  ScrollView,
-  Pressable,
   Button, // Import ScrollView
 } from "react-native";
+import { Appearance, useColorScheme } from "react-native";
 import { useFocusEffect, useScrollToTop } from "@react-navigation/native"; // Import useScrollToTop
-import { supabase } from "../services/supabase";
+
 import { getRandomUser } from "../services/user";
 import * as Location from "expo-location";
 import LottieView from "lottie-react-native";
 import { useUser } from "../context/UserContext";
-import MapView, { Marker } from "react-native-maps";
+import MapView from "react-native-maps";
 import HomeCard from "../component/HomeCard";
 
 export default function Home({ navigation }) {
   let height = Dimensions.get("window").height;
   let width = Dimensions.get("window").width;
+  const mapRef = useRef();
 
   const [loading, setLoading] = useState(true);
   const [trendingUsers, setTrendingUsers] = useState([]);
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scrollViewRef = useRef(); // Ref for ScrollView
-
   const [location, setLocation] = useState();
-  const [address, setAddress] = useState();
   const [city, setCity] = useState();
   const [isLoading, setIsLoading] = useState(true); // Introducing loading state
   const [allowLocation, setAllowLocation] = useState();
+  let colorScheme = useColorScheme();
   const { user } = useUser();
 
   const handleOpenSettings = () => {
     Linking.openSettings();
+  };
+
+  const focusMap = () => {
+    if (mapRef.current && location) {
+      mapRef.current.animateToRegion({
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      });
+    }
   };
 
   const reverseGeocode = async (currentLocation) => {
@@ -249,10 +255,32 @@ export default function Home({ navigation }) {
         initialRegion={{
           latitude: location.coords.latitude,
           longitude: location.coords.longitude,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
+          latitudeDelta: 0.018, // Adjust the latitudeDelta for street level
+          longitudeDelta: 0.018, // Adjust the longitudeDelta for street level
         }}
+        ref={mapRef}
       ></MapView>
+      <TouchableOpacity
+        onPress={focusMap}
+        style={{
+          bottom: height * 0.09,
+          left: width * 0.88,
+          elevation: 5,
+
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 6.25,
+          shadowRadius: 3.84,
+        }}
+      >
+        <Image
+          style={{
+            height: 40,
+            width: 40,
+          }}
+          source={require("../assets/focus.png")}
+        />
+      </TouchableOpacity>
       <HomeCard location={location} city={city} navigation={navigation} />
     </Animated.View>
   );

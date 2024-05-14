@@ -42,7 +42,33 @@ const GigCard = ({ navigation, item }) => {
 
   const renderUserInfo = () => {
     if (isLoading) {
-      return <ActivityIndicator size="small" color="grey" />;
+      return (
+        <View
+          style={{
+            borderRadius: 10,
+            backgroundColor: "white",
+            height: 80,
+            width: screenWidth * 0.95,
+            elevation: 5, // Add elevation for drop shadow
+            shadowColor: "#000", // Shadow color
+            shadowOffset: {
+              width: 0,
+              height: 2,
+            },
+            shadowOpacity: 0.25,
+            shadowRadius: 3.84,
+            marginBottom: 10, // Adjust margin to accommodate drop shadow
+            paddingHorizontal: 15, // Padding for inner content
+            paddingVertical: 10, // Padding for inner content
+          }}
+        >
+          <LottieView
+            autoPlay
+            style={{ height: 40, width: 40, alignSelf: "center" }}
+            source={require("../assets/lottie/greyCircle.json")}
+          />
+        </View>
+      );
     } else {
       return (
         <View
@@ -65,7 +91,12 @@ const GigCard = ({ navigation, item }) => {
         >
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <Image
-              style={{ height: 80, width: 80, borderRadius: 10 }}
+              style={{
+                height: 80,
+                width: 80,
+                borderRadius: 10,
+                backgroundColor: "grey",
+              }}
               source={{ uri: userDetails.profileimage }}
             />
             <View style={{ marginLeft: 15 }}>
@@ -92,6 +123,7 @@ const GigCard = ({ navigation, item }) => {
                   From: $200
                 </Text>
                 <LottieView
+                  autoPlay
                   style={{ height: 40, width: 40 }}
                   source={require("../assets/lottie/greenDot.json")}
                 />

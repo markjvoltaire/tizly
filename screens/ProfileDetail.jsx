@@ -60,7 +60,7 @@ export default function ProfileDetail({ route }) {
               top: screenHeight * 0.4,
               left: screenWidth * 0.04,
               fontFamily: "gilroy",
-              fontSize: 30,
+              fontSize: 25,
             }}
           >
             {profile.displayName}

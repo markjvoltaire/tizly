@@ -93,7 +93,7 @@ export default function Auth() {
           component={ProfileDetail}
           options={{
             tabBarVisible: false,
-            headerTitle: "Profile", // Customizing the header title
+            headerTitle: "Profile Details", // Customizing the header title
             headerBackTitle: "Back", // Customizing the back button text
             headerTintColor: "black", // Changing the color of the back button text
             gestureEnabled: true,

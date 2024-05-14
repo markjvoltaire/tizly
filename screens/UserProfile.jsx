@@ -305,10 +305,9 @@ export default function UserProfile({ route, navigation }) {
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <View
         style={{
-          flexDirection: "row",
-          alignItems: "center",
           left: screenWidth * 0.06,
           top: screenHeight * 0.03,
+          alignSelf: "center",
         }}
       >
         <View style={{ paddingRight: 10 }}>
@@ -318,8 +317,7 @@ export default function UserProfile({ route, navigation }) {
           />
         </View>
         <View>
-          <Text>{user.username}</Text>
-          <Text>{user.email}</Text>
+          <Text style={{ alignSelf: "center" }}>{user.username}</Text>
         </View>
       </View>
       {/* Signout Button */}
@@ -331,6 +329,7 @@ export default function UserProfile({ route, navigation }) {
           borderRadius: 5,
           alignSelf: "center",
           marginTop: 20,
+          top: 300,
         }}
         onPress={signOutUser}
       >
