@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { useFonts } from "expo-font";
+import { StripeProvider } from "@stripe/stripe-react-native";
 
 import { supabase } from "./services/supabase";
 import { UserProvider } from "./context/UserContext";
@@ -47,10 +48,12 @@ export default function App() {
   }
 
   return (
-    <UserProvider>
-      <NavigationContainer>
-        <Auth />
-      </NavigationContainer>
-    </UserProvider>
+    <StripeProvider publishableKey="pk_test_51PGlQDFJMCoKq8PTWUUhTDRsSTmaos2cTY08TrmhkyGRH77d5EQQ0CaHCPKng4iwFNs1MAvLjYGDkuoHrj1yen1700sDnFHoTZ">
+      <UserProvider>
+        <NavigationContainer>
+          <Auth />
+        </NavigationContainer>
+      </UserProvider>
+    </StripeProvider>
   );
 }

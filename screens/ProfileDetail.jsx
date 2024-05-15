@@ -12,7 +12,7 @@ import ServiceCard from "../component/ServiceCard";
 import BioCard from "../component/BioCard";
 import ReviewCards from "../component/ReviewCards";
 
-export default function ProfileDetail({ route }) {
+export default function ProfileDetail({ route, navigation }) {
   const profile = route.params.item;
   const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;
@@ -68,7 +68,11 @@ export default function ProfileDetail({ route }) {
         </View>
         <BioCard />
 
-        <ServiceCard profile={profile} screenWidth={screenWidth} />
+        <ServiceCard
+          navigation={navigation}
+          profile={profile}
+          screenWidth={screenWidth}
+        />
         <ServiceCard profile={profile} screenWidth={screenWidth} />
         <ServiceCard profile={profile} screenWidth={screenWidth} />
         <ReviewCards />

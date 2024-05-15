@@ -22,6 +22,7 @@ import SignUp from "../screens/SignUp";
 import ResetPassword from "../screens/ResetPassword";
 import TaskSearch from "../screens/TaskSearch";
 import Orders from "../screens/Orders";
+import Pay from "../screens/Pay";
 
 export default function Auth() {
   const Stack = createNativeStackNavigator();
@@ -71,6 +72,18 @@ export default function Auth() {
             tabBarVisible: false,
             headerShown: true,
             headerTitle: "Settings", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+
+        <Stack.Screen
+          name="Pay"
+          component={Pay}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Payment Information", // Customizing the header title
             headerBackTitle: "Back", // Customizing the back button text
             headerTintColor: "black", // Changing the color of the back button text
           }}

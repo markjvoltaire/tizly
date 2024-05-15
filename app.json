@@ -14,7 +14,7 @@
         }
       ]
     ],
-    "version": "46",
+    "version": "47",
     "orientation": "portrait",
     "icon": "./assets/outoDarkLogo.png",
     "userInterfaceStyle": "automatic",
@@ -30,7 +30,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.markjvoltaire.TizlyNative",
-      "buildNumber": "165",
+      "buildNumber": "166",
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "Allow access to photos to upload photos from your library."
       }
