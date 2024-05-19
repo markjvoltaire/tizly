@@ -14,12 +14,12 @@
         }
       ]
     ],
-    "version": "47",
+    "version": "48",
     "orientation": "portrait",
-    "icon": "./assets/outoDarkLogo.png",
+    "icon": "./assets/tizlyIcon.png",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/outoSplash.png",
+      "image": "./assets/tizlySplash.png",
       "resizeMode": "contain",
       "backgroundColor": "black"
     },
@@ -30,7 +30,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.markjvoltaire.TizlyNative",
-      "buildNumber": "166",
+      "buildNumber": "167",
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "Allow access to photos to upload photos from your library."
       }
