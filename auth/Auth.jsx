@@ -23,6 +23,8 @@ import ResetPassword from "../screens/ResetPassword";
 import TaskSearch from "../screens/TaskSearch";
 import Orders from "../screens/Orders";
 import Pay from "../screens/Pay";
+import OrderConfirmation from "../screens/OrderConfirmation";
+import OrderDetails from "../screens/OrderDetails";
 
 export default function Auth() {
   const Stack = createNativeStackNavigator();
@@ -78,14 +80,39 @@ export default function Auth() {
         />
 
         <Stack.Screen
+          name="Orders"
+          component={Orders}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Orders", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+
+        <Stack.Screen
+          name="OrderConfirmation"
+          component={OrderConfirmation}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Order Confirmation", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+
+        <Stack.Screen
           name="Pay"
           component={Pay}
           options={{
             tabBarVisible: false,
             headerShown: true,
-            headerTitle: "Payment Information", // Customizing the header title
+            headerTitle: "", // Customizing the header title
             headerBackTitle: "Back", // Customizing the back button text
-            headerTintColor: "black", // Changing the color of the back button text
+            headerTintColor: "white", // Changing the color of the back button text
+            headerTransparent: true,
           }}
         />
 
@@ -106,16 +133,24 @@ export default function Auth() {
           component={ProfileDetail}
           options={{
             tabBarVisible: false,
-            headerTitle: "Profile Details", // Customizing the header title
+            headerShown: true,
+            headerTitle: "", // Customizing the header title
             headerBackTitle: "Back", // Customizing the back button text
-            headerTintColor: "black", // Changing the color of the back button text
-            gestureEnabled: true,
+            headerTintColor: "white", // Changing the color of the back button text
+            headerTransparent: true,
           }}
         />
         <Stack.Screen
           name="UserProfile"
           component={UserProfile}
-          options={{ tabBarVisible: false }} // Hide tab bar for this screen
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+            headerTransparent: true,
+          }} // Hide tab bar for this screen
         />
 
         <Stack.Screen
@@ -209,6 +244,32 @@ export default function Auth() {
   //     </Stack.Navigator>
   //   );
   // };
+
+  const OrderStack = () => {
+    return (
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen
+          name="Orders"
+          component={Orders}
+          options={{
+            tabBarVisible: false,
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+
+        <Stack.Screen
+          name="OrderDetails"
+          component={OrderDetails}
+          options={{
+            tabBarVisible: false,
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+      </Stack.Navigator>
+    );
+  };
 
   const UserProfileStack = () => {
     return (
@@ -316,7 +377,7 @@ export default function Auth() {
 
       <Tab.Screen
         options={{
-          headerShown: false,
+          headerShown: true,
           tabBarIcon: ({ color, size, focused }) =>
             focused ? (
               <Image
@@ -340,8 +401,8 @@ export default function Auth() {
             </Text>
           ),
         }}
-        name="Orders"
-        component={Orders}
+        name="OrderScreen"
+        component={OrderStack}
       />
 
       <Tab.Screen

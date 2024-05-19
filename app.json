@@ -2,9 +2,9 @@
   "expo": {
     "name": "Tizly",
     "slug": "TizlyNative",
-    "scheme": "TizlyNative",
+    "scheme": "tizly",
     "detach": {
-      "scheme": "TizlyNative"
+      "scheme": "tizly"
     },
     "plugins": [
       [

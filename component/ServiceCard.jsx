@@ -6,7 +6,7 @@ export default function ServiceCard({ profile, screenWidth, navigation }) {
   const serviceTitle = "Inside and Outside Clean";
   const serviceDescription =
     "Transforming rides one detail at a time! Passionate about perfection.";
-  const servicePrice = 452.3;
+  const servicePrice = 180;
 
   return (
     <Pressable
@@ -48,8 +48,9 @@ export default function ServiceCard({ profile, screenWidth, navigation }) {
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <Image
               style={{ height: 80, width: 80, borderRadius: 10 }}
-              source={{ uri: profile.profileimage }}
+              source={require("../assets/photo1.jpg")}
             />
+
             <View style={{ marginLeft: 15 }}>
               <Text
                 style={{

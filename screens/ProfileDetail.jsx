@@ -7,6 +7,7 @@ import {
   ScrollView,
   Dimensions,
   Animated,
+  Pressable,
 } from "react-native";
 import ServiceCard from "../component/ServiceCard";
 import BioCard from "../component/BioCard";
@@ -27,9 +28,27 @@ export default function ProfileDetail({ route, navigation }) {
     }).start();
   }, []);
 
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <View>
+          <Pressable onPress={() => console.log("HELLO")}>
+            <Image
+              style={{ height: 30, width: 30 }}
+              source={require("../assets/moreCircle.png")}
+            />
+          </Pressable>
+        </View>
+      ),
+    });
+  });
+
   return (
     <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollViewContent}
+      >
         <View style={styles.profileContainer}>
           {/* Profile Image */}
           <Animated.Image
@@ -37,7 +56,7 @@ export default function ProfileDetail({ route, navigation }) {
             style={[
               {
                 width: screenWidth,
-                height: screenHeight * 0.45,
+                height: screenHeight * 0.55,
                 resizeMode: "cover",
                 backgroundColor: "black",
               },
@@ -47,17 +66,17 @@ export default function ProfileDetail({ route, navigation }) {
           <View
             style={{
               width: screenWidth,
-              height: screenHeight * 0.45,
+              height: screenHeight * 0.55,
               backgroundColor: "black",
               position: "absolute",
-              opacity: 0.5,
+              opacity: 0.65,
             }}
           ></View>
           <Text
             style={{
               position: "absolute",
               color: "white",
-              top: screenHeight * 0.4,
+              top: screenHeight * 0.5,
               left: screenWidth * 0.04,
               fontFamily: "gilroy",
               fontSize: 25,
@@ -66,7 +85,6 @@ export default function ProfileDetail({ route, navigation }) {
             {profile.displayName}
           </Text>
         </View>
-        <BioCard />
 
         <ServiceCard
           navigation={navigation}
@@ -75,7 +93,6 @@ export default function ProfileDetail({ route, navigation }) {
         />
         <ServiceCard profile={profile} screenWidth={screenWidth} />
         <ServiceCard profile={profile} screenWidth={screenWidth} />
-        <ReviewCards />
       </ScrollView>
     </View>
   );

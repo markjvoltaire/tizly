@@ -306,7 +306,12 @@ export default function UserProfile({ route, navigation }) {
       <View style={{ alignItems: "center", marginTop: 20, marginBottom: 30 }}>
         <Image
           source={{ uri: user.profileimage }}
-          style={{ width: 100, height: 100, borderRadius: 50 }}
+          style={{
+            width: 100,
+            height: 100,
+            borderRadius: 50,
+            backgroundColor: "grey",
+          }}
         />
         <Text style={{ marginTop: 10, fontSize: 18 }}>{user.username}</Text>
       </View>
