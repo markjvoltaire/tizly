@@ -28,21 +28,6 @@ export default function ProfileDetail({ route, navigation }) {
     }).start();
   }, []);
 
-  useEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <View>
-          <Pressable onPress={() => console.log("HELLO")}>
-            <Image
-              style={{ height: 30, width: 30 }}
-              source={require("../assets/moreCircle.png")}
-            />
-          </Pressable>
-        </View>
-      ),
-    });
-  });
-
   return (
     <View style={styles.container}>
       <ScrollView

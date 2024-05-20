@@ -145,7 +145,7 @@ export default function Auth() {
           component={UserProfile}
           options={{
             tabBarVisible: false,
-            headerShown: true,
+
             headerTitle: "", // Customizing the header title
             headerBackTitle: "Back", // Customizing the back button text
             headerTintColor: "black", // Changing the color of the back button text
@@ -249,7 +249,7 @@ export default function Auth() {
     return (
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen
-          name="Orders"
+          name="OrderScreen"
           component={Orders}
           options={{
             tabBarVisible: false,
@@ -401,13 +401,13 @@ export default function Auth() {
             </Text>
           ),
         }}
-        name="OrderScreen"
+        name="Orders"
         component={OrderStack}
       />
 
       <Tab.Screen
         options={{
-          headerShown: true,
+          headerShown: false,
           tabBarIcon: ({ color, size, focused }) =>
             focused ? (
               <Image

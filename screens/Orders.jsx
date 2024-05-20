@@ -84,6 +84,7 @@ export default function Orders({ navigation }) {
     React.useCallback(() => {
       const fetchOrders = async () => {
         if (!user) {
+          setLoading(false);
           return;
         } else {
           const resp = await getOrders();
@@ -315,9 +316,6 @@ export default function Orders({ navigation }) {
 
   const renderItem = ({ item }) => (
     <View style={{ alignSelf: "center" }}>
-      <OrderCard navigation={navigation} user={user} item={item} />
-      <OrderCard navigation={navigation} user={user} item={item} />
-      <OrderCard navigation={navigation} user={user} item={item} />
       <OrderCard navigation={navigation} user={user} item={item} />
     </View>
   );

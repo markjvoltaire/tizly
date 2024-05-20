@@ -14,6 +14,7 @@ import {
   Button,
   Alert,
   Dimensions,
+  ScrollView,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons"; // Import FontAwesome for icons
 import { getPosts } from "../services/user";
@@ -32,72 +33,7 @@ export default function UserProfile({ route, navigation }) {
   const [password, setPassword] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(!user ? false : true);
 
-  const screenWidth = Dimensions.get("window").width;
-  const screenHeight = Dimensions.get("window").height;
-
-  const screenName = "UserProfile";
-
-  async function getUser(userid) {
-    const resp = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("user_id", userid)
-      .single()
-      .limit(1);
-
-    return resp;
-  }
-
-  async function loginWithEmail() {
-    // setModalLoader(true);
-    const { user, error } = await supabase.auth.signIn({
-      email,
-      password,
-    });
-    if (error) {
-      Alert.alert(error.message);
-    } else {
-      const resp = await getUser(user.id);
-      supabase.auth.setAuth(user.access_token);
-
-      setUser(resp.body);
-    }
-  }
-
-  const logUserIn = () => {
-    loginWithEmail();
-    // Add your login logic here
-  };
-
-  const handleLoginModal = () => {
-    setModalVisible(true);
-    // Add your login logic here
-  };
-
-  const signOutUser = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
-  };
-
-  useEffect(() => {
-    const getUserInfo = async () => {
-      if (!user) return;
-
-      const resp = await getPosts(user.user_id);
-      setProfilePost(resp);
-      setLoadingGrid(false);
-      setLoading(false);
-    };
-    getUserInfo();
-  }, []);
-
-  useEffect(() => {
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 1000, // Adjust the duration as needed
-      useNativeDriver: true,
-    }).start();
-  }, [fadeAnim]);
+  // 179 CHARCTER LIMIT FOR REVIEWS
 
   // IF NO USER IS LOGGED IN
   if (isLoggedIn === false) {
@@ -300,81 +236,411 @@ export default function UserProfile({ route, navigation }) {
       </SafeAreaView>
     );
   }
+  const screenWidth = Dimensions.get("window").width;
+  const screenHeight = Dimensions.get("window").height;
+
+  const screenName = "UserProfile";
+
+  const classes = [
+    {
+      id: "2",
+      title: "Photo Shoot",
+      name: "Voltaire Views",
+      type: "fitness",
+      price: "$250",
+
+      image: require("../assets/cameraMan.jpg"),
+    },
+    {
+      id: "3",
+      title: "Make Session",
+      name: "Ashley Beauty",
+      type: "Beauty",
+      price: "$175",
+
+      image: require("../assets/makeUp.jpg"),
+    },
+    {
+      id: "4",
+      title: "Make Session",
+      name: "Ashley Beauty",
+      type: "Beauty",
+      price: "$175",
+
+      image: require("../assets/makeUp.jpg"),
+    },
+  ];
+
+  async function getUser(userid) {
+    const resp = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("user_id", userid)
+      .single()
+      .limit(1);
+
+    return resp;
+  }
+
+  async function loginWithEmail() {
+    // setModalLoader(true);
+    const { user, error } = await supabase.auth.signIn({
+      email,
+      password,
+    });
+    if (error) {
+      Alert.alert(error.message);
+    } else {
+      const resp = await getUser(user.id);
+      supabase.auth.setAuth(user.access_token);
+
+      setUser(resp.body);
+    }
+  }
+
+  const logUserIn = () => {
+    loginWithEmail();
+    // Add your login logic here
+  };
+
+  const handleLoginModal = () => {
+    setModalVisible(true);
+    // Add your login logic here
+  };
+
+  const signOutUser = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+  };
+
+  useEffect(() => {
+    const getUserInfo = async () => {
+      if (!user) return;
+
+      const resp = await getPosts(user.user_id);
+      setProfilePost(resp);
+      setLoadingGrid(false);
+      setLoading(false);
+    };
+    getUserInfo();
+  }, []);
+
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 1000, // Adjust the duration as needed
+      useNativeDriver: true,
+    }).start();
+  }, [fadeAnim]);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
-      <View style={{ alignItems: "center", marginTop: 20, marginBottom: 30 }}>
-        <Image
-          source={{ uri: user.profileimage }}
-          style={{
-            width: 100,
-            height: 100,
-            borderRadius: 50,
-            backgroundColor: "grey",
-          }}
-        />
-        <Text style={{ marginTop: 10, fontSize: 18 }}>{user.username}</Text>
-      </View>
+      <ScrollView
+        style={{
+          borderRadius: 10,
 
-      <View style={{ marginTop: 30, paddingHorizontal: 20 }}>
-        <Text style={{ fontSize: 20, marginBottom: 10 }}>Account Settings</Text>
-        <TouchableOpacity style={{ marginBottom: 20 }}>
-          <Text style={{ fontSize: 16, color: "#1DA1F2" }}>Edit Profile</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={{ marginBottom: 30 }}>
-          <Text style={{ fontSize: 16, color: "#1DA1F2" }}>
-            Push Notifications
-          </Text>
-        </TouchableOpacity>
-        <Text style={{ fontSize: 20, marginBottom: 20 }}>Support</Text>
-        <TouchableOpacity style={{ marginBottom: 20 }}>
-          <Text style={{ fontSize: 16, color: "#1DA1F2" }}>Help</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={{ marginBottom: 10 }}>
-          <Text style={{ fontSize: 16, color: "#1DA1F2" }}>About</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Signout Button */}
-
-      <Pressable onPress={signOutUser}>
+          elevation: 5, // Add elevation for drop shadow
+          backgroundColor: "white",
+          flex: 1,
+        }}
+      >
+        {/* PROFILE CARD */}
         <View
           style={{
-            top: 40,
-            flexDirection: "row",
-            alignItems: "center",
-            width: 328,
-            height: 72,
-            backgroundColor: "white",
             alignSelf: "center",
-            borderRadius: 16,
-            marginBottom: 20,
+            alignItems: "center",
+            justifyContent: "center",
+            borderRadius: 10,
+            backgroundColor: "white",
+            width: screenWidth * 0.85,
+            height: screenHeight * 0.2,
             elevation: 5, // Add elevation for drop shadow
             shadowColor: "#000", // Shadow color
+            top: screenHeight * 0.02,
             shadowOffset: {
               width: 0,
               height: 2,
             },
             shadowOpacity: 0.25,
             shadowRadius: 3.84,
+            marginBottom: 10,
+            paddingHorizontal: 15, // Padding for inner content
+            paddingVertical: 10, // Padding for inner content
+            flexDirection: "row",
           }}
         >
-          <View style={{ flex: 1 }}>
+          <View
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              paddingRight: 50,
+            }}
+          >
+            <Image
+              source={{ uri: user.profileimage }}
+              style={{
+                height: 90,
+                width: 90,
+                borderRadius: 100,
+                marginBottom: 10,
+              }}
+            />
             <Text
               style={{
                 alignSelf: "center",
-                fontSize: 18,
-                fontWeight: "600",
-                textAlign: "center",
+                fontFamily: "gilroy",
+                fontSize: 25,
               }}
             >
-              Sign Out
+              {user.username}
+            </Text>
+            <Text style={{ alignSelf: "center", fontFamily: "", fontSize: 10 }}>
+              {user.profession}
             </Text>
           </View>
+          <View style={{ justifyContent: "center", alignItems: "center" }}>
+            <View style={{ alignItems: "center", marginBottom: 15 }}>
+              <Text style={{ fontFamily: "gilroy", fontSize: 20 }}>5.0</Text>
+              <Text style={{ fontSize: 10 }}>Rating</Text>
+            </View>
+            <View style={{ alignItems: "center", marginBottom: 15 }}>
+              <Text style={{ fontFamily: "gilroy", fontSize: 20 }}>15</Text>
+              <Text style={{ fontSize: 10 }}>Reviews</Text>
+            </View>
+            <View style={{ alignItems: "center" }}>
+              <Text style={{ fontFamily: "gilroy", fontSize: 20 }}>28</Text>
+              <Text style={{ fontSize: 10 }}>Bookings</Text>
+            </View>
+          </View>
         </View>
-      </Pressable>
+        {/* PROFILE CARD */}
+
+        <Pressable
+          style={{
+            alignSelf: "center",
+            alignItems: "center",
+            justifyContent: "center",
+            borderRadius: 10,
+            backgroundColor: "#2BA5FE",
+            width: screenWidth * 0.85,
+            height: screenHeight * 0.06,
+            elevation: 5, // Add elevation for drop shadow
+            shadowColor: "#000", // Shadow color
+            top: screenHeight * 0.02,
+            shadowOffset: {
+              width: 0,
+              height: 2,
+            },
+            shadowOpacity: 0.25,
+            shadowRadius: 3.84,
+            marginBottom: 32,
+            paddingHorizontal: 15, // Padding for inner content
+            paddingVertical: 10, // Padding for inner content
+            flexDirection: "row",
+          }}
+        >
+          <Text style={{ fontWeight: "700", color: "white" }}>
+            Edit Profile
+          </Text>
+        </Pressable>
+
+        <View
+          style={{
+            width: screenWidth * 0.88,
+            alignSelf: "center",
+            marginBottom: 20,
+          }}
+        >
+          <Text style={{ fontSize: 12, lineHeight: 20 }}>
+            I'm Mark Voltaire, a professional photographer based in the vibrant
+            city of Miami. With over 8 years of experience capturing life's most
+            beautiful moments, I specialize in wedding, portrait, and event
+            photography. My passion for photography began in my teenage years,
+            and since then, I've honed my skills to ensure every shot tells a
+            unique story.
+          </Text>
+          <View
+            style={{
+              height: 0.5,
+              backgroundColor: "#E0E0E0",
+              marginVertical: 10,
+              marginBottom: 10,
+            }}
+          />
+
+          <Text style={{ fontSize: 19, fontFamily: "gilroy", marginBottom: 2 }}>
+            Reviews
+          </Text>
+
+          <FlatList
+            style={{ right: 10 }}
+            showsHorizontalScrollIndicator={false}
+            horizontal
+            data={classes}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <Animated.View style={{ opacity: fadeAnim, padding: 5 }}>
+                <View
+                  style={{
+                    borderRadius: 10,
+                    backgroundColor: "white",
+                    width: screenWidth * 0.59,
+                    height: screenHeight * 0.22,
+                    elevation: 5, // Add elevation for drop shadow
+                    shadowColor: "#000", // Shadow color
+                    top: 10,
+                    shadowOffset: {
+                      width: 0,
+                      height: 2,
+                    },
+                    shadowOpacity: 0.25,
+                    shadowRadius: 3.84,
+                    marginBottom: 15,
+                    paddingHorizontal: 15, // Padding for inner content
+                    paddingVertical: 10, // Padding for inner content
+                    flexDirection: "row",
+                  }}
+                >
+                  <View>
+                    <View
+                      style={{
+                        marginBottom: 10,
+                        height: 120,
+                        width: screenWidth * 0.53,
+                      }}
+                    >
+                      <Text style={{ fontSize: 12, lineHeight: 20 }}>
+                        "Mark's session was phenomenal! His talent and
+                        professionalism truly shine. I'm delighted with the
+                        stunning photos he captured. Highly recommend!"
+                      </Text>
+                    </View>
+
+                    <View
+                      style={{ flexDirection: "row", alignItems: "center" }}
+                    >
+                      <View>
+                        <Image
+                          style={{
+                            height: 30,
+                            width: 30,
+                            borderRadius: 20,
+                            marginRight: 10,
+                          }}
+                          source={require("../assets/photo2.jpg")}
+                        />
+                      </View>
+                      <View>
+                        <Text style={{ fontFamily: "gilroy" }}>stephanie</Text>
+                        <Text style={{ fontSize: 10 }}>2 weeks ago</Text>
+                      </View>
+                    </View>
+                  </View>
+                </View>
+              </Animated.View>
+            )}
+          />
+
+          <View
+            style={{
+              height: 0.5,
+              backgroundColor: "#E0E0E0",
+              marginVertical: 10,
+              marginBottom: 15,
+            }}
+          />
+
+          <Text
+            style={{ fontSize: 19, fontFamily: "gilroy", marginBottom: 15 }}
+          >
+            Portfolio
+          </Text>
+
+          <FlatList
+            style={{
+              marginBottom: 10,
+              width: screenWidth * 0.97,
+              alignSelf: "center",
+            }}
+            showsHorizontalScrollIndicator={false}
+            horizontal
+            data={classes}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <View>
+                <Animated.View style={{ opacity: fadeAnim }}>
+                  <TouchableOpacity>
+                    <Image
+                      style={{
+                        height: 110,
+                        width: 110,
+                        resizeMode: "cover",
+                        marginHorizontal: 10,
+                        borderRadius: 10,
+                        backgroundColor: "grey",
+                        marginRight: 1,
+                      }} // Add marginHorizontal for spacing
+                      source={item.image}
+                    />
+                  </TouchableOpacity>
+                </Animated.View>
+              </View>
+            )}
+          />
+          <View
+            style={{
+              height: 0.5,
+              backgroundColor: "#E0E0E0",
+              marginVertical: 10,
+              marginBottom: 20,
+            }}
+          />
+          <Text
+            style={{ fontSize: 19, fontFamily: "gilroy", marginBottom: 15 }}
+          >
+            Services
+          </Text>
+
+          <Pressable onPress={() => console.log("YERPP")}>
+            <View style={{ flexDirection: "row" }}>
+              <Image
+                style={{
+                  height: 160,
+                  width: 160,
+                  resizeMode: "cover",
+                  marginRight: 12,
+                  borderRadius: 10,
+                  backgroundColor: "grey",
+                }} // Add marginHorizontal for spacing
+                source={require("../assets/photo1.jpg")}
+              />
+              <View>
+                <Text
+                  style={{ fontSize: 15, marginBottom: 1, fontWeight: "600" }}
+                >
+                  Lifestyle Package
+                </Text>
+                <Text style={{ fontSize: 11, lineHeight: 20 }}>
+                  1 hour photoshoot
+                </Text>
+                <Text
+                  style={{ fontSize: 11, lineHeight: 20, fontFamily: "gilroy" }}
+                >
+                  from $200
+                </Text>
+              </View>
+            </View>
+          </Pressable>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  separator: {
+    height: 0.5,
+    backgroundColor: "#E0E0E0",
+    marginVertical: 10,
+  },
+});
