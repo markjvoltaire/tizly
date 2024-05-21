@@ -267,7 +267,7 @@ export default function UserProfile({ route, navigation }) {
       type: "Beauty",
       price: "$175",
 
-      image: require("../assets/makeUp.jpg"),
+      image: require("../assets/photo3.jpg"),
     },
   ];
 
@@ -352,7 +352,7 @@ export default function UserProfile({ route, navigation }) {
             justifyContent: "center",
             borderRadius: 10,
             backgroundColor: "white",
-            width: screenWidth * 0.85,
+            width: screenWidth * 0.9,
             height: screenHeight * 0.2,
             elevation: 5, // Add elevation for drop shadow
             shadowColor: "#000", // Shadow color
@@ -363,7 +363,7 @@ export default function UserProfile({ route, navigation }) {
             },
             shadowOpacity: 0.25,
             shadowRadius: 3.84,
-            marginBottom: 10,
+            marginBottom: 40,
             paddingHorizontal: 15, // Padding for inner content
             paddingVertical: 10, // Padding for inner content
             flexDirection: "row",
@@ -373,7 +373,7 @@ export default function UserProfile({ route, navigation }) {
             style={{
               justifyContent: "center",
               alignItems: "center",
-              paddingRight: 50,
+              paddingRight: 80,
             }}
           >
             <Image
@@ -415,35 +415,6 @@ export default function UserProfile({ route, navigation }) {
         </View>
         {/* PROFILE CARD */}
 
-        <Pressable
-          style={{
-            alignSelf: "center",
-            alignItems: "center",
-            justifyContent: "center",
-            borderRadius: 10,
-            backgroundColor: "#2BA5FE",
-            width: screenWidth * 0.85,
-            height: screenHeight * 0.06,
-            elevation: 5, // Add elevation for drop shadow
-            shadowColor: "#000", // Shadow color
-            top: screenHeight * 0.02,
-            shadowOffset: {
-              width: 0,
-              height: 2,
-            },
-            shadowOpacity: 0.25,
-            shadowRadius: 3.84,
-            marginBottom: 32,
-            paddingHorizontal: 15, // Padding for inner content
-            paddingVertical: 10, // Padding for inner content
-            flexDirection: "row",
-          }}
-        >
-          <Text style={{ fontWeight: "700", color: "white" }}>
-            Edit Profile
-          </Text>
-        </Pressable>
-
         <View
           style={{
             width: screenWidth * 0.88,
@@ -451,23 +422,6 @@ export default function UserProfile({ route, navigation }) {
             marginBottom: 20,
           }}
         >
-          <Text style={{ fontSize: 12, lineHeight: 20 }}>
-            I'm Mark Voltaire, a professional photographer based in the vibrant
-            city of Miami. With over 8 years of experience capturing life's most
-            beautiful moments, I specialize in wedding, portrait, and event
-            photography. My passion for photography began in my teenage years,
-            and since then, I've honed my skills to ensure every shot tells a
-            unique story.
-          </Text>
-          <View
-            style={{
-              height: 0.5,
-              backgroundColor: "#E0E0E0",
-              marginVertical: 10,
-              marginBottom: 10,
-            }}
-          />
-
           <Text style={{ fontSize: 19, fontFamily: "gilroy", marginBottom: 2 }}>
             Reviews
           </Text>

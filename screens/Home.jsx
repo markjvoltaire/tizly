@@ -157,7 +157,7 @@ export default function Home({ navigation }) {
       name: "Fit Wit Jess",
       type: "fitness",
       price: "$40",
-      image: require("../assets/trainer.jpg"),
+      image: require("../assets/dj.jpg"),
     },
     {
       id: "2",
@@ -210,7 +210,7 @@ export default function Home({ navigation }) {
             width: 500,
             alignSelf: "center",
           }}
-          source={require("../assets/lottie/location.json")}
+          source={require("../assets/lottie/blackCircle.json")}
           autoPlay
         />
         <Text style={{ fontFamily: "alata" }}>Loading</Text>
@@ -234,7 +234,7 @@ export default function Home({ navigation }) {
             width: 500,
             alignSelf: "center",
           }}
-          source={require("../assets/lottie/location.json")}
+          source={require("../assets/lottie/blackCircle.json")}
           autoPlay
         />
         <Text style={{ fontFamily: "alata" }}>Searching For Locals</Text>
@@ -328,172 +328,130 @@ export default function Home({ navigation }) {
           showsVerticalScrollIndicator={false}
           style={{ flex: 1, backgroundColor: "white" }}
         >
-          <View>
-            <View
+          <View
+            style={{
+              alignItems: "center",
+              backgroundColor: "white",
+              height: 50,
+              paddingBottom: 80,
+            }}
+          >
+            <TouchableOpacity style={{ bottom: 17, alignSelf: "center" }}>
+              <Image
+                style={{ height: 100, width: 360, resizeMode: "contain" }}
+                source={require("../assets/searchIn.png")}
+              />
+            </TouchableOpacity>
+          </View>
+          {/* Carousel */}
+          <View style={{ paddingBottom: 20, backgroundColor: "white" }}>
+            <Text
               style={{
-                alignItems: "center",
-                backgroundColor: "white",
-                height: 50,
-                paddingBottom: 80,
+                left: 18,
+                paddingBottom: 14,
+                fontSize: 19,
+                fontFamily: "gilroy",
               }}
             >
-              <TouchableOpacity style={{ bottom: 17, alignSelf: "center" }}>
-                <Image
-                  style={{ height: 100, width: 360, resizeMode: "contain" }}
-                  source={require("../assets/searchIn.png")}
-                />
-              </TouchableOpacity>
-            </View>
-            {/* Carousel */}
-            <View style={{ paddingBottom: 20, backgroundColor: "white" }}>
-              <Text
-                style={{
-                  left: 18,
-                  paddingBottom: 20,
-                  fontWeight: "500",
-                  fontSize: 20,
-                }}
-              >
-                In {city}
-              </Text>
-              <FlatList
-                showsHorizontalScrollIndicator={false}
-                horizontal
-                data={trendingUsers}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item, index }) => (
-                  <Animated.View style={{ opacity: fadeAnim }}>
-                    <TouchableOpacity onPress={() => goToProfile(item)}>
-                      <Image
-                        style={{
-                          height: 90,
-                          width: 90,
-                          resizeMode: "cover",
-                          marginHorizontal: 15,
-                          borderRadius: 160,
-                          backgroundColor: "grey",
-                          marginBottom: 5,
-                        }} // Add marginHorizontal for spacing
-                        source={{ uri: item.profileimage }}
-                      />
-                      <Text
-                        style={{
-                          alignSelf: "center",
-                        }}
-                      >
-                        {item.username}
-                      </Text>
-                      <Text
-                        style={{
-                          alignSelf: "center",
-                          marginBottom: 5,
-                          fontSize: 12,
-                          color: "grey",
-                        }}
-                      >
-                        {item.profession}
-                      </Text>
-                    </TouchableOpacity>
-                  </Animated.View>
-                )}
-              />
-            </View>
-
-            <View style={{ paddingBottom: 1, backgroundColor: "white" }}>
-              <Text
-                style={{
-                  left: 18,
-                  fontWeight: "500",
-                  fontSize: 20,
-                  paddingBottom: 20,
-                }}
-              >
-                Trending Services
-              </Text>
-              <FlatList
-                style={{ marginBottom: 25 }}
-                showsHorizontalScrollIndicator={false}
-                horizontal
-                data={classes}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => (
-                  <View>
-                    <Animated.View style={{ opacity: fadeAnim }}>
-                      <TouchableOpacity>
-                        <Image
-                          style={{
-                            height: 150,
-                            width: 260,
-                            resizeMode: "cover",
-                            marginHorizontal: 10,
-                            borderRadius: 16,
-                            backgroundColor: "grey",
-                          }} // Add marginHorizontal for spacing
-                          source={item.image}
-                        />
-                      </TouchableOpacity>
-                    </Animated.View>
-                    <View
+              In {city}
+            </Text>
+            <FlatList
+              showsHorizontalScrollIndicator={false}
+              horizontal
+              data={trendingUsers}
+              keyExtractor={(item) => item.id}
+              style={{ flex: 1 }}
+              renderItem={({ item, index }) => (
+                <Animated.View style={{ opacity: fadeAnim }}>
+                  <TouchableOpacity onPress={() => goToProfile(item)}>
+                    <Image
                       style={{
-                        width: width * 0.65,
-                        left: 12,
+                        height: 90,
+                        width: 90,
+                        resizeMode: "cover",
+                        marginHorizontal: 15,
+                        borderRadius: 160,
+                        backgroundColor: "grey",
+                        marginBottom: 5,
+                      }} // Add marginHorizontal for spacing
+                      source={{ uri: item.profileimage }}
+                    />
+                    <Text
+                      style={{
+                        alignSelf: "center",
+                        fontSize: 13,
                       }}
                     >
-                      <Text style={{}}>{item.title}</Text>
-                      <Text style={{ color: "grey" }}>{item.name}</Text>
-                    </View>
-                  </View>
-                )}
-              />
-            </View>
-
-            <View style={{ backgroundColor: "white" }}>
-              <Text
-                style={{
-                  left: 18,
-                  paddingBottom: 20,
-                  fontWeight: "500",
-                  fontSize: 20,
-                }}
-              >
-                Gigs Near You
-              </Text>
-              <FlatList
-                style={{ marginBottom: 50 }}
-                showsHorizontalScrollIndicator={false}
-                horizontal
-                data={classes}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => (
-                  <View>
-                    <Animated.View style={{ opacity: fadeAnim }}>
-                      <TouchableOpacity>
-                        <Image
-                          style={{
-                            height: 150,
-                            width: 260,
-                            resizeMode: "cover",
-                            marginHorizontal: 10,
-                            borderRadius: 16,
-                            backgroundColor: "grey",
-                          }} // Add marginHorizontal for spacing
-                          source={item.image}
-                        />
-                      </TouchableOpacity>
-                    </Animated.View>
-                    <View
+                      {item.username}
+                    </Text>
+                    <Text
                       style={{
-                        width: width * 0.65,
-                        left: 12,
+                        alignSelf: "center",
+                        marginBottom: 5,
+                        fontSize: 12,
+                        color: "grey",
                       }}
                     >
-                      <Text style={{}}>{item.title}</Text>
-                      <Text style={{ color: "grey" }}>{item.name}</Text>
-                    </View>
+                      {item.profession}
+                    </Text>
+                  </TouchableOpacity>
+                </Animated.View>
+              )}
+            />
+          </View>
+
+          <View style={{ paddingBottom: 1, backgroundColor: "white" }}>
+            <FlatList
+              style={{ marginBottom: 25, alignSelf: "center", flex: 1 }}
+              showsHorizontalScrollIndicator={false}
+              data={classes}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => (
+                <Animated.View style={{ opacity: fadeAnim, marginBottom: 2 }}>
+                  <Image
+                    style={{
+                      width: width * 0.96,
+                      height: height * 0.29,
+                      resizeMode: "cover",
+                      borderRadius: 10,
+                      backgroundColor: "grey",
+                      marginBottom: 10,
+                    }} // Add marginHorizontal for spacing
+                    source={item.image}
+                  />
+                  <View style={{ flexDirection: "row" }}>
+                    <Text
+                      style={{
+                        fontSize: 15,
+                        marginBottom: 1,
+                        fontWeight: "600",
+
+                        width: width * 0.75,
+                      }}
+                    >
+                      Lifestyle Package
+                    </Text>
                   </View>
-                )}
-              />
-            </View>
+                  <Text
+                    style={{
+                      lineHeight: 20,
+                      fontFamily: "gilroy",
+                    }}
+                  >
+                    from $200
+                  </Text>
+                  <Text style={{ lineHeight: 20 }}>{city}</Text>
+                  <View
+                    style={{
+                      height: 0.5,
+                      backgroundColor: "#E0E0E0",
+                      marginVertical: 10,
+                      marginBottom: 15,
+                    }}
+                  />
+                </Animated.View>
+              )}
+            />
           </View>
         </ScrollView>
       </SafeAreaView>
