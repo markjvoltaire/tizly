@@ -134,9 +134,9 @@ export default function Auth() {
           options={{
             tabBarVisible: false,
             headerShown: true,
-            headerTitle: "", // Customizing the header title
+            headerTitle: "Profile Details", // Customizing the header title
             headerBackTitle: "Back", // Customizing the back button text
-            headerTintColor: "white", // Changing the color of the back button text
+            headerTintColor: "black", // Changing the color of the back button text
             headerTransparent: true,
           }}
         />
@@ -407,7 +407,8 @@ export default function Auth() {
 
       <Tab.Screen
         options={{
-          headerShown: false,
+          headerShown: true,
+          headerTitle: "My Profile",
           tabBarIcon: ({ color, size, focused }) =>
             focused ? (
               <Image
