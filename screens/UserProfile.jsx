@@ -287,26 +287,6 @@ const UserProfile = ({ route, navigation }) => {
         </View>
         <View style={styles.separator} />
         <View style={styles.contentContainer}>
-          <Text style={styles.sectionTitle}>Reviews</Text>
-          <FlatList
-            style={{ right: 10, width: screenWidth * 0.94 }}
-            horizontal
-            data={classes}
-            keyExtractor={(item) => item.id}
-            renderItem={renderReviewItem}
-            showsHorizontalScrollIndicator={false}
-          />
-          <View style={styles.separator} />
-          <Text style={styles.sectionTitle}>Portfolio</Text>
-          <FlatList
-            horizontal
-            style={{ right: 10, width: screenWidth * 0.94 }}
-            data={classes}
-            keyExtractor={(item) => item.id}
-            renderItem={renderPortfolioItem}
-            showsHorizontalScrollIndicator={false}
-          />
-          <View style={styles.separator} />
           <Text style={styles.sectionTitle}>Services</Text>
           <Pressable onPress={() => console.log("Service selected")}>
             <View style={styles.serviceItem}>
@@ -332,6 +312,27 @@ const UserProfile = ({ route, navigation }) => {
               </View>
             </View>
           </Pressable>
+          <View style={styles.separator} />
+          <Text style={styles.sectionTitle}>Reviews</Text>
+          <FlatList
+            style={{ right: 10, width: screenWidth * 0.94 }}
+            horizontal
+            data={classes}
+            keyExtractor={(item) => item.id}
+            renderItem={renderReviewItem}
+            showsHorizontalScrollIndicator={false}
+          />
+          <View style={styles.separator} />
+          <Text style={styles.sectionTitle}>Portfolio</Text>
+          <FlatList
+            horizontal
+            style={{ right: 10, width: screenWidth * 0.94 }}
+            data={classes}
+            keyExtractor={(item) => item.id}
+            renderItem={renderPortfolioItem}
+            showsHorizontalScrollIndicator={false}
+          />
+          <View style={styles.separator} />
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -406,8 +407,13 @@ const styles = StyleSheet.create({
   portfolioImage: { width: 200, height: 150, borderRadius: 8, marginRight: 16 },
 
   // Services
-  serviceItem: { flexDirection: "row", alignItems: "center", marginBottom: 16 },
-  serviceImage: { width: 50, height: 50, borderRadius: 8, marginRight: 16 },
+  serviceItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
+    marginTop: 10,
+  },
+  serviceImage: { width: 60, height: 60, borderRadius: 8, marginRight: 16 },
   serviceTitle: { fontSize: 16, fontWeight: "bold" },
   serviceDetails: { fontSize: 14, color: "#636363" },
 

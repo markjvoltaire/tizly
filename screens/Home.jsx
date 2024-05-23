@@ -1,462 +1,335 @@
-import React, { useState, useEffect, useRef } from "react";
 import {
-  Image,
   StyleSheet,
   Text,
+  TextInput,
   View,
-  Dimensions,
-  Modal,
-  ActivityIndicator,
-  SafeAreaView,
-  Linking,
-  TouchableOpacity,
-  Animated,
-  FlatList,
   ScrollView,
+  TouchableOpacity,
+  Image,
+  FlatList,
+  Dimensions,
   Pressable,
-  Button, // Import ScrollView
 } from "react-native";
-import { useFocusEffect, useScrollToTop } from "@react-navigation/native"; // Import useScrollToTop
-import { supabase } from "../services/supabase";
-import { getRandomUser } from "../services/user";
-import * as Location from "expo-location";
-import LottieView from "lottie-react-native";
+import React, { useState, useRef } from "react";
 import { useUser } from "../context/UserContext";
+import { useFocusEffect, useScrollToTop } from "@react-navigation/native";
 
 export default function Home({ navigation }) {
-  let height = Dimensions.get("window").height;
-  let width = Dimensions.get("window").width;
+  const { user, setUser } = useUser();
 
-  const [loading, setLoading] = useState(true);
-  const [trendingUsers, setTrendingUsers] = useState([]);
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const scrollViewRef = useRef(); // Ref for ScrollView
-
-  const [location, setLocation] = useState();
-  const [address, setAddress] = useState();
-  const [city, setCity] = useState();
-  const [isLoading, setIsLoading] = useState(true); // Introducing loading state
-  const [allowLocation, setAllowLocation] = useState();
-  const { user } = useUser();
-
-  const handleOpenSettings = () => {
-    Linking.openSettings();
-  };
-
-  const goToProfile = (item) => {
-    if (!user) {
-      navigation.navigate("ProfileDetail", { item });
-    } else if (item.user_id === user.user_id) {
-      navigation.navigate("UserProfile");
-    } else {
-      navigation.navigate("ProfileDetail", { item });
-    }
-  };
-
-  const reverseGeocode = async (currentLocation) => {
-    try {
-      const { coords } = currentLocation;
-      const reverseGeocodedAddress = await Location.reverseGeocodeAsync({
-        longitude: coords.longitude,
-        latitude: coords.latitude,
-      });
-
-      const { isoCountryCode, city } = reverseGeocodedAddress[0];
-      console.log("reverseGeocodedAddress", reverseGeocodedAddress[0]);
-      // console.log("Reverse Geocoded:", isoCountryCode);
-      setCity(city); // Assuming `setCity` is defined elsewhere
-      setIsLoading(false); // Set loading state to false when done
-    } catch (error) {
-      console.error("Error during reverse geocoding:", error);
-      setIsLoading(false); // Set loading state to false when done
-    }
-  };
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     const getPermissions = async () => {
-  //       let { status } = await Location.requestForegroundPermissionsAsync();
-  //       if (status !== "granted") {
-  //         console.log("Please grant location permissions");
-  //         setAllowLocation(false);
-  //         setIsLoading(false); // Set loading state to false when done
-  //         return;
-  //       } else {
-  //         setAllowLocation(true);
-  //       }
-
-  //       let currentLocation = await Location.getCurrentPositionAsync({});
-  //       setLocation(currentLocation);
-  //       // console.log("Location:", currentLocation);
-  //       reverseGeocode(currentLocation);
-  //     };
-
-  //     getPermissions(); // Call getPermissions when screen is focused
-  //   }, [])
-  // );
-
-  useEffect(() => {
-    const getPermissions = async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        // console.log("Please grant location permissions");
-        setAllowLocation(false);
-        setIsLoading(false); // Set loading state to false when done
-        return;
-      } else {
-        setAllowLocation(true);
-      }
-
-      let currentLocation = await Location.getCurrentPositionAsync({});
-
-      setLocation(currentLocation);
-      console.log("Location:", currentLocation);
-      reverseGeocode(currentLocation);
-    };
-    getPermissions();
-  }, []);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const resp = await getRandomUser();
-
-        setTrendingUsers(resp);
-        const timeout = setTimeout(() => {
-          setLoading(false);
-          fadeIn();
-        }, 1000);
-
-        return () => {
-          clearTimeout(timeout);
-          fadeAnim.setValue(0); // Reset the fade animation when component unmounts
-        };
-      } catch (error) {
-        // Handle errors here
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
-  const fadeIn = () => {
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 1000, // Adjust the duration as needed
-      useNativeDriver: true,
-    }).start();
-  };
-
-  useScrollToTop(scrollViewRef); // Hook up useScrollToTop to ScrollView
-
-  // Mock data for carousel items
-
-  const classes = [
-    {
-      id: "1",
-      title: "Personal Training",
-      name: "Fit Wit Jess",
-      type: "fitness",
-      price: "$40",
-      image: require("../assets/dj.jpg"),
-    },
-    {
-      id: "2",
-      title: "Photo Shoot",
-      name: "Voltaire Views",
-      type: "fitness",
-      price: "$250",
-
-      image: require("../assets/cameraMan.jpg"),
-    },
-    {
-      id: "3",
-      title: "Make Session",
-      name: "Ashley Beauty",
-      type: "Beauty",
-      price: "$175",
-
-      image: require("../assets/makeUp.jpg"),
-    },
-  ];
-
-  const professions = [
+  const services = [
     {
       id: 1,
-      profession: "Photographer",
-      image: require("../assets/Camera.png"),
+      title: "Wedding Photography",
+      category: "Photographers",
+      rating: 4.8,
+      price: "$200",
+      images: [
+        require("../assets/cameraMan.jpg"),
+        require("../assets/photo1.jpg"),
+      ],
     },
     {
       id: 2,
-      profession: "Videographer",
-      image: require("../assets/Video.png"),
+      title: "Car Detailing",
+      category: "Auto Detailers",
+      rating: 4.5,
+      price: "$100",
+      images: [
+        require("../assets/cameraMan.jpg"),
+        require("../assets/photo1.jpg"),
+      ],
     },
-    { id: 3, profession: "Auto", image: require("../assets/Password.png") },
-    { id: 4, profession: "DJ", image: require("../assets/Password.png") },
+    {
+      id: 3,
+      title: "House Cleaning",
+      category: "Home Cleaning",
+      rating: 4.7,
+      price: "$150",
+      images: [
+        require("../assets/cameraMan.jpg"),
+        require("../assets/photo1.jpg"),
+      ],
+    },
+    {
+      id: 4,
+      title: "Lawn Mowing",
+      category: "Lawn Services",
+      rating: 4.6,
+      price: "$50",
+      images: [
+        require("../assets/cameraMan.jpg"),
+        require("../assets/photo1.jpg"),
+      ],
+    },
+    {
+      id: 5,
+      title: "Event Photography",
+      category: "Photographers",
+      rating: 4.9,
+      price: "$300",
+      images: [
+        require("../assets/cameraMan.jpg"),
+        require("../assets/photo1.jpg"),
+      ],
+    },
+    {
+      id: 6,
+      title: "Deep House Cleaning",
+      category: "Home Cleaning",
+      rating: 4.8,
+      price: "$200",
+      images: [
+        require("../assets/cameraMan.jpg"),
+        require("../assets/photo1.jpg"),
+      ],
+    },
+    {
+      id: 7,
+      title: "Gardening Service",
+      category: "Lawn Services",
+      rating: 4.5,
+      price: "$80",
+      images: [
+        require("../assets/cameraMan.jpg"),
+        require("../assets/photo1.jpg"),
+      ],
+    },
+    {
+      id: 8,
+      title: "Pet Grooming",
+      category: "Pet Services",
+      rating: 4.7,
+      price: "$60",
+      images: [
+        require("../assets/cameraMan.jpg"),
+        require("../assets/photo1.jpg"),
+      ],
+    },
   ];
 
-  if (loading) {
-    return (
-      <View
-        style={{
-          alignItems: "center",
-          justifyContent: "center",
-          flex: 1,
-          backgroundColor: "white",
-        }}
-      >
-        <LottieView
-          style={{
-            height: 500,
-            width: 500,
-            alignSelf: "center",
-          }}
-          source={require("../assets/lottie/blackCircle.json")}
-          autoPlay
-        />
-        <Text style={{ fontFamily: "alata" }}>Loading</Text>
-      </View>
-    );
-  }
-
-  if (isLoading) {
-    return (
-      <View
-        style={{
-          alignItems: "center",
-          justifyContent: "center",
-          flex: 1,
-          backgroundColor: "white",
-        }}
-      >
-        <LottieView
-          style={{
-            height: 500,
-            width: 500,
-            alignSelf: "center",
-          }}
-          source={require("../assets/lottie/blackCircle.json")}
-          autoPlay
-        />
-        <Text style={{ fontFamily: "alata" }}>Searching For Locals</Text>
-      </View>
-    );
-  }
-
-  if (allowLocation === false) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor: "#fafafa",
-        }}
-      >
-        <Text
-          style={{
-            fontSize: 20,
-            textAlign: "center",
-            color: "#333",
-            fontFamily: "Arial",
-            marginBottom: 20,
-          }}
-        >
-          Location Access Disabled
-        </Text>
-        <Text
-          style={{
-            fontSize: 16,
-            textAlign: "center",
-            color: "#666",
-            fontFamily: "Arial",
-            marginBottom: 30,
-          }}
-        >
-          To use this feature, enable location access in your device settings.
-        </Text>
-        <Button
-          title="Open Settings"
-          onPress={handleOpenSettings}
-          color="#ff5f5f"
-        />
-      </View>
-    );
-  }
-
   return (
-    <Animated.View
-      style={{
-        // opacity: fadeAnim,
-        flex: 1,
-        backgroundColor: "white",
-      }}
-    >
-      <SafeAreaView style={{ flex: 1 }}>
-        <View style={{ flexDirection: "row", paddingBottom: 10 }}>
-          <Pressable style={{ flexDirection: "row" }}>
-            <Image
-              style={{
-                height: 30,
-                width: 30,
-                left: 15,
-                resizeMode: "contain",
-                marginRight: 20,
-              }}
-              source={require("../assets/Location.png")}
-            />
-            <Text style={{ top: 6, fontFamily: "alata" }}>{city}</Text>
-          </Pressable>
+    <View style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.headerText}>ServiceFinder</Text>
+      </View>
 
-          <Pressable
-            style={{ marginLeft: "auto", marginRight: 18, top: 4 }}
-            onPress={() => navigation.navigate("Settings")}
-          >
-            <Image
-              style={{
-                height: 28,
-                width: 28,
-                resizeMode: "contain",
-                marginLeft: "auto",
-                marginRight: 12,
-              }}
-              source={require("../assets/moreCircleBlack.png")}
-            />
-          </Pressable>
-        </View>
-        <ScrollView
-          ref={scrollViewRef}
-          showsVerticalScrollIndicator={false}
-          style={{ flex: 1, backgroundColor: "white" }}
-        >
-          <View
-            style={{
-              alignItems: "center",
-              backgroundColor: "white",
-              height: 50,
-              paddingBottom: 80,
-            }}
-          >
-            <TouchableOpacity style={{ bottom: 17, alignSelf: "center" }}>
-              <Image
-                style={{ height: 100, width: 360, resizeMode: "contain" }}
-                source={require("../assets/searchIn.png")}
-              />
-            </TouchableOpacity>
-          </View>
-          {/* Carousel */}
-          <View style={{ paddingBottom: 20, backgroundColor: "white" }}>
-            <Text
-              style={{
-                left: 18,
-                paddingBottom: 14,
-                fontSize: 19,
-                fontFamily: "gilroy",
-              }}
-            >
-              In {city}
-            </Text>
-            <FlatList
-              showsHorizontalScrollIndicator={false}
-              horizontal
-              data={trendingUsers}
-              keyExtractor={(item) => item.id}
-              style={{ flex: 1 }}
-              renderItem={({ item, index }) => (
-                <Animated.View style={{ opacity: fadeAnim }}>
-                  <TouchableOpacity onPress={() => goToProfile(item)}>
-                    <Image
-                      style={{
-                        height: 90,
-                        width: 90,
-                        resizeMode: "cover",
-                        marginHorizontal: 15,
-                        borderRadius: 160,
-                        backgroundColor: "grey",
-                        marginBottom: 5,
-                      }} // Add marginHorizontal for spacing
-                      source={{ uri: item.profileimage }}
-                    />
-                    <Text
-                      style={{
-                        alignSelf: "center",
-                        fontSize: 13,
-                      }}
-                    >
-                      {item.username}
-                    </Text>
-                    <Text
-                      style={{
-                        alignSelf: "center",
-                        marginBottom: 5,
-                        fontSize: 12,
-                        color: "grey",
-                      }}
-                    >
-                      {item.profession}
-                    </Text>
-                  </TouchableOpacity>
-                </Animated.View>
-              )}
-            />
-          </View>
+      {/* Search Bar */}
+      <Text style={{ left: 23, fontSize: 20, fontFamily: "gilroy" }}>
+        Hello {user?.username}
+      </Text>
+      <TextInput
+        style={styles.searchBar}
+        placeholder="Search for services..."
+      />
 
-          <View style={{ paddingBottom: 1, backgroundColor: "white" }}>
-            <FlatList
-              style={{ marginBottom: 25, alignSelf: "center", flex: 1 }}
-              showsHorizontalScrollIndicator={false}
-              data={classes}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => (
-                <Animated.View style={{ opacity: fadeAnim, marginBottom: 2 }}>
-                  <Image
-                    style={{
-                      width: width * 0.96,
-                      height: height * 0.29,
-                      resizeMode: "cover",
-                      borderRadius: 10,
-                      backgroundColor: "grey",
-                      marginBottom: 10,
-                    }} // Add marginHorizontal for spacing
-                    source={item.image}
-                  />
-                  <View style={{ flexDirection: "row" }}>
-                    <Text
-                      style={{
-                        fontSize: 15,
-                        marginBottom: 1,
-                        fontWeight: "600",
+      {/* Categories */}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.categoriesContainer}
+      >
+        <CategoryItem title="Photographers" />
+        <CategoryItem title="Auto Detailers" />
+        <CategoryItem title="Home Cleaning" />
+        <CategoryItem title="Lawn Services" />
+        <CategoryItem title="Pet Services" />
+        {/* Add more categories as needed */}
+      </ScrollView>
 
-                        width: width * 0.75,
-                      }}
-                    >
-                      Lifestyle Package
-                    </Text>
-                  </View>
-                  <Text
-                    style={{
-                      lineHeight: 20,
-                      fontFamily: "gilroy",
-                    }}
-                  >
-                    from $200
-                  </Text>
-                  <Text style={{ lineHeight: 20 }}>{city}</Text>
-                  <View
-                    style={{
-                      height: 0.5,
-                      backgroundColor: "#E0E0E0",
-                      marginVertical: 10,
-                      marginBottom: 15,
-                    }}
-                  />
-                </Animated.View>
-              )}
-            />
-          </View>
-        </ScrollView>
-      </SafeAreaView>
-    </Animated.View>
+      {/* Services Feed */}
+      <ScrollView contentContainerStyle={styles.servicesContainer}>
+        {services.map((service) => (
+          <ServiceItem key={service.id} service={service} />
+        ))}
+      </ScrollView>
+    </View>
   );
 }
 
-const styles = StyleSheet.create({});
+const CategoryItem = ({ title }) => (
+  <TouchableOpacity style={styles.categoryItem}>
+    <Text style={styles.categoryText}>{title}</Text>
+  </TouchableOpacity>
+);
+
+const ServiceItem = ({ service }) => {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const onImageScroll = (event) => {
+    const contentOffsetX = event.nativeEvent.contentOffset.x;
+    const viewSize = event.nativeEvent.layoutMeasurement.width;
+    const currentIndex = Math.floor(contentOffsetX / viewSize);
+    setCurrentImageIndex(currentIndex);
+  };
+
+  return (
+    <View style={styles.serviceItem}>
+      <FlatList
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        data={service.images}
+        renderItem={({ item }) => (
+          <Image source={item} style={styles.serviceImage} />
+        )}
+        keyExtractor={(item, index) => index.toString()}
+        onScroll={onImageScroll}
+        scrollEventThrottle={16}
+      />
+      <View style={styles.paginationDots}>
+        {service.images.map((_, index) => (
+          <View
+            key={index}
+            style={[
+              styles.dot,
+              {
+                backgroundColor:
+                  index === currentImageIndex ? "#C52A66" : "#ccc",
+              },
+            ]}
+          />
+        ))}
+      </View>
+      <View style={styles.serviceInfo}>
+        <Text style={styles.serviceTitle}>{service.title}</Text>
+        <Text style={styles.serviceCategory}>{service.category}</Text>
+        <Text style={styles.serviceRating}>Rating: {service.rating}</Text>
+        <Text style={styles.servicePrice}>{service.price}</Text>
+        <View style={styles.deliveryInfo}>
+          <Image
+            source={require("../assets/photo3.jpg")}
+            style={styles.profileImage}
+          />
+          <Text style={styles.deliveryPersonName}>John Doe</Text>
+        </View>
+      </View>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "white",
+  },
+  header: {
+    backgroundColor: "white",
+    padding: 20,
+    alignItems: "center",
+  },
+  headerText: {
+    color: "white",
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  searchBar: {
+    backgroundColor: "white",
+    padding: 10,
+    margin: 20,
+    borderRadius: 5,
+    elevation: 2, // Adds shadow on Android
+    shadowColor: "#000", // Adds shadow on iOS
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    borderWidth: 0.2,
+  },
+  categoriesContainer: {
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+    bottom: 10,
+    marginBottom: 25,
+  },
+  categoryItem: {
+    backgroundColor: "#C52A66",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    marginHorizontal: 10,
+    borderRadius: 12,
+    elevation: 1, // Adds shadow on Android
+    shadowColor: "#000", // Adds shadow on iOS
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    height: 50, // Adjust the height as needed
+  },
+  categoryText: {
+    fontSize: 16,
+    color: "white",
+    fontFamily: "gilroy",
+  },
+  servicesContainer: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
+  serviceItem: {
+    backgroundColor: "white",
+    borderRadius: 8,
+    marginBottom: 20,
+    overflow: "hidden",
+    elevation: 1, // Adds shadow on Android
+    shadowColor: "#000", // Adds shadow on iOS
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1,
+    borderWidth: 3,
+    borderColor: "#f5f5f5",
+  },
+  serviceImage: {
+    width: Dimensions.get("window").width * 0.89,
+    height: 200,
+    resizeMode: "cover",
+    backgroundColor: "grey",
+  },
+  paginationDots: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginVertical: 5,
+  },
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginHorizontal: 4,
+  },
+  serviceInfo: {
+    padding: 10,
+  },
+  serviceTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  serviceCategory: {
+    fontSize: 14,
+    color: "#666",
+    marginVertical: 2,
+  },
+  serviceRating: {
+    fontSize: 14,
+    color: "#666",
+  },
+  servicePrice: {
+    fontSize: 16,
+    color: "#333",
+    fontWeight: "bold",
+  },
+  deliveryInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 10,
+  },
+  profileImage: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    marginRight: 10,
+  },
+  deliveryPersonName: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+});

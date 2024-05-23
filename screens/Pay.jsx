@@ -23,6 +23,7 @@ export default function Pay({ route, navigation }) {
   const [loading, setLoading] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [orderList, setOrderList] = useState([]);
+  console.log("route", route.params.service);
   const { profile, serviceTitle, serviceDescription, servicePrice } =
     route.params;
   const { confirmPayment } = useStripe();
@@ -119,7 +120,7 @@ export default function Pay({ route, navigation }) {
   return (
     <View style={styles.container}>
       <Animated.Image
-        source={{ uri: profile.profileimage }}
+        source={require("../assets/photo1.jpg")}
         style={[
           {
             width: screenWidth,
@@ -152,7 +153,7 @@ export default function Pay({ route, navigation }) {
         </Text>
 
         <Text style={{ color: "white", fontWeight: "600", fontSize: 18 }}>
-          ${servicePrice}
+          $500
         </Text>
       </View>
 
@@ -201,7 +202,7 @@ export default function Pay({ route, navigation }) {
           onPress={handlePayPress}
           disabled={loading}
           style={{
-            backgroundColor: "#635BFF",
+            backgroundColor: "#C52A66",
             height: screenHeight * 0.06,
             width: screenWidth * 0.9,
             borderRadius: 10,
@@ -213,7 +214,7 @@ export default function Pay({ route, navigation }) {
             <ActivityIndicator color="#fff" />
           ) : (
             <Text style={{ color: "#fff", fontWeight: "bold" }}>
-              Book Now ${servicePrice}
+              Book Now $200
             </Text>
           )}
         </TouchableOpacity>
