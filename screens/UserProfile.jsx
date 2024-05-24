@@ -37,6 +37,42 @@ const UserProfile = ({ route, navigation }) => {
   const screenHeight = Dimensions.get("window").height;
   const screenName = "UserProfile";
 
+  const services = [
+    {
+      id: 1,
+      title: "Wedding Photography",
+      category: "Photographers",
+      rating: 4.8,
+      price: "$200",
+      images: [
+        require("../assets/cameraMan.jpg"),
+        require("../assets/photo1.jpg"),
+      ],
+    },
+    {
+      id: 2,
+      title: "Car Detailing",
+      category: "Auto Detailers",
+      rating: 4.5,
+      price: "$100",
+      images: [
+        require("../assets/cameraMan.jpg"),
+        require("../assets/photo1.jpg"),
+      ],
+    },
+    {
+      id: 3,
+      title: "House Cleaning",
+      category: "Home Cleaning",
+      rating: 4.7,
+      price: "$150",
+      images: [
+        require("../assets/cameraMan.jpg"),
+        require("../assets/photo1.jpg"),
+      ],
+    },
+  ];
+
   const classes = [
     {
       id: "2",
@@ -158,6 +194,54 @@ const UserProfile = ({ route, navigation }) => {
     </Animated.View>
   );
 
+  const ServiceItem = ({ service }) => {
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+    const onImageScroll = (event) => {
+      const contentOffsetX = event.nativeEvent.contentOffset.x;
+      const viewSize = event.nativeEvent.layoutMeasurement.width;
+      const currentIndex = Math.floor(contentOffsetX / viewSize);
+      setCurrentImageIndex(currentIndex);
+    };
+
+    return (
+      <View style={styles.serviceItem}>
+        <FlatList
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+          data={service.images}
+          renderItem={({ item }) => (
+            <Image source={item} style={styles.serviceImage} />
+          )}
+          keyExtractor={(item, index) => index.toString()}
+          onScroll={onImageScroll}
+          scrollEventThrottle={16}
+        />
+        <View style={styles.paginationDots}>
+          {service.images.map((_, index) => (
+            <View
+              key={index}
+              style={[
+                styles.dot,
+                {
+                  backgroundColor:
+                    index === currentImageIndex ? "#2BA5FE" : "#ccc",
+                },
+              ]}
+            />
+          ))}
+        </View>
+        <View style={styles.serviceInfo}>
+          <Text style={styles.serviceTitle}>{service.title}</Text>
+          {/* <Text style={styles.serviceCategory}>{service.category}</Text> */}
+          <Text style={styles.serviceRating}>Rating: {service.rating}</Text>
+          <Text style={styles.servicePrice}>{service.price}</Text>
+        </View>
+      </View>
+    );
+  };
+
   if (!isLoggedIn) {
     return (
       <SafeAreaView style={styles.loginContainer}>
@@ -244,7 +328,12 @@ const UserProfile = ({ route, navigation }) => {
           <View style={styles.profileInfo}>
             <Image
               source={{ uri: user.profileimage }}
-              style={styles.profileImage}
+              style={{
+                height: 70,
+                width: 70,
+                borderRadius: 40,
+                marginBottom: 15,
+              }}
             />
             <Text style={styles.profileName}>{user.username}</Text>
             <Text style={styles.profileProfession}>{user.profession}</Text>
@@ -264,12 +353,13 @@ const UserProfile = ({ route, navigation }) => {
             </View>
           </View>
           <TouchableOpacity
+            onPress={() => navigation.navigate("Settings")}
             style={{
               width: 300,
               height: 40,
               borderRadius: 10,
               justifyContent: "center",
-              backgroundColor: "#C52A66",
+              backgroundColor: "#2BA5FE",
               alignSelf: "center",
             }}
           >
@@ -281,37 +371,21 @@ const UserProfile = ({ route, navigation }) => {
                 fontSize: 16,
               }}
             >
-              Edit Profile
+              Settings
             </Text>
           </TouchableOpacity>
         </View>
         <View style={styles.separator} />
         <View style={styles.contentContainer}>
           <Text style={styles.sectionTitle}>Services</Text>
-          <Pressable onPress={() => console.log("Service selected")}>
-            <View style={styles.serviceItem}>
-              <Image
-                style={styles.serviceImage}
-                source={require("../assets/photo1.jpg")}
-              />
-              <View>
-                <Text style={styles.serviceTitle}>Lifestyle Package</Text>
-                <Text style={styles.serviceDetails}>$150 per hour</Text>
-              </View>
-            </View>
-          </Pressable>
-          <Pressable onPress={() => console.log("Service selected")}>
-            <View style={styles.serviceItem}>
-              <Image
-                style={styles.serviceImage}
-                source={require("../assets/photo2.jpg")}
-              />
-              <View>
-                <Text style={styles.serviceTitle}>Fashion Photoshoot</Text>
-                <Text style={styles.serviceDetails}>$200 per hour</Text>
-              </View>
-            </View>
-          </Pressable>
+
+          {/*  */}
+          <ScrollView contentContainerStyle={styles.servicesContainer}>
+            {services.map((service) => (
+              <ServiceItem key={service.id} service={service} />
+            ))}
+          </ScrollView>
+          {/*  */}
           <View style={styles.separator} />
           <Text style={styles.sectionTitle}>Reviews</Text>
           <FlatList
@@ -349,6 +423,7 @@ const styles = StyleSheet.create({
     padding: 16,
     alignItems: "center",
   },
+
   profileInfo: { alignItems: "center" },
   profileStats: {
     flexDirection: "row",
@@ -368,11 +443,47 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     backgroundColor: "grey",
   },
-  profileName: { fontSize: 24, fontWeight: "bold" },
+  profileName: { fontSize: 22, fontWeight: "bold" },
   profileProfession: { fontSize: 16, color: "#636363" },
   statItem: { alignItems: "center" },
   statValue: { fontSize: 18, fontWeight: "bold" },
   statLabel: { fontSize: 14, color: "#636363" },
+
+  serviceInfo: {
+    padding: 10,
+  },
+
+  serviceCategory: {
+    fontSize: 14,
+    color: "#666",
+    marginVertical: 2,
+  },
+  serviceRating: {
+    fontSize: 14,
+    color: "grey",
+    marginBottom: 2,
+  },
+  servicePrice: {
+    fontSize: 16,
+    color: "#333",
+    fontWeight: "bold",
+    marginBottom: 1,
+  },
+  deliveryInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 10,
+  },
+  profileImage: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    marginRight: 10,
+  },
+  deliveryPersonName: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
 
   // Sections
   sectionTitle: { fontSize: 20, fontFamily: "gilroy", marginBottom: 8 },
@@ -406,15 +517,40 @@ const styles = StyleSheet.create({
   // Portfolio
   portfolioImage: { width: 200, height: 150, borderRadius: 8, marginRight: 16 },
 
+  paginationDots: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginVertical: 8,
+  },
+
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginHorizontal: 4,
+  },
+
   // Services
   serviceItem: {
-    flexDirection: "row",
-    alignItems: "center",
+    backgroundColor: "white",
+    borderRadius: 8,
     marginBottom: 20,
-    marginTop: 10,
+    overflow: "hidden",
+    elevation: 1, // Adds shadow on Android
+    shadowColor: "#000", // Adds shadow on iOS
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1,
+    borderWidth: 3,
+    borderColor: "#f5f5f5",
   },
-  serviceImage: { width: 60, height: 60, borderRadius: 8, marginRight: 16 },
-  serviceTitle: { fontSize: 16, fontWeight: "bold" },
+  serviceImage: {
+    width: Dimensions.get("window").width * 0.91,
+    height: 200,
+    resizeMode: "cover",
+    backgroundColor: "grey",
+  },
+  serviceTitle: { fontSize: 16, fontWeight: "bold", marginBottom: 1 },
   serviceDetails: { fontSize: 14, color: "#636363" },
 
   // Login modal

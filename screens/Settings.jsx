@@ -8,7 +8,7 @@ import {
   TextInput,
   Button,
   Alert,
-  Switch,
+  Image,
 } from "react-native";
 import { supabase } from "../services/supabase";
 import { useUser } from "../context/UserContext";
@@ -16,18 +16,17 @@ import LottieView from "lottie-react-native";
 
 export default function Settings({ navigation }) {
   const { user, setUser } = useUser();
-  const [modal, setModal] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   async function getUser(userid) {
     const resp = await supabase
       .from("profiles")
       .select("*")
       .eq("user_id", userid)
-      .single()
-      .limit(1);
+      .single();
 
     return resp;
   }
@@ -42,10 +41,10 @@ export default function Settings({ navigation }) {
       })
       .eq("user_id", userId);
 
-    if (res.error === null) {
-      setUser(res.body[0]);
+    if (!res.error) {
+      setUser(res.data[0]);
     } else {
-      console.log("ERROR", res.error);
+      console.error("ERROR", res.error);
       Alert.alert("Something Went Wrong");
     }
 
@@ -53,29 +52,24 @@ export default function Settings({ navigation }) {
   }
 
   async function loginWithEmail() {
-    // setModalLoader(true);
+    setLoading(true);
     const { user, error } = await supabase.auth.signIn({
       email,
       password,
     });
+    setLoading(false);
     if (error) {
       Alert.alert(error.message);
     } else {
       const resp = await getUser(user.id);
       supabase.auth.setAuth(user.access_token);
-      console.log("resp", resp);
-      setUser(resp.body);
+      setUser(resp.data);
+      setModalVisible(false);
     }
   }
 
-  const handleLoginModal = () => {
-    setModalVisible(true);
-    // Add your login logic here
-  };
-
   const logUserIn = () => {
     loginWithEmail();
-    // Add your login logic here
   };
 
   async function signOutUser() {
@@ -83,172 +77,117 @@ export default function Settings({ navigation }) {
     setUser(null);
   }
 
-  // Function to handle log out action
   const handleLogOut = async () => {
-    // Your log out logic here
-    setModal(true);
+    setLoading(true);
     await signOutUser();
-    setUser(null);
-    console.log("Logging out...");
+    setLoading(false);
     navigation.navigate("HomeScreen");
-    setModal(false);
-  };
-
-  const handleLogIn = async () => {
-    // Your log out logic here
-    handleLoginModal();
   };
 
   const handleAuth = () => {
-    user ? handleLogOut() : handleLogIn();
+    user ? handleLogOut() : setModalVisible(true);
   };
 
   return (
     <View style={styles.container}>
-      {/* Example settings options */}
       {user && (
-        <TouchableOpacity
-          onPress={() => navigation.navigate("EditProfile")}
-          style={styles.optionContainer}
-        >
-          <Text style={styles.optionText}>Edit Profile</Text>
-        </TouchableOpacity>
+        <>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("EditProfile")}
+            style={styles.optionContainer}
+          >
+            <Image
+              source={require("../assets/profileActive.png")}
+              style={styles.icon}
+            />
+            <Text style={styles.optionText}>Account settings</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("MyServices")}
+            style={styles.optionContainer}
+          >
+            <Image
+              source={require("../assets/Calendar.png")}
+              style={styles.icon}
+            />
+            <Text style={styles.optionText}>My services</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("EditProfile")}
+            style={styles.optionContainer}
+          >
+            <Image
+              source={require("../assets/PlusActive.png")}
+              style={styles.icon}
+            />
+            <Text style={styles.optionText}>Invite a friend</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("EditProfile")}
+            style={styles.optionContainer}
+          >
+            <Image
+              source={require("../assets/MessageActive.png")}
+              style={styles.icon}
+            />
+            <Text style={styles.optionText}>Support</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => editAccountType()}
+            style={styles.optionContainer}
+          >
+            <Image source={require("../assets/info.png")} style={styles.icon} />
+            <Text style={styles.optionText}>
+              {user.type === "personal"
+                ? "Switch to business account"
+                : "Switch to personal account"}
+            </Text>
+          </TouchableOpacity>
+        </>
       )}
-      {user && (
-        <TouchableOpacity
-          onPress={() => editAccountType()}
-          style={styles.optionContainer}
-        >
-          <Text style={styles.optionText}>
-            {user.type === "personal"
-              ? "Switch To Business Account"
-              : "Switch To Personal Account"}
-          </Text>
-        </TouchableOpacity>
-      )}
-
-      {/* Log out button */}
       <TouchableOpacity style={styles.logoutButton} onPress={handleAuth}>
         <Text style={styles.logoutButtonText}>
-          {user ? "log out" : "login"}
+          {user ? "Log out" : "Log in"}
         </Text>
       </TouchableOpacity>
-      <Modal visible={modal} animationType="slide">
-        <LottieView
-          style={{
-            height: 130,
-            width: 130,
-            top: 290,
-            alignSelf: "center",
-          }}
-          source={require("../assets/lottie/grey-loader.json")}
-          autoPlay
-        />
-      </Modal>
+      {loading && (
+        <Modal visible={loading} transparent={true} animationType="slide">
+          <View style={styles.loaderContainer}>
+            <LottieView
+              style={styles.loader}
+              source={require("../assets/lottie/grey-loader.json")}
+              autoPlay
+            />
+          </View>
+        </Modal>
+      )}
       <Modal
         animationType="slide"
         visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(!modalVisible);
-        }}
+        onRequestClose={() => setModalVisible(false)}
       >
-        <View
-          style={{
-            margin: 20,
-            backgroundColor: "white",
-            borderRadius: 10,
-            top: 200,
-            padding: 20,
-            alignItems: "center",
-            shadowColor: "#000",
-            shadowOffset: {
-              width: 0,
-              height: 2,
-            },
-            shadowOpacity: 0.25,
-            shadowRadius: 4,
-            elevation: 5,
-          }}
-        >
-          <Text
-            style={{
-              fontSize: 20,
-              marginBottom: 15,
-              textAlign: "center",
-              fontWeight: "600",
-            }}
-          >
-            Login or Sign Up
-          </Text>
+        <View style={styles.modalContent}>
+          <Text style={styles.modalTitle}>Login or Sign Up</Text>
           <TextInput
-            style={{
-              height: 40,
-              width: "100%",
-              borderColor: "gray",
-              borderWidth: 1,
-              borderRadius: 12,
-              marginBottom: 10,
-              paddingHorizontal: 10,
-              fontFamily: "alata",
-              borderWidth: 1,
-              borderColor: "#BBBBBB",
-              backgroundColor: "#F3F3F9",
-            }}
+            style={styles.input}
             placeholderTextColor="grey"
             placeholder="Email"
             value={email}
-            onChangeText={(text) => setEmail(text)}
+            onChangeText={setEmail}
           />
           <TextInput
-            style={{
-              height: 40,
-              width: "100%",
-              borderColor: "gray",
-              borderWidth: 1,
-              borderRadius: 10,
-              marginBottom: 10,
-              paddingHorizontal: 10,
-              fontFamily: "alata",
-              borderWidth: 1,
-              borderColor: "#BBBBBB",
-              backgroundColor: "#F3F3F9",
-            }}
+            style={styles.input}
             placeholderTextColor="grey"
             placeholder="Password"
             secureTextEntry
             value={password}
-            onChangeText={(text) => setPassword(text)}
+            onChangeText={setPassword}
           />
-          <TouchableOpacity
-            style={{
-              backgroundColor: "#007AFF",
-              paddingVertical: 12,
-              paddingHorizontal: 20,
-              borderRadius: 5,
-              alignSelf: "stretch",
-            }}
-            onPress={logUserIn}
-          >
-            <Text
-              style={{
-                color: "#FFFFFF",
-                fontSize: 18,
-                fontWeight: "600",
-                textAlign: "center",
-              }}
-            >
-              Log In
-            </Text>
+          <TouchableOpacity style={styles.loginButton} onPress={logUserIn}>
+            <Text style={styles.loginButtonText}>Log In</Text>
           </TouchableOpacity>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              marginTop: 10,
-              marginBottom: 20,
-            }}
-          >
-            <Text style={{ marginRight: 5 }}>Don't have an account?</Text>
+          <View style={styles.signupContainer}>
+            <Text>Don't have an account?</Text>
             <Button
               title="Sign Up"
               onPress={() => {
@@ -256,25 +195,17 @@ export default function Settings({ navigation }) {
               }}
             />
           </View>
-
           <TouchableOpacity
-            style={{
-              marginBottom: 10,
-              marginBottom: 20,
-            }}
             onPress={() => {
-              // Add your forgot password functionality here
               setModalVisible(false);
               navigation.navigate("ResetPassword");
             }}
           >
-            <Text style={{ color: "#007AFF", fontSize: 16 }}>
-              Forgot Password?
-            </Text>
+            <Text style={styles.forgotPassword}>Forgot Password?</Text>
           </TouchableOpacity>
           <Button
             title="Not Yet"
-            onPress={() => setModalVisible(!modalVisible)}
+            onPress={() => setModalVisible(false)}
             color="grey"
           />
         </View>
@@ -289,22 +220,25 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     padding: 20,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-  },
   optionContainer: {
+    flexDirection: "row",
+    alignItems: "center",
     borderBottomWidth: 1,
     borderBottomColor: "#CCCCCC",
     paddingVertical: 25,
   },
+  icon: {
+    width: 24,
+    height: 24,
+    marginRight: 10,
+  },
   optionText: {
     fontSize: 18,
+    fontWeight: "500",
   },
   logoutButton: {
     marginTop: 20,
-    backgroundColor: "#C52A66",
+    backgroundColor: "#2BA5FE",
     padding: 15,
     borderRadius: 8,
     alignItems: "center",
@@ -313,5 +247,70 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 18,
     fontWeight: "bold",
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  loader: {
+    height: 130,
+    width: 130,
+  },
+  modalContent: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 10,
+    padding: 20,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 20,
+    marginBottom: 15,
+    textAlign: "center",
+    fontWeight: "600",
+  },
+  input: {
+    height: 40,
+    width: "100%",
+    borderColor: "gray",
+    borderWidth: 1,
+    borderRadius: 10,
+    marginBottom: 10,
+    paddingHorizontal: 10,
+    backgroundColor: "#F3F3F9",
+  },
+  loginButton: {
+    backgroundColor: "#007AFF",
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    alignSelf: "stretch",
+  },
+  loginButtonText: {
+    color: "#FFFFFF",
+    fontSize: 18,
+    fontWeight: "600",
+    textAlign: "center",
+  },
+  signupContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 10,
+    marginBottom: 20,
+  },
+  forgotPassword: {
+    color: "#007AFF",
+    fontSize: 16,
+    marginBottom: 20,
   },
 });

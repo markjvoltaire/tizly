@@ -25,6 +25,7 @@ import Orders from "../screens/Orders";
 import Pay from "../screens/Pay";
 import OrderConfirmation from "../screens/OrderConfirmation";
 import OrderDetails from "../screens/OrderDetails";
+import MyServices from "../screens/MyServices";
 
 export default function Auth() {
   const Stack = createNativeStackNavigator();
@@ -297,6 +298,34 @@ export default function Auth() {
         />
 
         <Stack.Screen
+          name="MyServices"
+          component={MyServices}
+          options={{
+            headerShown: true,
+            tabBarVisible: false,
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+            headerTitle: "My Services", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+
+        <Stack.Screen
+          name="Settings"
+          component={Settings}
+          options={{
+            headerShown: true,
+            tabBarVisible: false,
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+            headerTitle: "Settings", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+
+        <Stack.Screen
           name="ResetPassword"
           component={ResetPassword}
           options={{
@@ -407,8 +436,7 @@ export default function Auth() {
 
       <Tab.Screen
         options={{
-          headerShown: true,
-          headerTitle: "My Profile",
+          headerShown: false,
           tabBarIcon: ({ color, size, focused }) =>
             focused ? (
               <Image

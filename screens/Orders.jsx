@@ -206,7 +206,7 @@ export default function Orders({ navigation }) {
                 styles.dot,
                 {
                   backgroundColor:
-                    index === currentImageIndex ? "#C52A66" : "#ccc",
+                    index === currentImageIndex ? "#2BA5FE" : "#ccc",
                 },
               ]}
             />
