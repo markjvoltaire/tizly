@@ -42,7 +42,6 @@ export default function InboxCard({ item, user, navigation }) {
       setLoading(true); // Set loading to true when fetching data
 
       const resp = await getUser(otherId);
-      console.log("resp", resp);
 
       setProfileDetails(resp); // Set profile details
       setLoading(false); // Set loading to false when data is fetched
@@ -55,7 +54,7 @@ export default function InboxCard({ item, user, navigation }) {
       style={styles.cardContainer}
       onPress={() =>
         navigation.navigate("InboxDetails", {
-          profileDetails,
+          profileDetails: profileDetails,
         })
       }
     >
@@ -102,17 +101,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
     borderRadius: 10,
     padding: 15,
-    marginBottom: 10,
+
     flexDirection: "row",
     alignItems: "center",
-    elevation: 2, // for Android shadow
-    shadowColor: "#000000", // for iOS shadow
-    shadowOpacity: 0.1, // for iOS shadow
-    shadowRadius: 5, // for iOS shadow
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    }, // for iOS shadow
   },
   loadingContainer: {
     flex: 1,
@@ -120,9 +111,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   profileImage: {
-    height: 60,
+    height: 40,
+    width: 40,
     backgroundColor: "grey",
-    width: 60,
     borderRadius: 30,
     marginRight: 15,
   },
@@ -131,7 +122,7 @@ const styles = StyleSheet.create({
   },
   username: {
     fontSize: 18,
-    fontWeight: "500",
+    fontWeight: "700",
     marginBottom: 5,
   },
   message: {

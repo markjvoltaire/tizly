@@ -34,9 +34,8 @@ const Inbox = ({ navigation }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(!user ? false : true);
   const screenName = "Inbox";
 
-  console.log("isLoggedIn", isLoggedIn);
-
   async function getUser(userid) {
+    console.log("userid", userid);
     const resp = await supabase
       .from("profiles")
       .select("*")
@@ -82,12 +81,13 @@ const Inbox = ({ navigation }) => {
       email,
       password,
     });
+
     if (error) {
       Alert.alert(error.message);
     } else {
       const resp = await getUser(user.id);
-      supabase.auth.setAuth(user.access_token);
       console.log("resp", resp);
+      supabase.auth.setAuth(user.access_token);
       setUser(resp.body);
     }
   }
@@ -142,7 +142,6 @@ const Inbox = ({ navigation }) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      console.log("FOCUSED");
       let isMounted = true;
 
       const fetchData = async () => {
@@ -163,7 +162,6 @@ const Inbox = ({ navigation }) => {
 
       return () => {
         isMounted = false;
-        console.log("NOT FOCUSED");
       };
     }, [])
   );
@@ -232,7 +230,7 @@ const Inbox = ({ navigation }) => {
 
           <TouchableOpacity
             style={{
-              backgroundColor: "#007AFF",
+              backgroundColor: "green",
               paddingVertical: 12,
               paddingHorizontal: 20,
               borderRadius: 5,
@@ -362,7 +360,7 @@ const Inbox = ({ navigation }) => {
                 onPress={() => {
                   // Add your sign up functionality here
                   setModalVisible(false);
-                  navigation.navigate("ProfileTypeSelect", { screenName });
+                  navigation.navigate("SignUp", { screenName });
                 }}
               />
             </View>
@@ -393,11 +391,14 @@ const Inbox = ({ navigation }) => {
     );
   }
 
-  const renderInboxItem = ({ item }) => (
-    <View style={styles.itemContainer}>
-      <InboxCard navigation={navigation} user={user} item={item} />
-    </View>
-  );
+  const renderInboxItem = ({ item }) => {
+    return (
+      <View>
+        <InboxCard navigation={navigation} user={user} item={item} />
+        <View style={styles.separator} />
+      </View>
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -431,6 +432,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "white",
   },
+  separator: { height: 1, backgroundColor: "#e0e0e0" },
   list: {
     flex: 1,
     paddingHorizontal: 10,

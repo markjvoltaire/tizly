@@ -31,7 +31,6 @@ export default function InboxDetails({ route, navigation }) {
   const [isThereMessages, setIsThereMessages] = useState(false);
   const [threadId, setThreadId] = useState();
   const { user } = useUser();
-  console.log("route", route);
 
   async function getMessages() {
     try {
@@ -49,11 +48,8 @@ export default function InboxDetails({ route, navigation }) {
       }
 
       if (resp.body.length === 0) {
-        console.log("NO MESSAGES");
         setIsThereMessages(false);
       } else {
-        console.log("resp", resp.body[0].threadID);
-        console.log("THERE IS MESSAGES");
         setThreadId(resp.body[0].threadID);
         setIsThereMessages(true);
       }
@@ -66,8 +62,6 @@ export default function InboxDetails({ route, navigation }) {
   }
   const sendMessage = async () => {
     const userId = supabase.auth.currentUser.id;
-    const threadID = `${userId + profileDetails.user_id}`;
-    console.log("threadID", threadID);
 
     if (messageText.trim() !== "") {
       const res = await supabase.from("messages").insert([
@@ -76,6 +70,7 @@ export default function InboxDetails({ route, navigation }) {
           sender: userId,
           receiver: profileDetails.user_id,
           message: messageText,
+
           threadID:
             isThereMessages === false
               ? userId + profileDetails.user_id
@@ -87,7 +82,7 @@ export default function InboxDetails({ route, navigation }) {
           ...messages,
           { sender: userId, message: messageText.trim() },
         ]);
-        console.log("messages", messages);
+
         setMessageText("");
       } else {
         Alert.alert("An error has occured please try again");
@@ -99,6 +94,12 @@ export default function InboxDetails({ route, navigation }) {
 
   const handleRefresh = async () => {
     setRefreshing(true); // Set refreshing to true when refreshing starts
+    const retrieveMessages = async () => {
+      const resp = await getMessages();
+      setMessages(resp);
+      setLoading(false);
+    };
+    retrieveMessages();
     setRefreshing(false);
   };
 
@@ -170,7 +171,6 @@ export default function InboxDetails({ route, navigation }) {
 
   useFocusEffect(
     React.useCallback(() => {
-      console.log("FOCUSED");
       let isMounted = true;
 
       const fetchData = async () => {
@@ -188,7 +188,6 @@ export default function InboxDetails({ route, navigation }) {
 
       return () => {
         isMounted = false;
-        console.log("NOT FOCUSED");
       };
     }, [])
   );
@@ -258,18 +257,16 @@ export default function InboxDetails({ route, navigation }) {
             contentContainerStyle={styles.messagesContainer}
           >
             {messages.map((message, index) => (
-              <>
-                <Message
-                  message={message}
-                  user={user}
-                  profileDetails={profileDetails}
-                  key={index}
-                  sender={message.sender}
-                  navigation={navigation}
-                >
-                  {message.message}
-                </Message>
-              </>
+              <Message
+                message={message}
+                user={user}
+                profileDetails={profileDetails}
+                key={index}
+                sender={message.sender}
+                navigation={navigation}
+              >
+                {message.message}
+              </Message>
             ))}
             <View style={{ height: 100 }} />
           </ScrollView>
@@ -296,7 +293,7 @@ export default function InboxDetails({ route, navigation }) {
           <Pressable
             onPress={() => sendMessage()}
             style={{
-              backgroundColor: "#007AFF",
+              backgroundColor: "green",
               width: screenWidth * 0.25,
               height: screenHeight * 0.04,
               justifyContent: "center",
@@ -366,73 +363,34 @@ const Message = ({ sender, children, message, user, navigation }) => {
 
   const messageStyle =
     sender === user.user_id ? styles.userMessage : styles.businessMessage;
-  return message.type === "offering" ? (
-    <View style={[styles.messageContainer, messageStyle]}>
-      <Text
-        style={{
-          marginBottom: 10,
-          color: sender === user.user_id ? null : "white",
-          fontWeight: "600",
-        }}
-      >
-        New Offering
-      </Text>
-      <Text style={{ color: sender === user.user_id ? null : "white" }}>
-        {children}
-      </Text>
-      <Text
-        style={{
-          color: sender === user.user_id ? null : "white",
-          fontSize: 10,
-          fontFamily: "alata",
-          marginBottom: 30,
-        }}
-      >
-        {formattedDate}
-      </Text>
-      {/* Move time rendering here */}
 
-      <Pressable
-        onPress={() => navigation.navigate("OfferDetails")}
-        style={{
-          alignSelf: "center",
-          backgroundColor: "#007AFF",
-          width: 200,
-          height: 40,
-          justifyContent: "center",
-          borderRadius: 10,
-        }}
-      >
-        <Text
-          style={{
-            alignSelf: "center",
-            color: sender === user.user_id ? "white" : null,
-            fontWeight: "700",
-          }}
-        >
-          {sender === user.user_id ? "Manage Offer" : "View Offer"}
-        </Text>
-      </Pressable>
-    </View>
-  ) : (
+  return (
     <>
-      <Pressable onLongPress={() => console.log("Hello")}>
-        <View style={[styles.messageContainer, messageStyle]}>
-          <Text style={{ color: sender === user.user_id ? null : "white" }}>
-            {children}
-          </Text>
-          <Text
-            style={{
-              color: sender === user.user_id ? null : "white",
-              fontSize: 10,
-              fontFamily: "alata",
-            }}
-          >
-            {formattedDate}
-          </Text>
-          {/* Move time rendering here */}
-        </View>
-      </Pressable>
+      <>
+        <Pressable onLongPress={() => console.log("Hello")}>
+          <View style={[styles.messageContainer, messageStyle]}>
+            <Text
+              style={{
+                color: sender === user.user_id ? null : "white",
+                fontWeight: "600",
+                marginBottom: 5,
+              }}
+            >
+              {children}
+            </Text>
+            {/* Move time rendering here */}
+            <Text
+              style={{
+                color: sender === user.user_id ? null : "white",
+                fontSize: 11,
+                fontWeight: "400",
+              }}
+            >
+              {formattedDate}
+            </Text>
+          </View>
+        </Pressable>
+      </>
     </>
   );
 };
@@ -455,7 +413,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F3F3F9",
     width: 250,
     height: 40,
-    fontFamily: "Poppins-SemiBold",
+
     fontSize: 13,
     paddingTop: 12,
     justifyContent: "center",
@@ -471,7 +429,7 @@ const styles = StyleSheet.create({
     alignSelf: "flex-end",
   },
   businessMessage: {
-    backgroundColor: "#029EF6",
+    backgroundColor: "green",
     alignSelf: "flex-start",
   },
   sender: {

@@ -1,70 +1,277 @@
-import React, { useState } from "react";
 import {
   StyleSheet,
   Text,
   View,
-  Button,
-  TextInput,
-  FlatList,
+  Dimensions,
+  Alert,
+  ScrollView,
+  RefreshControl,
+  ActivityIndicator,
+  Pressable,
+  Image,
 } from "react-native";
+import React, { useEffect, useState } from "react";
+import { supabase } from "../services/supabase";
+import { useUser } from "../context/UserContext";
 
-export default function MyServices() {
-  const [services, setServices] = useState([]);
-  const [newServiceName, setNewServiceName] = useState("");
+export default function MyServices({ navigation }) {
+  const [taskList, setTaskList] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
+  const screenWidth = Dimensions.get("window").width;
+  const screenHeight = Dimensions.get("window").height;
 
-  const addService = () => {
-    if (newServiceName.trim() !== "") {
-      setServices([...services, { id: Date.now(), name: newServiceName }]);
-      setNewServiceName("");
+  async function getTasks() {
+    const userId = supabase.auth.currentUser.id;
+    let { data: tasks, error } = await supabase
+
+      .from("tasks")
+      .select("*")
+      .eq("taskCreator", userId)
+      .order("id", { ascending: false });
+    return tasks;
+  }
+
+  const fetchTasks = async () => {
+    const resp = await getTasks();
+    console.log("resp", resp);
+    setTaskList(resp);
+  };
+
+  const ServiceItem = ({ service, navigation }) => {
+    const [loading, setLoading] = useState(true);
+    const [serviceUser, setServiceUser] = useState({});
+
+    const date = new Date(service.created_at);
+    const currentDate = new Date();
+    const timeDifference = currentDate.getTime() - date.getTime();
+    const secondsDifference = Math.floor(timeDifference / 1000);
+    const minutesDifference = Math.floor(secondsDifference / 60);
+    const hoursDifference = Math.floor(minutesDifference / 60);
+    const daysDifference = Math.floor(hoursDifference / 24);
+
+    let formattedDate;
+
+    if (daysDifference > 7) {
+      const monthNames = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+      ];
+
+      const month = date.getMonth();
+      const monthName = monthNames[month];
+      formattedDate = `${monthName} ${date.getDate()}, ${date.getFullYear()}`;
+    } else if (daysDifference > 0) {
+      formattedDate =
+        daysDifference === 1 ? "1 day ago" : `${daysDifference} days ago`;
+    } else if (hoursDifference > 0) {
+      formattedDate =
+        hoursDifference === 1 ? "1 hour ago" : `${hoursDifference} hours ago`;
+    } else if (minutesDifference > 0) {
+      formattedDate =
+        minutesDifference === 1
+          ? "1 minute ago"
+          : `${minutesDifference} minutes ago`;
+    } else {
+      formattedDate = "Just now";
     }
-  };
 
-  const deleteService = (id) => {
-    setServices(services.filter((service) => service.id !== id));
-  };
+    async function getUser() {
+      const resp = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("user_id", service.taskCreator)
+        .single()
+        .limit(1);
 
-  return (
-    <View style={styles.container}>
-      <Button title="Add Service" onPress={addService} />
-      <FlatList
-        data={services}
-        renderItem={({ item }) => (
-          <View style={styles.serviceItem}>
-            <Text>{item.name}</Text>
-            <Button title="Delete" onPress={() => deleteService(item.id)} />
+      return resp;
+    }
+
+    const fetchUser = async () => {
+      const resp = await getUser();
+      setServiceUser(resp.body);
+      setLoading(false);
+    };
+
+    const createAlert = async (service) =>
+      Alert.alert(
+        "Report Task",
+        "This action cannot be undone. Are you sure you want to delete?",
+        [
+          {
+            text: "Cancel",
+            onPress: () => console.log("Cancel Pressed"),
+            style: "cancel",
+          },
+          {
+            text: "Report",
+            onPress: async () => {
+              console.log("REPORT");
+
+              // Add your delete logic here
+            },
+          },
+        ]
+      );
+
+    useEffect(() => {
+      fetchUser();
+    }, []);
+
+    if (loading) {
+      return (
+        <View style={{ flex: 1 }}>
+          <ActivityIndicator />
+        </View>
+      );
+    }
+
+    return (
+      <Pressable
+        style={{ backgroundColor: "white" }}
+        onPress={() =>
+          service.completed === "F"
+            ? navigation.navigate("TaskDetails", { service, serviceUser })
+            : createAlert(service)
+        }
+      >
+        <View style={{ padding: 10, marginBottom: 1 }}>
+          <View style={{ flexDirection: "row" }}>
+            <Text
+              style={{
+                fontSize: 17,
+                fontWeight: "bold",
+                marginBottom: 10,
+                color: "#313131",
+
+                width: screenWidth * 0.8,
+                marginRight: 20,
+              }}
+            >
+              {service.taskDescription}
+            </Text>
+
+            <Image
+              source={require("../assets/moreButton.png")}
+              style={styles.icon}
+            />
           </View>
-        )}
-        keyExtractor={(item) => item.id.toString()}
-      />
+
+          <View style={styles.optionContainer}>
+            <Image
+              source={{ uri: serviceUser.profileimage }}
+              style={styles.profileimage}
+            />
+            <Text style={{ fontSize: 14, color: "#313131" }}>
+              {serviceUser.username}
+            </Text>
+          </View>
+
+          <View style={styles.optionContainer}>
+            <Image
+              source={require("../assets/CalendarNotActive.png")}
+              style={styles.icon}
+            />
+            <Text style={{ fontSize: 14, color: "#313131" }}>
+              {formattedDate}
+            </Text>
+          </View>
+
+          <View style={styles.optionContainer}>
+            <Image
+              source={require("../assets/Location.png")}
+              style={styles.icon}
+            />
+            <View style={{ flexDirection: "row" }}>
+              <Text
+                style={{
+                  fontSize: 14,
+                  color: "#313131",
+
+                  width: screenWidth * 0.5,
+                  marginRight: 30,
+                }}
+              >
+                {service.city}, {service.state}
+              </Text>
+
+              <View
+                style={{
+                  width: screenWidth * 0.2,
+                  flexDirection: "row",
+                  justifyContent: "center",
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 12,
+                    color: "black",
+                    fontWeight: "800",
+                    alignSelf: "center",
+                  }}
+                >
+                  {service.completed === "F"
+                    ? "Open"
+                    : service.completed === "Y"
+                    ? "Completed"
+                    : null}
+                </Text>
+              </View>
+            </View>
+          </View>
+        </View>
+      </Pressable>
+    );
+  };
+
+  useEffect(() => {
+    fetchTasks();
+  }, []);
+  return (
+    <View style={{ flex: 1 }}>
+      <ScrollView
+        contentContainerStyle={styles.servicesContainer}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={fetchTasks} />
+        }
+      >
+        {taskList.map((service) => (
+          <View style={{ marginBottom: 3 }} key={service.id}>
+            <ServiceItem navigation={navigation} service={service} />
+          </View>
+        ))}
+      </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: "#fff",
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-  },
-  input: {
-    height: 40,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
-    paddingHorizontal: 10,
+  optionContainer: {
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 10,
   },
-  serviceItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    borderBottomWidth: 1,
-    borderColor: "#ccc",
-    paddingVertical: 10,
+  icon: {
+    width: 22,
+    height: 22,
+    marginRight: 10,
+  },
+  profileimage: {
+    width: 24,
+    height: 24,
+    marginRight: 10,
+    borderRadius: 20,
+    backgroundColor: "grey",
+    borderWidth: 1,
+    borderColor: "green",
   },
 });

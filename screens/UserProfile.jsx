@@ -21,6 +21,7 @@ import { getPosts } from "../services/user";
 import { useUser } from "../context/UserContext";
 import LottieView from "lottie-react-native";
 import { supabase } from "../services/supabase";
+import MapView from "react-native-maps";
 
 const UserProfile = ({ route, navigation }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -32,73 +33,7 @@ const UserProfile = ({ route, navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(!!user);
-
-  const screenWidth = Dimensions.get("window").width;
-  const screenHeight = Dimensions.get("window").height;
-  const screenName = "UserProfile";
-
-  const services = [
-    {
-      id: 1,
-      title: "Wedding Photography",
-      category: "Photographers",
-      rating: 4.8,
-      price: "$200",
-      images: [
-        require("../assets/cameraMan.jpg"),
-        require("../assets/photo1.jpg"),
-      ],
-    },
-    {
-      id: 2,
-      title: "Car Detailing",
-      category: "Auto Detailers",
-      rating: 4.5,
-      price: "$100",
-      images: [
-        require("../assets/cameraMan.jpg"),
-        require("../assets/photo1.jpg"),
-      ],
-    },
-    {
-      id: 3,
-      title: "House Cleaning",
-      category: "Home Cleaning",
-      rating: 4.7,
-      price: "$150",
-      images: [
-        require("../assets/cameraMan.jpg"),
-        require("../assets/photo1.jpg"),
-      ],
-    },
-  ];
-
-  const classes = [
-    {
-      id: "2",
-      title: "Photo Shoot",
-      name: "Voltaire Views",
-      type: "fitness",
-      price: "$250",
-      image: require("../assets/cameraMan.jpg"),
-    },
-    {
-      id: "3",
-      title: "Make Session",
-      name: "Ashley Beauty",
-      type: "Beauty",
-      price: "$175",
-      image: require("../assets/makeUp.jpg"),
-    },
-    {
-      id: "4",
-      title: "Make Session",
-      name: "Ashley Beauty",
-      type: "Beauty",
-      price: "$175",
-      image: require("../assets/photo3.jpg"),
-    },
-  ];
+  const [userID, setUserID] = useState(user?.user_id);
 
   const handleLoginModal = () => setModalVisible(true);
 
@@ -138,6 +73,82 @@ const UserProfile = ({ route, navigation }) => {
     }
   };
 
+  const handleDeactiveAccount = async () => {
+    await deleteUserTasks();
+    await deleteMessages();
+    await deleteAccount(userID);
+    await deleteProfileSchema();
+  };
+  async function deleteProfileSchema() {
+    console.log("user", user);
+    const { data, error: deleteError } = await supabase.auth.api.deleteUser(
+      user.user_id
+    );
+
+    console.log("data", data);
+
+    console.log("DELETE SUCCESSFUL", data);
+    signOutUser();
+
+    if (deleteError) {
+      console.log("ERROR DELETE", deleteError);
+      throw deleteError;
+    }
+  }
+  const deleteUserTasks = async () => {
+    const { data, error } = await supabase
+      .from("tasks")
+      .delete()
+      .eq("taskCreator", user.user_id);
+
+    console.log("TASK DELETED");
+  };
+
+  const deleteMessages = async () => {
+    const { data, error } = await supabase
+      .from("messages")
+      .delete()
+      .like("threadID", `%${user.user_id}%`);
+
+    console.log("Messages DELETED");
+
+    return data;
+  };
+
+  const deleteAccount = async () => {
+    const { data, error } = await supabase
+      .from("profiles")
+      .delete()
+      .eq("user_id", userID);
+
+    console.log("DELETE FROM PROFILE");
+
+    console.log("error", error);
+    return data;
+  };
+
+  const createAlert = async (service) =>
+    Alert.alert(
+      "Deactive Account",
+      "This action cannot be undone. Are you sure you want to delete?",
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel",
+        },
+        {
+          text: "Deactivate",
+          style: "destructive",
+          onPress: async () => {
+            await handleDeactiveAccount();
+
+            // Add your delete logic here
+          },
+        },
+      ]
+    );
+
   const logUserIn = () => loginWithEmail();
 
   const signOutUser = async () => {
@@ -166,158 +177,11 @@ const UserProfile = ({ route, navigation }) => {
     }).start();
   }, [fadeAnim]);
 
-  const renderReviewItem = ({ item }) => (
-    <Animated.View style={{ ...styles.reviewItem, opacity: fadeAnim }}>
-      <Text style={styles.reviewText}>
-        "Mark's session was phenomenal! His talent and professionalism truly
-        shine. I'm delighted with the stunning photos he captured. Highly
-        recommend!"
-      </Text>
-      <View style={styles.reviewFooter}>
-        <Image
-          style={styles.reviewImage}
-          source={require("../assets/photo2.jpg")}
-        />
-        <View>
-          <Text style={styles.reviewAuthor}>stephanie</Text>
-          <Text style={styles.reviewTime}>2 weeks ago</Text>
-        </View>
-      </View>
-    </Animated.View>
-  );
-
-  const renderPortfolioItem = ({ item }) => (
-    <Animated.View style={{ opacity: fadeAnim }}>
-      <TouchableOpacity>
-        <Image style={styles.portfolioImage} source={item.image} />
-      </TouchableOpacity>
-    </Animated.View>
-  );
-
-  const ServiceItem = ({ service }) => {
-    const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
-    const onImageScroll = (event) => {
-      const contentOffsetX = event.nativeEvent.contentOffset.x;
-      const viewSize = event.nativeEvent.layoutMeasurement.width;
-      const currentIndex = Math.floor(contentOffsetX / viewSize);
-      setCurrentImageIndex(currentIndex);
-    };
-
+  if (isLoggedIn === false) {
     return (
-      <View style={styles.serviceItem}>
-        <FlatList
-          horizontal
-          pagingEnabled
-          showsHorizontalScrollIndicator={false}
-          data={service.images}
-          renderItem={({ item }) => (
-            <Image source={item} style={styles.serviceImage} />
-          )}
-          keyExtractor={(item, index) => index.toString()}
-          onScroll={onImageScroll}
-          scrollEventThrottle={16}
-        />
-        <View style={styles.paginationDots}>
-          {service.images.map((_, index) => (
-            <View
-              key={index}
-              style={[
-                styles.dot,
-                {
-                  backgroundColor:
-                    index === currentImageIndex ? "#2BA5FE" : "#ccc",
-                },
-              ]}
-            />
-          ))}
-        </View>
-        <View style={styles.serviceInfo}>
-          <Text style={styles.serviceTitle}>{service.title}</Text>
-          {/* <Text style={styles.serviceCategory}>{service.category}</Text> */}
-          <Text style={styles.serviceRating}>Rating: {service.rating}</Text>
-          <Text style={styles.servicePrice}>{service.price}</Text>
-        </View>
+      <View>
+        <Text>NO USER</Text>
       </View>
-    );
-  };
-
-  if (!isLoggedIn) {
-    return (
-      <SafeAreaView style={styles.loginContainer}>
-        <View style={styles.loginContent}>
-          <Text style={styles.loginTitle}>Profile</Text>
-          <Text style={styles.loginSubtitle}>Log in to see your profile</Text>
-          <Text style={styles.loginInfo}>
-            Once you login, you'll find your profile here
-          </Text>
-          <TouchableOpacity
-            style={styles.loginButton}
-            onPress={handleLoginModal}
-          >
-            <Text style={styles.loginButtonText}>Log In</Text>
-          </TouchableOpacity>
-        </View>
-        <Modal
-          animationType="slide"
-          visible={modalVisible}
-          onRequestClose={() => setModalVisible(!modalVisible)}
-        >
-          <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Login or Sign Up</Text>
-            <TextInput
-              style={styles.input}
-              placeholderTextColor="grey"
-              placeholder="Email"
-              value={email}
-              onChangeText={setEmail}
-            />
-            <TextInput
-              style={styles.input}
-              placeholderTextColor="grey"
-              placeholder="Password"
-              secureTextEntry
-              value={password}
-              onChangeText={setPassword}
-            />
-            <TouchableOpacity style={styles.modalButton} onPress={logUserIn}>
-              <Text style={styles.modalButtonText}>Log In</Text>
-            </TouchableOpacity>
-            <View style={styles.modalFooter}>
-              <Text>Don't have an account?</Text>
-              <Button
-                title="Sign Up"
-                color="#C52A66"
-                onPress={() => {
-                  setModalVisible(false);
-                  setEmail("");
-                  setPassword("");
-                  navigation.navigate("ProfileTypeSelect", { screenName });
-                }}
-              />
-            </View>
-            <TouchableOpacity
-              onPress={() => {
-                setModalVisible(false);
-                setEmail("");
-                setPassword("");
-                navigation.navigate("ResetPassword");
-              }}
-            >
-              <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-            </TouchableOpacity>
-            <Button
-              title="Not Yet"
-              onPress={() => {
-                setModalVisible(!modalVisible);
-                setEmail("");
-                setPassword("");
-              }}
-              color="grey"
-            />
-          </View>
-        </Modal>
-      </SafeAreaView>
     );
   }
 
@@ -333,12 +197,14 @@ const UserProfile = ({ route, navigation }) => {
                 width: 70,
                 borderRadius: 40,
                 marginBottom: 15,
+                backgroundColor: "grey",
+                borderWidth: 1,
+                borderColor: "green",
               }}
             />
             <Text style={styles.profileName}>{user.username}</Text>
-            <Text style={styles.profileProfession}>{user.profession}</Text>
           </View>
-          <View style={styles.profileStats}>
+          {/* <View style={styles.profileStats}>
             <View style={styles.statItem}>
               <Text style={styles.statValue}>5.0</Text>
               <Text style={styles.statLabel}>Rating</Text>
@@ -351,62 +217,52 @@ const UserProfile = ({ route, navigation }) => {
               <Text style={styles.statValue}>28</Text>
               <Text style={styles.statLabel}>Bookings</Text>
             </View>
-          </View>
-          <TouchableOpacity
-            onPress={() => navigation.navigate("Settings")}
-            style={{
-              width: 300,
-              height: 40,
-              borderRadius: 10,
-              justifyContent: "center",
-              backgroundColor: "#2BA5FE",
-              alignSelf: "center",
-            }}
-          >
-            <Text
-              style={{
-                alignSelf: "center",
-                color: "white",
-                fontFamily: "gilroy",
-                fontSize: 16,
-              }}
-            >
-              Settings
-            </Text>
-          </TouchableOpacity>
+          </View> */}
         </View>
         <View style={styles.separator} />
-        <View style={styles.contentContainer}>
-          <Text style={styles.sectionTitle}>Services</Text>
 
-          {/*  */}
-          <ScrollView contentContainerStyle={styles.servicesContainer}>
-            {services.map((service) => (
-              <ServiceItem key={service.id} service={service} />
-            ))}
-          </ScrollView>
-          {/*  */}
-          <View style={styles.separator} />
-          <Text style={styles.sectionTitle}>Reviews</Text>
-          <FlatList
-            style={{ right: 10, width: screenWidth * 0.94 }}
-            horizontal
-            data={classes}
-            keyExtractor={(item) => item.id}
-            renderItem={renderReviewItem}
-            showsHorizontalScrollIndicator={false}
+        <TouchableOpacity
+          onPress={() => navigation.navigate("EditProfile")}
+          style={styles.optionContainer}
+        >
+          <Image
+            source={require("../assets/profileNotActive.png")}
+            style={styles.icon}
           />
-          <View style={styles.separator} />
-          <Text style={styles.sectionTitle}>Portfolio</Text>
-          <FlatList
-            horizontal
-            style={{ right: 10, width: screenWidth * 0.94 }}
-            data={classes}
-            keyExtractor={(item) => item.id}
-            renderItem={renderPortfolioItem}
-            showsHorizontalScrollIndicator={false}
+          <Text style={styles.optionText}>Edit Profile</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => navigation.navigate("MyServices")}
+          style={styles.optionContainer}
+        >
+          <Image source={require("../assets/Wallet.png")} style={styles.icon} />
+          <Text style={styles.optionText}>My Tasks</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => navigation.navigate("EditLocation")}
+          style={styles.optionContainer}
+        >
+          <Image
+            source={require("../assets/Location.png")}
+            style={styles.icon}
           />
-          <View style={styles.separator} />
+          <Text style={styles.optionText}>My Location</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => createAlert()}
+          style={styles.optionContainer}
+        >
+          <Image source={require("../assets/Hide.png")} style={styles.icon} />
+          <Text style={styles.optionText}>Deactivate Account</Text>
+        </TouchableOpacity>
+
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity onPress={() => signOutUser()} style={styles.button}>
+            <Text style={styles.buttonText}>Log out</Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -417,141 +273,13 @@ const styles = StyleSheet.create({
   // Main containers
   container: { flex: 1, backgroundColor: "white" },
   scrollView: { padding: 16 },
-  profileCard: {
-    backgroundColor: "#fff",
-    borderRadius: 8,
-    padding: 16,
-    alignItems: "center",
-  },
-
-  profileInfo: { alignItems: "center" },
-  profileStats: {
-    flexDirection: "row",
-    marginTop: 16,
-    justifyContent: "space-around",
-    width: "100%",
-    marginBottom: 30,
-  },
-  contentContainer: { marginBottom: 50 },
   separator: { height: 1, backgroundColor: "#e0e0e0", marginVertical: 16 },
-
-  // Profile info
-  profileImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    marginBottom: 8,
-    backgroundColor: "grey",
-  },
-  profileName: { fontSize: 22, fontWeight: "bold" },
-  profileProfession: { fontSize: 16, color: "#636363" },
   statItem: { alignItems: "center" },
   statValue: { fontSize: 18, fontWeight: "bold" },
   statLabel: { fontSize: 14, color: "#636363" },
-
   serviceInfo: {
     padding: 10,
   },
-
-  serviceCategory: {
-    fontSize: 14,
-    color: "#666",
-    marginVertical: 2,
-  },
-  serviceRating: {
-    fontSize: 14,
-    color: "grey",
-    marginBottom: 2,
-  },
-  servicePrice: {
-    fontSize: 16,
-    color: "#333",
-    fontWeight: "bold",
-    marginBottom: 1,
-  },
-  deliveryInfo: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 10,
-  },
-  profileImage: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    marginRight: 10,
-  },
-  deliveryPersonName: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-
-  // Sections
-  sectionTitle: { fontSize: 20, fontFamily: "gilroy", marginBottom: 8 },
-
-  // Reviews
-  reviewItem: {
-    backgroundColor: "#fff",
-    borderRadius: 8,
-    padding: 16,
-    marginTop: 10,
-    marginRight: 16,
-    marginBottom: 10,
-    marginLeft: 10,
-    width: 270,
-    height: 200,
-    elevation: 5, // Add elevation for drop shadow
-    shadowColor: "#000", // Shadow color
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-  },
-  reviewText: { fontSize: 14, marginBottom: 18 },
-  reviewFooter: { flexDirection: "row", alignItems: "center" },
-  reviewImage: { width: 40, height: 40, borderRadius: 20, marginRight: 8 },
-  reviewAuthor: { fontSize: 14, fontWeight: "bold" },
-  reviewTime: { fontSize: 12, color: "#636363" },
-
-  // Portfolio
-  portfolioImage: { width: 200, height: 150, borderRadius: 8, marginRight: 16 },
-
-  paginationDots: {
-    flexDirection: "row",
-    justifyContent: "center",
-    marginVertical: 8,
-  },
-
-  dot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    marginHorizontal: 4,
-  },
-
-  // Services
-  serviceItem: {
-    backgroundColor: "white",
-    borderRadius: 8,
-    marginBottom: 20,
-    overflow: "hidden",
-    elevation: 1, // Adds shadow on Android
-    shadowColor: "#000", // Adds shadow on iOS
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
-    borderWidth: 3,
-    borderColor: "#f5f5f5",
-  },
-  serviceImage: {
-    width: Dimensions.get("window").width * 0.91,
-    height: 200,
-    resizeMode: "cover",
-    backgroundColor: "grey",
-  },
-  serviceTitle: { fontSize: 16, fontWeight: "bold", marginBottom: 1 },
-  serviceDetails: { fontSize: 14, color: "#636363" },
 
   // Login modal
   loginContainer: {
@@ -599,9 +327,77 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 16,
   },
-  modalButtonText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
-  modalFooter: { flexDirection: "row", alignItems: "center", marginBottom: 16 },
-  forgotPasswordText: { color: "#C52A66", marginTop: 16 },
+  profileName: { fontSize: 22, marginBottom: 12 },
+
+  profileInfo: { alignItems: "center" },
+  profileStats: {
+    flexDirection: "row",
+    marginTop: 16,
+    justifyContent: "space-around",
+    width: "100%",
+    marginBottom: 30,
+  },
+
+  serviceCategory: {
+    fontSize: 14,
+    color: "#666",
+    marginVertical: 2,
+  },
+  serviceRating: {
+    fontSize: 14,
+    color: "grey",
+    marginBottom: 2,
+  },
+  servicePrice: {
+    fontSize: 16,
+    color: "#333",
+    fontWeight: "bold",
+    marginBottom: 1,
+  },
+  deliveryInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 10,
+  },
+
+  icon: {
+    width: 24,
+    height: 24,
+    marginRight: 10,
+  },
+  buttonContainer: {
+    marginTop: 16,
+    width: "100%",
+    marginBottom: 50,
+  },
+  button: {
+    backgroundColor: "green",
+    paddingVertical: 15,
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "bold",
+    alignSelf: "center",
+  },
+  map: {
+    height: 200,
+    borderRadius: 5,
+    marginBottom: 10,
+    borderWidth: 0.5,
+    borderColor: "green",
+  },
+  optionContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 50,
+  },
+  optionText: {
+    fontSize: 18,
+    fontWeight: "500",
+  },
 });
 
 export default UserProfile;

@@ -13,6 +13,8 @@ export default function TaskSearch({ route, navigation }) {
   const [businessList, setBusinessList] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  console.log("route", route.params);
+
   useEffect(() => {
     const fetchData = async () => {
       try {

@@ -24,8 +24,6 @@ export default function SignUp({ route, navigation }) {
   const accountType = route.params.accountType;
   const profession = route.params.profession ? route.params.profession : null;
 
-  console.log("profession", profession);
-  console.log("accountType", accountType);
   const signUpWithEmail = async () => {
     setModal(true);
     // Input validation
@@ -52,8 +50,6 @@ export default function SignUp({ route, navigation }) {
             username: username,
             user_id: userId,
             email: email,
-            type: accountType,
-            profession: profession,
           },
         ]);
 
@@ -62,7 +58,7 @@ export default function SignUp({ route, navigation }) {
           setModal(false);
         }, 6000);
 
-        navigation.navigate(screenName);
+        navigation.goBack();
         setUser(resp.body[0]);
         Alert.alert("Sign Up Successful");
         return resp;
@@ -86,7 +82,7 @@ export default function SignUp({ route, navigation }) {
         <TextInput
           style={styles.input}
           placeholderTextColor="#A0A0A0"
-          placeholder="Username"
+          placeholder="Name"
           value={username}
           onChangeText={(text) => setUserName(text)}
         />

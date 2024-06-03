@@ -6,162 +6,336 @@ import {
   View,
   ScrollView,
   TouchableOpacity,
-  Image,
   FlatList,
   Dimensions,
+  Image,
   Animated,
+  RefreshControl,
+  Pressable,
+  SafeAreaView,
+  ActivityIndicator,
+  Modal,
+  Alert,
 } from "react-native";
-
+import { useFocusEffect, useScrollToTop } from "@react-navigation/native"; // Import useScrollToTop
 import { useUser } from "../context/UserContext";
+import { supabase } from "../services/supabase";
 
-const services = [
-  {
-    id: 1,
-    title: "Wedding Photography",
-    category: "Photographers",
-    rating: 4.8,
-    price: "$200",
-    images: [
-      require("../assets/cameraMan.jpg"),
-      require("../assets/photo1.jpg"),
-    ],
-  },
-  {
-    id: 2,
-    title: "Car Detailing",
-    category: "Auto Detailers",
-    rating: 4.5,
-    price: "$100",
-    images: [
-      require("../assets/cameraMan.jpg"),
-      require("../assets/photo1.jpg"),
-    ],
-  },
-  {
-    id: 3,
-    title: "House Cleaning",
-    category: "Home Cleaning",
-    rating: 4.7,
-    price: "$150",
-    images: [
-      require("../assets/cameraMan.jpg"),
-      require("../assets/photo1.jpg"),
-    ],
-  },
-  {
-    id: 4,
-    title: "Lawn Mowing",
-    category: "Lawn Services",
-    rating: 4.6,
-    price: "$50",
-    images: [
-      require("../assets/cameraMan.jpg"),
-      require("../assets/photo1.jpg"),
-    ],
-  },
-  {
-    id: 5,
-    title: "Event Photography",
-    category: "Photographers",
-    rating: 4.9,
-    price: "$300",
-    images: [
-      require("../assets/cameraMan.jpg"),
-      require("../assets/photo1.jpg"),
-    ],
-  },
-  {
-    id: 6,
-    title: "Deep House Cleaning",
-    category: "Home Cleaning",
-    rating: 4.8,
-    price: "$200",
-    images: [
-      require("../assets/cameraMan.jpg"),
-      require("../assets/photo1.jpg"),
-    ],
-  },
-  {
-    id: 7,
-    title: "Gardening Service",
-    category: "Lawn Services",
-    rating: 4.5,
-    price: "$80",
-    images: [
-      require("../assets/cameraMan.jpg"),
-      require("../assets/photo1.jpg"),
-    ],
-  },
-  {
-    id: 8,
-    title: "Pet Grooming",
-    category: "Pet Services",
-    rating: 4.7,
-    price: "$60",
-    images: [
-      require("../assets/cameraMan.jpg"),
-      require("../assets/photo1.jpg"),
-    ],
-  },
-];
+const screenWidth = Dimensions.get("window").width;
+const screenHeight = Dimensions.get("window").height;
 
-const CategoryItem = ({ title }) => (
-  <TouchableOpacity style={styles.categoryItem}>
+const CategoryItem = ({ title, navigation }) => (
+  <TouchableOpacity
+    onPress={() => navigation.navigate("TaskSearch", { title })}
+    style={styles.categoryItem}
+  >
     <Text style={styles.categoryText}>{title}</Text>
   </TouchableOpacity>
 );
 
-const ServiceItem = ({ service }) => {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+const ServiceItem = ({ service, navigation }) => {
+  const [modal, setModal] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [serviceUser, setServiceUser] = useState({});
+  const { user, setUser } = useUser();
 
-  const onImageScroll = (event) => {
-    const contentOffsetX = event.nativeEvent.contentOffset.x;
-    const viewSize = event.nativeEvent.layoutMeasurement.width;
-    const currentIndex = Math.floor(contentOffsetX / viewSize);
-    setCurrentImageIndex(currentIndex);
+  const date = new Date(service.created_at);
+  const currentDate = new Date();
+  const timeDifference = currentDate.getTime() - date.getTime();
+  const secondsDifference = Math.floor(timeDifference / 1000);
+  const minutesDifference = Math.floor(secondsDifference / 60);
+  const hoursDifference = Math.floor(minutesDifference / 60);
+  const daysDifference = Math.floor(hoursDifference / 24);
+
+  let formattedDate;
+
+  if (daysDifference > 7) {
+    const monthNames = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+
+    const month = date.getMonth();
+    const monthName = monthNames[month];
+    formattedDate = `${monthName} ${date.getDate()}, ${date.getFullYear()}`;
+  } else if (daysDifference > 0) {
+    formattedDate =
+      daysDifference === 1 ? "1 day ago" : `${daysDifference} days ago`;
+  } else if (hoursDifference > 0) {
+    formattedDate =
+      hoursDifference === 1 ? "1 hour ago" : `${hoursDifference} hours ago`;
+  } else if (minutesDifference > 0) {
+    formattedDate =
+      minutesDifference === 1
+        ? "1 minute ago"
+        : `${minutesDifference} minutes ago`;
+  } else {
+    formattedDate = "Just now";
+  }
+
+  async function getUser() {
+    const resp = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("user_id", service.taskCreator)
+      .single()
+      .limit(1);
+
+    return resp;
+  }
+
+  const fetchUser = async () => {
+    const resp = await getUser();
+    setServiceUser(resp.body);
+    setLoading(false);
   };
 
+  const createThreeButtonAlert = async (service) =>
+    Alert.alert(
+      "Warning!",
+      "This action cannot be undone. Are you sure you want to delete?",
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel",
+        },
+        {
+          style: "destructive",
+          text: "Delete",
+          onPress: async () => {
+            navigation.navigate("TaskDetails", { service, serviceUser });
+
+            // Add your delete logic here
+          },
+        },
+      ]
+    );
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1 }}>
+        <ActivityIndicator />
+      </View>
+    );
+  }
+
   return (
-    <View style={styles.serviceItem}>
-      <FlatList
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        data={service.images}
-        renderItem={({ item }) => (
-          <Image source={item} style={styles.serviceImage} />
-        )}
-        keyExtractor={(item, index) => index.toString()}
-        onScroll={onImageScroll}
-        scrollEventThrottle={16}
-      />
-      <View style={styles.paginationDots}>
-        {service.images.map((_, index) => (
-          <View
-            key={index}
-            style={[
-              styles.dot,
-              {
-                backgroundColor:
-                  index === currentImageIndex ? "#2BA5FE" : "#ccc",
-              },
-            ]}
+    <Pressable
+      style={{ backgroundColor: "white" }}
+      onPress={() =>
+        navigation.navigate("TaskDetails", { service, serviceUser })
+      }
+    >
+      <View style={{ padding: 10, marginBottom: 1 }}>
+        <View style={{ flexDirection: "row" }}>
+          <Text
+            style={{
+              fontSize: 17,
+              fontWeight: "bold",
+              marginBottom: 10,
+              color: "#313131",
+
+              width: screenWidth * 0.8,
+              marginRight: 20,
+            }}
+          >
+            {service.taskDescription}
+          </Text>
+
+          <Pressable
+            onPress={() =>
+              navigation.navigate("TaskDetails", { service, serviceUser })
+            }
+          >
+            <Image
+              source={require("../assets/moreButton.png")}
+              style={styles.icon}
+            />
+          </Pressable>
+        </View>
+
+        <View style={styles.optionContainer}>
+          <Image
+            source={{ uri: serviceUser.profileimage }}
+            style={styles.profileimage}
           />
-        ))}
+          <Text style={{ fontSize: 14, color: "#313131" }}>
+            {serviceUser.username}
+          </Text>
+        </View>
+
+        <View style={styles.optionContainer}>
+          <Image
+            source={require("../assets/CalendarNotActive.png")}
+            style={styles.icon}
+          />
+          <Text style={{ fontSize: 14, color: "#313131" }}>
+            {formattedDate}
+          </Text>
+        </View>
+
+        <View style={styles.optionContainer}>
+          <Image
+            source={require("../assets/Location.png")}
+            style={styles.icon}
+          />
+          <View style={{ flexDirection: "row" }}>
+            <Text
+              style={{
+                fontSize: 14,
+                color: "#313131",
+
+                width: screenWidth * 0.6,
+                marginRight: 30,
+              }}
+            >
+              {service.city}, {service.state}
+            </Text>
+
+            <View style={{ width: screenWidth * 0.2 }}>
+              <Text
+                style={{
+                  fontSize: 12,
+                  fontWeight: "800",
+                  width: screenWidth * 0.2,
+                }}
+              >
+                {service.completed === "F" ? "Open" : null}
+              </Text>
+            </View>
+          </View>
+        </View>
       </View>
-      <View style={styles.serviceInfo}>
-        <Text style={styles.serviceTitle}>{service.title}</Text>
-        {/* <Text style={styles.serviceCategory}>{service.category}</Text> */}
-        <Text style={styles.serviceRating}>Rating: {service.rating}</Text>
-        <Text style={styles.servicePrice}>{service.price}</Text>
-      </View>
-    </View>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modal}
+        onRequestClose={() => {
+          setModal(false);
+        }}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Manage Task</Text>
+            <TouchableOpacity
+              style={{
+                backgroundColor: "green",
+                height: Dimensions.get("window").height * 0.07,
+                width: Dimensions.get("window").width * 0.6,
+                borderRadius: 10,
+                alignItems: "center",
+                justifyContent: "center",
+                marginBottom: 25,
+              }}
+            >
+              <Text style={styles.buttonText}>Mark as Complete</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => createThreeButtonAlert(setModal)}
+              style={{
+                backgroundColor: "red",
+                height: Dimensions.get("window").height * 0.07,
+                width: Dimensions.get("window").width * 0.6,
+                borderRadius: 10,
+                alignItems: "center",
+                justifyContent: "center",
+                marginBottom: 25,
+              }}
+            >
+              <Text style={styles.buttonText}>Delete Task</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => setModal(false)}
+              style={{
+                backgroundColor: "white",
+                height: Dimensions.get("window").height * 0.07,
+                width: Dimensions.get("window").width * 0.6,
+                borderRadius: 10,
+                alignItems: "center",
+                justifyContent: "center",
+                marginBottom: 20,
+                borderWidth: 0.4,
+              }}
+            >
+              <Text
+                style={{ color: "black", fontWeight: "bold", fontSize: 18 }}
+              >
+                Cancel
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    </Pressable>
   );
 };
 
 export default function Home({ navigation }) {
   const { user, setUser } = useUser();
+
+  const [taskList, setTaskList] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
   const [fadeAnim] = useState(new Animated.Value(0));
+
+  async function getTasks() {
+    let { data: tasks, error } = await supabase
+      .from("tasks")
+      .select("*")
+      .eq("completed", "F")
+      .eq("city", user.city)
+      .eq("state", user.state)
+      .order("id", { ascending: false });
+    return tasks;
+  }
+
+  const fetchTasks = async () => {
+    setRefreshing(true);
+    const resp = await getTasks();
+    setTaskList(resp);
+    setRefreshing(false);
+  };
+
+  useEffect(() => {
+    fetchTasks();
+  }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      let isMounted = true;
+
+      const fetchData = async () => {
+        try {
+          const resp = await getTasks();
+          setTaskList(resp);
+        } catch (error) {
+          console.error("Error fetching messages:", error);
+        }
+      };
+
+      fetchData();
+
+      return () => {
+        isMounted = false;
+      };
+    }, [])
+  );
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -173,27 +347,59 @@ export default function Home({ navigation }) {
 
   return (
     <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
-      <TextInput
-        placeholderTextColor="grey"
-        style={styles.searchBar}
-        placeholder="Search for services..."
-      />
+      <SafeAreaView
+        style={{
+          backgroundColor: "white",
+          borderBottomWidth: 1,
+          borderColor: "#f5f5f5",
+        }}
+      >
+        <TouchableOpacity
+          onPress={() => navigation.navigate("EditLocation")}
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            marginBottom: 10,
+            marginLeft: 10,
+          }}
+        >
+          <Image
+            source={require("../assets/Location.png")}
+            style={styles.icon}
+          />
+          <Text style={styles.optionText}>
+            {user?.city}, {user?.state}
+          </Text>
+        </TouchableOpacity>
+        {/* <TextInput
+          placeholderTextColor="grey"
+          style={styles.searchBar}
+          placeholder="Search for services..."
+        /> */}
+        {/* 
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.categoriesContainer}
+        >
+          <CategoryItem navigation={navigation} title="Photographers" />
+          <CategoryItem navigation={navigation} title="Auto Detailers" />
+          <CategoryItem navigation={navigation} title="Home Cleaning" />
+          <CategoryItem navigation={navigation} title="Lawn Services" />
+          <CategoryItem navigation={navigation} title="Pet Services" />
+        </ScrollView> */}
+      </SafeAreaView>
 
       <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.categoriesContainer}
+        contentContainerStyle={styles.servicesContainer}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={fetchTasks} />
+        }
       >
-        <CategoryItem title="Photographers" />
-        <CategoryItem title="Auto Detailers" />
-        <CategoryItem title="Home Cleaning" />
-        <CategoryItem title="Lawn Services" />
-        <CategoryItem title="Pet Services" />
-      </ScrollView>
-
-      <ScrollView contentContainerStyle={styles.servicesContainer}>
-        {services.map((service) => (
-          <ServiceItem key={service.id} service={service} />
+        {taskList.map((service) => (
+          <View style={{ marginBottom: 3 }} key={service.id}>
+            <ServiceItem navigation={navigation} service={service} />
+          </View>
         ))}
       </ScrollView>
     </Animated.View>
@@ -203,12 +409,31 @@ export default function Home({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: "#f5f5f5",
   },
+  optionContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  icon: {
+    width: 22,
+    height: 22,
+    marginRight: 10,
+  },
+  profileimage: {
+    width: 24,
+    height: 24,
+    marginRight: 10,
+    borderRadius: 20,
+    backgroundColor: "grey",
+    borderWidth: 1,
+    borderColor: "green",
+  },
+  optionText: {},
   searchBar: {
     backgroundColor: "white",
     padding: 10,
-    marginTop: 65,
     margin: 20,
     borderRadius: 12,
     elevation: 2,
@@ -221,10 +446,11 @@ const styles = StyleSheet.create({
   categoriesContainer: {
     paddingHorizontal: 10,
     paddingVertical: 10,
-    marginBottom: 25,
+    marginBottom: 2,
+    bottom: 10,
   },
   categoryItem: {
-    backgroundColor: "#2BA5FE",
+    backgroundColor: "#635BFF",
     paddingHorizontal: 10,
     marginHorizontal: 10,
     borderRadius: 12,
@@ -243,13 +469,12 @@ const styles = StyleSheet.create({
     fontFamily: "gilroy",
   },
   servicesContainer: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingHorizontal: 1,
   },
   serviceItem: {
     backgroundColor: "white",
     borderRadius: 18,
-    marginBottom: 20,
+    marginBottom: 2,
     overflow: "hidden",
     elevation: 1,
     shadowColor: "#000",
@@ -259,27 +484,14 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     borderColor: "#f5f5f5",
   },
-  serviceImage: {
-    width: Dimensions.get("window").width * 0.89,
-    height: 200,
-    resizeMode: "cover",
-    backgroundColor: "grey",
-  },
-  paginationDots: {
-    flexDirection: "row",
-    justifyContent: "center",
-    marginVertical: 5,
-  },
-  dot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    marginHorizontal: 4,
-  },
   serviceInfo: {
     padding: 10,
   },
-  serviceTitle: { fontSize: 16, fontWeight: "bold", marginBottom: 1 },
+  serviceTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 1,
+  },
   serviceCategory: {
     fontSize: 14,
     color: "#666",
@@ -309,5 +521,38 @@ const styles = StyleSheet.create({
   deliveryPersonName: {
     fontSize: 16,
     fontWeight: "500",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 10,
+    alignItems: "center",
+    width: 350,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+  modalButton: {
+    padding: 10,
+    borderRadius: 5,
+    backgroundColor: "#eee",
+    marginBottom: 10,
+  },
+  cancelButton: {
+    backgroundColor: "red",
+    marginBottom: 0,
+  },
+  buttonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 18,
   },
 });
