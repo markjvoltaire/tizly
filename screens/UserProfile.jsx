@@ -22,6 +22,7 @@ import { useUser } from "../context/UserContext";
 import LottieView from "lottie-react-native";
 import { supabase } from "../services/supabase";
 import MapView from "react-native-maps";
+import Login from "../component/Login";
 
 const UserProfile = ({ route, navigation }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -34,6 +35,10 @@ const UserProfile = ({ route, navigation }) => {
   const [password, setPassword] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(!!user);
   const [userID, setUserID] = useState(user?.user_id);
+
+  if (!user) {
+    return <Login />;
+  }
 
   const handleLoginModal = () => setModalVisible(true);
 

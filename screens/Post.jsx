@@ -8,10 +8,15 @@ import {
   Modal,
   Alert,
 } from "react-native";
+import { useUser } from "../context/UserContext";
+import Login from "../component/Login";
 
 export default function Post({ route, navigation }) {
   const [taskDescription, setTaskDescription] = useState("");
+  const { user, setUser } = useUser();
   const maxCharacters = 60;
+
+  console.log("user", user);
 
   const handleNext = () => {
     if (taskDescription.length < 3) {
@@ -21,6 +26,10 @@ export default function Post({ route, navigation }) {
     navigation.navigate("AddLocation", { taskDescription });
     setTaskDescription("");
   };
+
+  if (!user) {
+    return <Login />;
+  }
 
   return (
     <View style={styles.container}>

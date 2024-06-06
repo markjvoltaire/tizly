@@ -36,11 +36,11 @@ import ReviewTask from "../screens/ReviewTask";
 import Offers from "../screens/Offers";
 import EditLocation from "../screens/EditLocation";
 import EditProfile from "../screens/EditProfile";
+import Login from "../component/Login";
 
 export default function Auth() {
   const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
-
   const [loading, setLoading] = useState(true);
   const { user, setUser } = useUser();
 
@@ -69,6 +69,10 @@ export default function Auth() {
     fetchUserById();
   }, []);
 
+  if (!user) {
+    return <Login />;
+  }
+
   const HomeStack = () => {
     return (
       <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -76,6 +80,18 @@ export default function Auth() {
           name="HomeScreen"
           component={Home}
           options={{ tabBarVisible: false }} // Hide tab bar for this screen
+        />
+
+        <Stack.Screen
+          name="Messages"
+          component={Inbox}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Messages", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
         />
         <Stack.Screen
           name="EditLocation"

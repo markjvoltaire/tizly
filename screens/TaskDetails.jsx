@@ -168,7 +168,7 @@ export default function TaskDetails({ route, navigation }) {
   const createAlert = async (task) =>
     Alert.alert(
       "Report Task",
-      "This action cannot be undone. Are you sure you want to delete?",
+      "This action cannot be undone. Are you sure you want to report this?",
       [
         {
           text: "Cancel",
@@ -187,11 +187,13 @@ export default function TaskDetails({ route, navigation }) {
     );
 
   const handleSendOffer = () => {
-    user.user_id === task.taskCreator
+    user?.user_id === task.taskCreator
       ? setModal(true)
-      : navigation.navigate("InboxDetails", {
+      : user
+      ? navigation.navigate("InboxDetails", {
           profileDetails: profile,
-        });
+        })
+      : navigation.navigate("Messages");
   };
 
   return (
@@ -245,11 +247,13 @@ export default function TaskDetails({ route, navigation }) {
           onPress={() => handleSendOffer()}
         >
           <Text style={styles.buttonText}>
-            {user.user_id === task.taskCreator ? "Manage Task" : "Send Message"}
+            {user?.user_id === task.taskCreator
+              ? "Manage Task"
+              : "Send Message"}
           </Text>
         </TouchableOpacity>
 
-        {user.user_id === task.taskCreator ? null : (
+        {user?.user_id === task.taskCreator ? null : (
           <TouchableOpacity
             style={{
               backgroundColor: "grey",

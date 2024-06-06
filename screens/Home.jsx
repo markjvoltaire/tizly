@@ -289,19 +289,38 @@ const ServiceItem = ({ service, navigation }) => {
 
 export default function Home({ navigation }) {
   const { user, setUser } = useUser();
-
+  const [loading, setLoading] = useState(true);
   const [taskList, setTaskList] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [fadeAnim] = useState(new Animated.Value(0));
 
   async function getTasks() {
-    let { data: tasks, error } = await supabase
+    // Start building the query by selecting all columns from the "tasks" table
+    // where the "completed" field is "F" and ordering by "id" in descending order.
+    let query = supabase
       .from("tasks")
       .select("*")
       .eq("completed", "F")
-      .eq("city", user.city)
-      .eq("state", user.state)
       .order("id", { ascending: false });
+
+    // Check if the user object exists and has both "city" and "state" properties.
+    if (user && user.city && user.state) {
+      // If the user object is defined, add additional filters for "city" and "state".
+      query = query.eq("city", user.city).eq("state", user.state);
+    }
+
+    // Execute the query and await the results.
+    let { data: tasks, error } = await query;
+
+    // Check if there was an error with the query.
+    if (error) {
+      // Log the error to the console for debugging purposes.
+      console.error("Error fetching tasks:", error);
+      // Return null to indicate that fetching the tasks failed.
+      return null;
+    }
+
+    // Return the list of tasks retrieved from the database.
     return tasks;
   }
 
@@ -354,23 +373,6 @@ export default function Home({ navigation }) {
           borderColor: "#f5f5f5",
         }}
       >
-        <TouchableOpacity
-          onPress={() => navigation.navigate("EditLocation")}
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            marginBottom: 10,
-            marginLeft: 10,
-          }}
-        >
-          <Image
-            source={require("../assets/Location.png")}
-            style={styles.icon}
-          />
-          <Text style={styles.optionText}>
-            {user?.city}, {user?.state}
-          </Text>
-        </TouchableOpacity>
         {/* <TextInput
           placeholderTextColor="grey"
           style={styles.searchBar}
