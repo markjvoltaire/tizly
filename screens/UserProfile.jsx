@@ -22,7 +22,7 @@ import { useUser } from "../context/UserContext";
 import LottieView from "lottie-react-native";
 import { supabase } from "../services/supabase";
 import MapView from "react-native-maps";
-import Login from "../component/Login";
+import Login from "./Login";
 
 const UserProfile = ({ route, navigation }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;

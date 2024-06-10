@@ -66,7 +66,7 @@ export default function Welcome({ navigation }) {
   });
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#00A3FF" }}>
+    <View style={{ flex: 1, backgroundColor: "#46A05F" }}>
       {loading ? (
         <View style={{ flex: 1, justifyContent: "center" }}>
           <ActivityIndicator size="large" color="white" />
@@ -104,7 +104,6 @@ export default function Welcome({ navigation }) {
           <Modal animationType="slide" transparent={true} visible={modal}>
             <View
               style={{
-                backgroundColor: "white",
                 height: height * 0.45,
                 width: width,
                 top: height * 0.7,
@@ -115,8 +114,7 @@ export default function Welcome({ navigation }) {
                 onPress={() => goToSignUp()}
                 style={{
                   backgroundColor: "white",
-                  borderWidth: 1,
-                  borderColor: "black",
+
                   width: width * 0.8,
                   height: height * 0.06,
                   padding: 12,
@@ -140,8 +138,7 @@ export default function Welcome({ navigation }) {
                 onPress={() => goToLogin()}
                 style={{
                   backgroundColor: "black",
-                  borderWidth: 1,
-                  borderColor: "black",
+
                   width: width * 0.8,
                   height: height * 0.06,
                   padding: 12,

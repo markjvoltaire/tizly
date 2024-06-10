@@ -2,9 +2,10 @@ import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StyleSheet, View } from "react-native";
 import Welcome from "../screens/Welcome";
-import Login from "../screens/Login";
+
 import SignUp from "../screens/SignUp";
 import ResetPassword from "../screens/ResetPassword";
+import LoginScreen from "../screens/LoginScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -22,7 +23,7 @@ export default function NoAuth() {
         />
         <Stack.Screen
           name="Login"
-          component={Login}
+          component={LoginScreen}
           options={{ headerShown: false }}
         />
         <Stack.Screen

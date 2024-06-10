@@ -36,7 +36,9 @@ import ReviewTask from "../screens/ReviewTask";
 import Offers from "../screens/Offers";
 import EditLocation from "../screens/EditLocation";
 import EditProfile from "../screens/EditProfile";
-import Login from "../component/Login";
+import Login from "../screens/Login";
+import Welcome from "../screens/Welcome";
+import PersonalHome from "../screens/PersonalHome";
 
 export default function Auth() {
   const Stack = createNativeStackNavigator();
@@ -70,7 +72,45 @@ export default function Auth() {
   }, []);
 
   if (!user) {
-    return <Login />;
+    return (
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen
+          name="Welcome"
+          component={Welcome}
+          options={{ tabBarVisible: false }} // Hide tab bar for this screen
+        />
+
+        <Stack.Screen
+          name="Login"
+          component={Login}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTintColor: "black",
+            headerBackTitle: "Back",
+          }} // Hide tab bar for this screen
+        />
+
+        <Stack.Screen
+          name="SignUp"
+          component={SignUp}
+          options={{
+            headerShown: true,
+            headerTintColor: "black",
+            headerBackTitle: "Back",
+          }}
+        />
+        <Stack.Screen
+          name="ResetPassword"
+          component={ResetPassword}
+          options={{
+            headerShown: true,
+            headerTintColor: "black",
+            headerBackTitle: "Back",
+          }}
+        />
+      </Stack.Navigator>
+    );
   }
 
   const HomeStack = () => {
@@ -78,7 +118,7 @@ export default function Auth() {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen
           name="HomeScreen"
-          component={Home}
+          component={user.type === "business" ? Home : PersonalHome}
           options={{ tabBarVisible: false }} // Hide tab bar for this screen
         />
 
@@ -515,7 +555,7 @@ export default function Auth() {
         component={PostStack}
       />
 
-      {/* <Tab.Screen
+      <Tab.Screen
         options={{
           tabBarShowLabel: false,
           headerShown: true,
@@ -534,7 +574,7 @@ export default function Auth() {
         }}
         name="Offers"
         component={OfferStack}
-      /> */}
+      />
 
       <Tab.Screen
         options={{

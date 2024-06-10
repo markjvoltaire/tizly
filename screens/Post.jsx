@@ -5,15 +5,16 @@ import {
   View,
   TextInput,
   TouchableOpacity,
-  Modal,
   Alert,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { useUser } from "../context/UserContext";
-import Login from "../component/Login";
+import Login from "./Login";
 
 export default function Post({ route, navigation }) {
   const [taskDescription, setTaskDescription] = useState("");
-  const { user, setUser } = useUser();
+  const { user } = useUser();
   const maxCharacters = 60;
 
   console.log("user", user);
@@ -32,28 +33,33 @@ export default function Post({ route, navigation }) {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Describe what task you need done</Text>
-      <TextInput
-        style={styles.textInput}
-        multiline={true}
-        numberOfLines={4}
-        placeholder="What do you need done for you?"
-        placeholderTextColor="grey"
-        value={taskDescription}
-        onChangeText={(text) => {
-          if (text.length <= maxCharacters) {
-            setTaskDescription(text);
-          }
-        }}
-      />
-      <Text style={styles.characterCount}>
-        {taskDescription.length}/{maxCharacters}
-      </Text>
-      <TouchableOpacity style={styles.button} onPress={handleNext}>
-        <Text style={styles.buttonText}>Next</Text>
-      </TouchableOpacity>
-    </View>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <View style={styles.container}>
+        <Text style={styles.header}>Describe what task you need done</Text>
+        <TextInput
+          style={[
+            styles.textInput,
+            taskDescription.length >= maxCharacters && styles.textInputError,
+          ]}
+          multiline={true}
+          numberOfLines={4}
+          placeholder="What do you need done for you?"
+          placeholderTextColor="grey"
+          value={taskDescription}
+          onChangeText={(text) => {
+            if (text.length <= maxCharacters) {
+              setTaskDescription(text);
+            }
+          }}
+        />
+        <Text style={styles.characterCount}>
+          {taskDescription.length}/{maxCharacters}
+        </Text>
+        <TouchableOpacity style={styles.button} onPress={handleNext}>
+          <Text style={styles.buttonText}>Next</Text>
+        </TouchableOpacity>
+      </View>
+    </TouchableWithoutFeedback>
   );
 }
 
@@ -79,9 +85,10 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     paddingHorizontal: 10,
     fontFamily: "gilroy",
-    borderWidth: 1,
-    borderColor: "#BBBBBB",
     backgroundColor: "#F3F3F9",
+  },
+  textInputError: {
+    borderColor: "red",
   },
   characterCount: {
     alignSelf: "flex-end",

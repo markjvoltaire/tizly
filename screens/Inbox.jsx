@@ -19,7 +19,7 @@ import { supabase } from "../services/supabase";
 import { getUser } from "../services/user";
 import InboxCard from "../component/InboxCard";
 import { useFocusEffect, useScrollToTop } from "@react-navigation/native"; // Import useScrollToTop
-import Login from "../component/Login";
+import Login from "./Login";
 
 const Inbox = ({ navigation }) => {
   const { user, setUser } = useUser();
@@ -121,6 +121,8 @@ const Inbox = ({ navigation }) => {
 
       // Create a map to store the latest message for each threadID
       const latestMessagesMap = new Map();
+
+      console.log("allMessages", allMessages);
 
       // Iterate over all messages
       for (const message of allMessages) {

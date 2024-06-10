@@ -15,6 +15,7 @@ import { useUser } from "../context/UserContext";
 
 export default function Login({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
+  const [signUpModal, setSignUpModal] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { setUser } = useUser();
@@ -66,69 +67,39 @@ export default function Login({ navigation }) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Tizly</Text>
-      <Text style={styles.subheading}>
-        Connecting You to the Right Professionals
-      </Text>
-      <TouchableOpacity style={styles.loginButton} onPress={handleLoginModal}>
-        <Text style={styles.loginButtonText}>Log In</Text>
+    <View style={styles.modalView}>
+      <TextInput
+        style={styles.input}
+        placeholderTextColor="grey"
+        autoCapitalize="none"
+        placeholder="Email"
+        value={email}
+        onChangeText={(text) => setEmail(text)}
+      />
+      <TextInput
+        style={styles.input}
+        placeholderTextColor="grey"
+        placeholder="Password"
+        autoCapitalize="none"
+        secureTextEntry
+        value={password}
+        onChangeText={(text) => setPassword(text)}
+      />
+
+      <TouchableOpacity style={styles.submitButton} onPress={logUserIn}>
+        <Text style={styles.submitButtonText}>Log In</Text>
       </TouchableOpacity>
-
-      <Modal
-        animationType="slide"
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(!modalVisible)}
+      <View style={styles.signUpContainer}></View>
+      <TouchableOpacity
+        style={styles.forgotPassword}
+        onPress={() => {
+          setModalVisible(false);
+          navigation.navigate("ResetPassword");
+        }}
       >
-        <View style={styles.modalView}>
-          <Text style={styles.modalTitle}>Login or Sign Up</Text>
-          <TextInput
-            style={styles.input}
-            placeholderTextColor="grey"
-            placeholder="Email"
-            value={email}
-            onChangeText={(text) => setEmail(text)}
-          />
-          <TextInput
-            style={styles.input}
-            placeholderTextColor="grey"
-            placeholder="Password"
-            secureTextEntry
-            value={password}
-            onChangeText={(text) => setPassword(text)}
-          />
-
-          <TouchableOpacity style={styles.submitButton} onPress={logUserIn}>
-            <Text style={styles.submitButtonText}>Log In</Text>
-          </TouchableOpacity>
-          <View style={styles.signUpContainer}>
-            <Text style={styles.signUpText}>Don't have an account?</Text>
-            <Button
-              color="green"
-              title="Sign Up"
-              onPress={() => {
-                setModalVisible(false);
-                navigation.navigate("SignUp");
-              }}
-            />
-          </View>
-          <TouchableOpacity
-            style={styles.forgotPassword}
-            onPress={() => {
-              setModalVisible(false);
-              navigation.navigate("ResetPassword");
-            }}
-          >
-            <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-          </TouchableOpacity>
-          <Button
-            title="Not Yet"
-            onPress={() => setModalVisible(!modalVisible)}
-            color="grey"
-          />
-        </View>
-      </Modal>
-    </SafeAreaView>
+        <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+      </TouchableOpacity>
+    </View>
   );
 }
 
@@ -163,7 +134,7 @@ const styles = StyleSheet.create({
   },
   modalView: {
     flex: 1,
-    justifyContent: "center",
+
     alignItems: "center",
     backgroundColor: "#fff",
     padding: 20,
@@ -190,7 +161,7 @@ const styles = StyleSheet.create({
     color: "black",
   },
   submitButton: {
-    backgroundColor: "green",
+    backgroundColor: "black",
     paddingVertical: 15,
     paddingHorizontal: 50,
     borderRadius: 30,

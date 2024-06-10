@@ -6,6 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Switch,
 } from "react-native";
 import React, { useState } from "react";
 import { useUser } from "../context/UserContext";
@@ -13,49 +14,108 @@ import { supabase } from "../services/supabase";
 import * as ImagePicker from "expo-image-picker";
 
 export default function EditProfile({ navigation }) {
+  // Use user context to get current user and setUser function
   const { user, setUser } = useUser();
+  // Initialize state variables for image preview, image data, name, account type, and switch state
   const [imagePreview, setImagePreview] = useState(user.profileimage);
-  const [imageData, setImageData] = useState(false);
-
+  const [imageData, setImageData] = useState(null);
   const [name, setName] = useState(user.username);
+  const [isBusinessAccount, setIsBusinessAccount] = useState(
+    user.accountType === "business"
+  );
+  const [isEnabled, setIsEnabled] = useState(user.type === "business");
 
-  const pickPost = async () => {
-    const options = {
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      aspect: [9, 16],
-      canAskAgain: true,
-      quality: 0.1,
-      allowsEditing: false,
-    };
+  // Function to toggle account type switch
+  const toggleSwitch = async () => {
+    setIsEnabled((previousState) => !previousState);
+    await updateAccountType();
+  };
 
-    const photo = await ImagePicker.launchImageLibraryAsync(options);
+  // Function to update the account type in the database
+  const updateAccountType = async () => {
+    const userId = supabase.auth.currentUser.id;
+    const accountType = isEnabled ? "personal" : "business";
+    const res = await supabase
+      .from("profiles")
+      .update({ type: accountType })
+      .eq("user_id", userId);
 
-    if (!photo.canceled) {
-      // "fileSize": 791445
-      // "fileSize": 88749,
-      let newfile = {
-        uri: photo.assets[0].uri,
-        type: `test/${photo.assets[0].uri.split(".")[1]}`,
-        name: `test.${photo.assets[0].uri.split(".")[1]}`,
-        mediaType: photo.assets[0].type,
-        height: photo.assets[0].height,
-        width: photo.assets[0].width,
-      };
-
-      setImagePreview(newfile.uri);
-      setImageData(newfile);
+    if (res.error) {
+      console.log("ERROR", res.error);
+      Alert.alert("Something Went Wrong");
+    } else {
+      setUser(res.data[0]);
     }
   };
 
-  let xhr; // XHR object variable
+  // Function to open image picker and select an image
+  const pickImage = async () => {
+    const options = {
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      aspect: [9, 16],
+      quality: 0.1,
+    };
 
+    const result = await ImagePicker.launchImageLibraryAsync(options);
+
+    if (!result.canceled) {
+      const selectedImage = result.assets[0];
+      const newFile = {
+        uri: selectedImage.uri,
+        type: `image/${selectedImage.uri.split(".").pop()}`,
+        name: `image.${selectedImage.uri.split(".").pop()}`,
+      };
+
+      setImagePreview(newFile.uri);
+      setImageData(newFile);
+    }
+  };
+
+  // Function to handle upload response from Cloudinary
+  const handleUploadResponse = async (xhr) => {
+    if (xhr.status === 200) {
+      const resp = JSON.parse(xhr.responseText);
+      const userId = supabase.auth.currentUser.id;
+      const res = await supabase
+        .from("profiles")
+        .update({
+          profileimage: resp.secure_url,
+          username: name,
+          accountType: isBusinessAccount ? "business" : "personal",
+        })
+        .eq("user_id", userId);
+
+      if (res.error) {
+        console.log("ERROR", res.error);
+        Alert.alert("Something Went Wrong");
+      } else {
+        setUser(res.data[0]);
+      }
+    } else {
+      console.log("Upload to Cloudinary failed.");
+      handleUploadFailure();
+    }
+  };
+
+  // Function to handle upload error to Cloudinary
+  const handleUploadError = () => {
+    console.log("An error occurred during the upload to Cloudinary.");
+    handleUploadFailure();
+  };
+
+  // Function to handle upload failure
+  const handleUploadFailure = () => {
+    Alert.alert("An error occurred during the upload");
+  };
+
+  // Function to handle the XHR request to upload the image to Cloudinary
   const handleXHR = async () => {
     const data = new FormData();
     data.append("file", imageData);
     data.append("upload_preset", "TizlyUpload");
     data.append("cloud_name", "doz01gvsj");
 
-    xhr = new XMLHttpRequest();
+    const xhr = new XMLHttpRequest();
     xhr.open("POST", "https://api.cloudinary.com/v1_1/doz01gvsj/upload", true);
 
     xhr.onload = () => handleUploadResponse(xhr);
@@ -64,138 +124,54 @@ export default function EditProfile({ navigation }) {
     xhr.send(data);
   };
 
-  const handleUploadResponse = async (xhr) => {
-    const userId = supabase.auth.currentUser.id;
-
-    if (xhr.status === 200) {
-      const resp = JSON.parse(xhr.responseText);
-
-      if (user.username == !name) {
-        const res = await supabase
-          .from("profiles")
-          .update({
-            profileimage: resp.secure_url,
-            usename: name,
-          })
-          .eq("user_id", userId);
-
-        if (res.error === null) {
-          setUser(res.body[0]);
-        } else {
-          console.log("ERROR", res.error);
-          Alert.alert("Something Went Wrong");
+  // Function to handle profile update
+  const editProfile = async () => {
+    if (!imageData) {
+      // Check if there is any change in username or account type
+      if (
+        user.username === name &&
+        user.accountType === (isBusinessAccount ? "business" : "personal")
+      ) {
+        Alert.alert("No change was made");
+      } else {
+        if (user.username !== name) {
+          await editUsername();
         }
+        await updateAccountType();
+        Alert.alert("Your changes were saved");
+        navigation.goBack();
       }
-
-      await editProfileImage(resp);
     } else {
-      console.log("Upload to Cloudinary failed.");
-      handleUploadFailure();
-    }
-  };
-
-  const handleUploadError = () => {
-    console.log("An error occurred during the upload to Cloudinary.");
-    handleUploadFailure();
-  };
-
-  const handleUploadFailure = () => {
-    Alert.alert("An error occurred during the upload");
-    // navigation.goBack();
-  };
-
-  const cancelUpload = () => {
-    if (xhr) {
-      xhr.abort(); // Abort the XHR request
-      setCanceled(true); // Set the canceled state to true
-      setCanceled(false);
+      await handleXHR();
+      if (user.username !== name) {
+        await editUsername();
+      }
+      Alert.alert("Your changes were saved");
       navigation.goBack();
     }
   };
 
-  const editProfileImage = async (resp) => {
-    const userId = supabase.auth.currentUser.id;
-    const res = await supabase
-      .from("profiles")
-      .update({
-        profileimage: resp.secure_url,
-      })
-      .eq("user_id", userId);
-
-    if (res.error === null) {
-      setUser(res.body[0]);
-    } else {
-      console.log("ERROR", res.error);
-      Alert.alert("Something Went Wrong");
-    }
-  };
-
+  // Function to handle username update
   const editUsername = async () => {
     const userId = supabase.auth.currentUser.id;
     const res = await supabase
       .from("profiles")
-      .update({
-        username: name,
-      })
+      .update({ username: name })
       .eq("user_id", userId);
 
-    if (res.error === null) {
-      setUser(res.body[0]);
-    } else {
+    if (res.error) {
       console.log("ERROR", res.error);
       Alert.alert("Something Went Wrong");
+    } else {
+      setUser(res.data[0]);
     }
   };
 
-  async function editProfile() {
-    const userId = supabase.auth.currentUser.id;
-
-    if (!imageData) {
-      if (user.username === name) {
-        Alert.alert("No change was made");
-      } else {
-        await editUsername();
-
-        Alert.alert("Your changes were saved");
-        navigation.goBack();
-      }
-    }
-
-    if (imageData && user.username !== name) {
-      await handleXHR();
-      await editUsername();
-      Alert.alert("Your changes were saved");
-      navigation.goBack();
-
-      return;
-    }
-    if (imageData) {
-      await handleXHR();
-      Alert.alert("Your changes were saved");
-      navigation.goBack();
-      return;
-    }
-  }
-
   return (
     <View style={{ padding: 16, backgroundColor: "white", flex: 1 }}>
-      <TouchableOpacity
-        onPress={() => pickPost()}
-        style={{ alignItems: "center" }}
-      >
-        <Image
-          source={{ uri: imagePreview }}
-          style={{
-            width: 124,
-            height: 124,
-            marginRight: 10,
-            borderRadius: 100,
-            marginBottom: 20,
-            backgroundColor: "grey",
-            borderWidth: 1,
-            borderColor: "green",
-          }}
-        />
+      {/* Image picker and preview */}
+      <TouchableOpacity onPress={pickImage} style={{ alignItems: "center" }}>
+        <Image source={{ uri: imagePreview }} style={styles.profileImage} />
         <Text style={{ fontSize: 13, fontWeight: "400", color: "#313131" }}>
           Change Profile Image
         </Text>
@@ -203,33 +179,32 @@ export default function EditProfile({ navigation }) {
 
       <View style={styles.separator} />
 
+      {/* Name input */}
       <Text style={styles.optionText}>Name</Text>
-
       <TextInput
         placeholder="Enter your name"
         placeholderTextColor="grey"
-        style={{
-          height: 40,
-          width: 350,
-          borderColor: "gray",
-          borderWidth: 1,
-          borderRadius: 12,
-          marginBottom: 20,
-          paddingHorizontal: 10,
-          fontFamily: "gilroy",
-          borderWidth: 1,
-          borderColor: "#BBBBBB",
-          backgroundColor: "#F3F3F9",
-          top: 10,
-          marginBottom: 50,
-        }}
+        style={styles.textInput}
         value={name}
-        onChangeText={(text) => {
-          setName(text);
-        }}
+        onChangeText={setName}
       />
 
-      <TouchableOpacity onPress={() => editProfile()} style={styles.button}>
+      {/* Account type switch */}
+      <Text style={styles.optionText}>Account Type</Text>
+      <View style={styles.toggleContainer}>
+        <Text style={styles.toggleLabel}>Personal</Text>
+        <Switch
+          trackColor={{ false: "#767577", true: "green" }}
+          thumbColor={isEnabled ? "white" : "#f4f3f4"}
+          ios_backgroundColor="#3e3e3e"
+          onValueChange={toggleSwitch}
+          value={isEnabled}
+        />
+        <Text style={styles.toggleLabel}>Business</Text>
+      </View>
+
+      {/* Update profile button */}
+      <TouchableOpacity onPress={editProfile} style={styles.button}>
         <Text style={styles.buttonText}>Update Profile</Text>
       </TouchableOpacity>
     </View>
@@ -237,16 +212,50 @@ export default function EditProfile({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  icon: {
-    width: 24,
-    height: 24,
-    marginRight: 10,
+  profileImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 100,
+    marginBottom: 20,
+    backgroundColor: "grey",
+    borderWidth: 1,
+    borderColor: "green",
   },
-  separator: { height: 1, backgroundColor: "#e0e0e0", marginVertical: 16 },
-
+  separator: {
+    height: 1,
+    backgroundColor: "#e0e0e0",
+    marginVertical: 16,
+  },
   optionText: {
     fontSize: 18,
     fontWeight: "700",
+    color: "#313131",
+  },
+  textInput: {
+    height: 40,
+    width: "100%",
+    borderColor: "gray",
+    borderWidth: 0.3,
+    borderRadius: 12,
+    marginBottom: 30,
+    paddingHorizontal: 10,
+    backgroundColor: "#F3F3F9",
+  },
+  toggleContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "100%",
+    height: 60,
+    borderRadius: 12,
+    backgroundColor: "#F3F3F9",
+    borderColor: "gray",
+    borderWidth: 0.3,
+    paddingHorizontal: 10,
+    marginBottom: 50,
+  },
+  toggleLabel: {
+    fontSize: 18,
     color: "#313131",
   },
   button: {
@@ -259,6 +268,5 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 18,
     fontWeight: "bold",
-    alignSelf: "center",
   },
 });

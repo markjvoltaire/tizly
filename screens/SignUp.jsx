@@ -20,10 +20,6 @@ export default function SignUp({ route, navigation }) {
 
   const { user, setUser } = useUser();
 
-  const screenName = route.params.screenName;
-  const accountType = route.params.accountType;
-  const profession = route.params.profession ? route.params.profession : null;
-
   const signUpWithEmail = async () => {
     setModal(true);
     // Input validation
@@ -159,7 +155,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   signupButton: {
-    backgroundColor: "#3897f0",
+    backgroundColor: "black",
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: "center",
