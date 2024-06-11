@@ -208,6 +208,16 @@ const UserProfile = ({ route, navigation }) => {
               }}
             />
             <Text style={styles.profileName}>{user.username}</Text>
+            <Text
+              style={{
+                fontSize: 20,
+                color: "grey",
+                marginBottom: 1,
+                alignSelf: "center",
+              }}
+            >
+              {user.type}
+            </Text>
           </View>
           {/* <View style={styles.profileStats}>
             <View style={styles.statItem}>
@@ -332,7 +342,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 16,
   },
-  profileName: { fontSize: 22, marginBottom: 12 },
+  profileName: { fontSize: 22, marginBottom: 1 },
 
   profileInfo: { alignItems: "center" },
   profileStats: {

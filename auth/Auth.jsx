@@ -39,6 +39,7 @@ import EditProfile from "../screens/EditProfile";
 import Login from "../screens/Login";
 import Welcome from "../screens/Welcome";
 import PersonalHome from "../screens/PersonalHome";
+import PostService from "../screens/PostService";
 
 export default function Auth() {
   const Stack = createNativeStackNavigator();
@@ -287,9 +288,9 @@ export default function Auth() {
       <Stack.Navigator>
         <Stack.Screen
           name="Post"
-          component={Post}
+          component={user.type === "business" ? PostService : Post}
           options={{
-            headerTitle: "Create Task",
+            headerTitle: "Post",
             tabBarVisible: false,
             headerBackTitle: "Back", // Customizing the back button text
             headerTintColor: "black", // Changing the color of the back button text
@@ -555,7 +556,7 @@ export default function Auth() {
         component={PostStack}
       />
 
-      <Tab.Screen
+      {/* <Tab.Screen
         options={{
           tabBarShowLabel: false,
           headerShown: true,
@@ -574,7 +575,7 @@ export default function Auth() {
         }}
         name="Offers"
         component={OfferStack}
-      />
+      /> */}
 
       <Tab.Screen
         options={{

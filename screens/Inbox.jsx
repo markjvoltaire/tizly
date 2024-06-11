@@ -122,8 +122,6 @@ const Inbox = ({ navigation }) => {
       // Create a map to store the latest message for each threadID
       const latestMessagesMap = new Map();
 
-      console.log("allMessages", allMessages);
-
       // Iterate over all messages
       for (const message of allMessages) {
         // Check if threadID already exists in the map
