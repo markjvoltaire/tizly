@@ -9,6 +9,7 @@ import {
 
 export default function OrderConfirmation({ route, navigation }) {
   const order = route.params.order.body[0];
+  console.log("order", order);
   const {
     created_at,
     id,
@@ -27,7 +28,7 @@ export default function OrderConfirmation({ route, navigation }) {
           <Text style={styles.label}>Order ID:</Text>
           <Text style={styles.value}>{orderId}</Text>
 
-          <Text style={styles.label}>Created At:</Text>
+          <Text style={styles.label}>Payment Date:</Text>
           <Text style={styles.value}>
             {new Date(created_at).toLocaleString()}
           </Text>
@@ -35,11 +36,11 @@ export default function OrderConfirmation({ route, navigation }) {
           <Text style={styles.label}>Purchaser ID:</Text>
           <Text style={styles.value}>{purchaserId}</Text>
 
-          <Text style={styles.label}>Service ID:</Text>
-          <Text style={styles.value}>{serviceId}</Text>
+          {/* <Text style={styles.label}>Service ID:</Text>
+          <Text style={styles.value}>{serviceId}</Text> */}
 
           <Text style={styles.label}>User ID:</Text>
-          <Text style={styles.value}>{user_id}</Text>
+          <Text style={styles.value}>{order.seller_id}</Text>
         </View>
       </ScrollView>
       <View style={styles.bottomContainer}>
@@ -98,7 +99,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   button: {
-    backgroundColor: "#635BFF",
+    backgroundColor: "#46A05F",
     padding: 15,
     borderRadius: 10,
     alignItems: "center",

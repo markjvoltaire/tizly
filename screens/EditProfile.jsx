@@ -81,7 +81,7 @@ export default function EditProfile({ navigation }) {
         .update({
           profileimage: resp.secure_url,
           username: name,
-          accountType: isBusinessAccount ? "business" : "personal",
+          type: isBusinessAccount ? "business" : "personal",
         })
         .eq("user_id", userId);
 

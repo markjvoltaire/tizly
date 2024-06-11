@@ -39,6 +39,9 @@ const ServiceItem = ({ service, navigation }) => {
   const [serviceUser, setServiceUser] = useState({});
   const { user, setUser } = useUser();
 
+  const ref = useRef(null);
+  useScrollToTop(ref);
+
   const date = new Date(service.created_at);
   const currentDate = new Date();
   const timeDifference = currentDate.getTime() - date.getTime();
@@ -373,23 +376,17 @@ export default function Home({ navigation }) {
           borderColor: "#f5f5f5",
         }}
       >
-        {/* <TextInput
-          placeholderTextColor="grey"
-          style={styles.searchBar}
-          placeholder="Search for services..."
-        /> */}
-        {/* 
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.categoriesContainer}
+        <Text
+          style={{
+            alignSelf: "center",
+            fontFamily: "Poppins-Black",
+            color: "green",
+            fontSize: 25,
+            marginBottom: 10,
+          }}
         >
-          <CategoryItem navigation={navigation} title="Photographers" />
-          <CategoryItem navigation={navigation} title="Auto Detailers" />
-          <CategoryItem navigation={navigation} title="Home Cleaning" />
-          <CategoryItem navigation={navigation} title="Lawn Services" />
-          <CategoryItem navigation={navigation} title="Pet Services" />
-        </ScrollView> */}
+          tizly
+        </Text>
       </SafeAreaView>
 
       <ScrollView

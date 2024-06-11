@@ -9,14 +9,19 @@ import {
   Image,
   ActivityIndicator,
   Alert,
+  Dimensions,
+  Pressable,
 } from "react-native";
 import { supabase } from "../services/supabase";
 import { useUser } from "../context/UserContext";
 
-export default function PersonalHome() {
+export default function PersonalHome({ navigation }) {
   const [ntcList, setNtcList] = useState([]);
   const [forYouList, setForYouList] = useState([]);
   const { user } = useUser();
+
+  const screenWidth = Dimensions.get("window").width;
+  const screenHeight = Dimensions.get("window").height;
 
   async function getNewToCity() {
     const resp = await supabase
@@ -102,84 +107,87 @@ export default function PersonalHome() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      <Text
+        style={{
+          alignSelf: "center",
+          fontFamily: "Poppins-Black",
+          color: "green",
+          fontSize: 25,
+          marginBottom: 10,
+        }}
+      >
+        tizly
+      </Text>
       <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
         <TextInput
           style={styles.textInput}
           placeholder="Search..."
           placeholderTextColor="#888"
         />
-        <View style={styles.adBoard}>
-          <Text
-            style={{
-              alignSelf: "center",
-              fontFamily: "Poppins-Black",
-              color: "white",
-              fontSize: 50,
-            }}
-          >
-            tizly
-          </Text>
-          <Text
-            style={{ alignSelf: "center", color: "white", fontWeight: "500" }}
-          >
-            marketplace
-          </Text>
-        </View>
-        <Text style={styles.sectionTitle}>New to {user.city}</Text>
+
+        <Text style={styles.sectionTitle}>{user.city}</Text>
         <ScrollView
           showsHorizontalScrollIndicator={false}
           horizontal={true}
           style={styles.horizontalScroll}
         >
           {ntcList.map((item, index) => (
-            <View style={{ marginRight: 5, elevation: 5 }} key={index}>
-              <Image
-                source={{ uri: item.thumbnail }}
-                style={styles.scrollItem}
-              />
-              <Text style={styles.scrollItemText}>{item.title}</Text>
-              <Text
-                style={{ fontWeight: "600", fontSize: 13, marginBottom: 6 }}
-              >
-                From ${item.price}
-              </Text>
-              <BusinessInfo item={item} />
-            </View>
+            <Pressable
+              onPress={() => navigation.navigate("Pay", { item })}
+              key={index}
+            >
+              <View style={{ marginRight: 5, elevation: 5 }}>
+                <Image
+                  source={{ uri: item.thumbnail }}
+                  style={styles.scrollItem}
+                />
+                <Text style={styles.scrollItemText}>{item.title}</Text>
+                <Text
+                  style={{ fontWeight: "600", fontSize: 13, marginBottom: 6 }}
+                >
+                  From ${item.price}
+                </Text>
+                <BusinessInfo item={item} />
+              </View>
+            </Pressable>
           ))}
         </ScrollView>
 
-        <Text style={styles.sectionTitle}>Near You</Text>
-        <ScrollView
-          showsHorizontalScrollIndicator={false}
-          horizontal={true}
-          style={styles.horizontalScroll}
-        >
-          {forYouList.map((item, index) => (
-            <View style={{ marginRight: 40 }} key={index}>
-              <Image
-                source={{ uri: item.profileimage }}
-                style={styles.profileImage}
-              />
-              <Text style={{ alignSelf: "center", fontWeight: "400" }}>
-                {item.displayName}
-              </Text>
-            </View>
-          ))}
-        </ScrollView>
+        <View
+          style={{
+            height: 0.8,
+            backgroundColor: "#e0e0e0",
+            marginBottom: 20,
+            width: screenWidth * 0.95,
+            alignSelf: "center",
+          }}
+        />
 
         <Text style={[styles.sectionTitle, styles.secondSectionTitle]}>
           Trending Near You
         </Text>
         <ScrollView
           showsHorizontalScrollIndicator={false}
-          horizontal={true}
-          style={styles.horizontalScroll}
+          style={{
+            marginBottom: 30, // Reduce bottom margin of the first scroll view
+            alignSelf: "center",
+          }}
         >
           {ntcList.map((item, index) => (
-            <View style={{ marginRight: 5, elevation: 5 }} key={index}>
+            <View style={{ elevation: 5, marginBottom: 30 }} key={index}>
               <Image
                 source={{ uri: item.thumbnail }}
-                style={styles.scrollItem}
+                style={{
+                  width: screenWidth * 0.96,
+                  height: screenHeight * 0.25,
+                  marginBottom: 5,
+                  backgroundColor: "#ccc", // Changed to a lighter color for better visibility
+
+                  justifyContent: "center",
+                  alignItems: "center",
+                  borderRadius: 3, // Added border radius for better visual appeal
+                  resizeMode: "cover",
+                }}
               />
               <Text style={styles.scrollItemText}>{item.title}</Text>
               <Text
@@ -202,25 +210,31 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     paddingTop: 10, // Added padding for better spacing
   },
+  separator: { height: 1, backgroundColor: "#e0e0e0", marginBottom: 1 },
+
   container: {
     flex: 1,
-    paddingHorizontal: 16,
+    paddingHorizontal: 2,
     backgroundColor: "#fff",
   },
   textInput: {
     height: 40,
-    borderColor: "#ddd",
-    borderWidth: 1,
-    borderRadius: 8,
+    width: "90%",
+    borderColor: "gray",
+    borderWidth: 0.3,
+    borderRadius: 12,
+    marginBottom: 20,
     paddingHorizontal: 10,
-    marginBottom: 16,
+    backgroundColor: "#F3F3F9",
+    alignSelf: "center",
   },
   adBoard: {
-    height: 200,
+    height: 170,
     width: "100%",
     resizeMode: "cover",
     marginBottom: 16,
-    borderRadius: 10,
+    borderRadius: 5,
+
     backgroundColor: "#46A05F",
     justifyContent: "center",
   },
@@ -228,27 +242,29 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 15,
+    marginLeft: 4,
   },
   secondSectionTitle: {
     marginTop: 4, // Reduce margin top to lower the space between sections
   },
   horizontalScroll: {
-    marginBottom: 30, // Reduce bottom margin of the first scroll view
+    marginBottom: 20,
+    marginLeft: 1, // Reduce bottom margin of the first scroll view
   },
   scrollItem: {
     width: 200,
     height: 130,
     marginBottom: 5,
     backgroundColor: "#ccc", // Changed to a lighter color for better visibility
-    marginRight: 20,
+    marginRight: 2,
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 10, // Added border radius for better visual appeal
+    borderRadius: 5, // Added border radius for better visual appeal
   },
 
   profileImage: {
-    width: 110,
-    height: 110,
+    width: 100,
+    height: 100,
     marginBottom: 15,
     backgroundColor: "#ccc", // Changed to a lighter color for better visibility
     marginRight: 10,

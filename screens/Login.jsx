@@ -68,6 +68,7 @@ export default function Login({ navigation }) {
 
   return (
     <View style={styles.modalView}>
+      <View style={{ marginBottom: 30 }} />
       <TextInput
         style={styles.input}
         placeholderTextColor="grey"
@@ -134,12 +135,9 @@ const styles = StyleSheet.create({
   },
   modalView: {
     flex: 1,
-
     alignItems: "center",
     backgroundColor: "#fff",
-    padding: 20,
     borderRadius: 10,
-    marginHorizontal: 20,
     elevation: 5,
   },
   modalTitle: {
@@ -150,7 +148,7 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 50,
-    width: "100%",
+    width: "95%",
     borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 12,

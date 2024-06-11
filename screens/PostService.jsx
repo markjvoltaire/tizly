@@ -312,6 +312,8 @@ const styles = StyleSheet.create({
     height: 200,
     marginBottom: 12,
     borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#ccc",
   },
   image: {
     width: "100%",
