@@ -22,14 +22,13 @@ import SignUp from "../screens/SignUp";
 import ResetPassword from "../screens/ResetPassword";
 import TaskSearch from "../screens/TaskSearch";
 import Orders from "../screens/Offers";
-import Pay from "../screens/Pay";
 import OrderConfirmation from "../screens/OrderConfirmation";
 import OrderDetails from "../screens/OrderDetails";
 import MyServices from "../screens/MyServices";
 import Post from "../screens/Post";
 
-import AddTime from "../screens/AddTime";
-import AddPrice from "../screens/AddTime";
+import AddTime from "../screens/AddDate";
+import AddPrice from "../screens/AddDate";
 import TaskDetails from "../screens/TaskDetails";
 import AddLocation from "../screens/AddLocation";
 import ReviewTask from "../screens/ReviewTask";
@@ -40,6 +39,9 @@ import Login from "../screens/Login";
 import Welcome from "../screens/Welcome";
 import PersonalHome from "../screens/PersonalHome";
 import PostService from "../screens/PostService";
+import AddDate from "../screens/AddDate";
+import SelectTime from "../screens/SelectTime";
+import ServiceDetails from "../screens/ServiceDetails";
 
 export default function Auth() {
   const Stack = createNativeStackNavigator();
@@ -147,6 +149,30 @@ export default function Auth() {
         />
 
         <Stack.Screen
+          name="AddDate"
+          component={AddDate}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Select Date", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }} // Hide tab bar for this screen
+        />
+
+        <Stack.Screen
+          name="SelectTime"
+          component={SelectTime}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Select Time", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }} // Hide tab bar for this screen
+        />
+
+        <Stack.Screen
           name="TaskDetails"
           component={TaskDetails}
           options={{
@@ -195,8 +221,8 @@ export default function Auth() {
         />
 
         <Stack.Screen
-          name="Pay"
-          component={Pay}
+          name="ServiceDetails"
+          component={ServiceDetails}
           options={{
             tabBarVisible: false,
             headerShown: true,

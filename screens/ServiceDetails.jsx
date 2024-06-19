@@ -20,11 +20,10 @@ import { useUser } from "../context/UserContext";
 import LottieView from "lottie-react-native";
 import { supabase } from "../services/supabase";
 
-export default function Pay({ route, navigation }) {
+export default function ServiceDetails({ route, navigation }) {
   const [loading, setLoading] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [orderList, setOrderList] = useState([]);
-  console.log("route", route.params.item);
   const { profile, serviceTitle, serviceDescription, servicePrice } =
     route.params;
   const { confirmPayment } = useStripe();
@@ -115,6 +114,10 @@ export default function Pay({ route, navigation }) {
       setLoading(false); // Ensure loading state is set to false in the finally block
       setProcessing(false);
     }
+  };
+
+  const goToAddTime = () => {
+    navigation.navigate("AddDate");
   };
 
   const BusinessInfo = () => {
@@ -240,7 +243,7 @@ export default function Pay({ route, navigation }) {
 
       <View style={styles.bottomBar}>
         <TouchableOpacity
-          onPress={handlePayPress}
+          onPress={goToAddTime}
           disabled={loading}
           style={{
             backgroundColor: "#46A05F",
@@ -254,9 +257,7 @@ export default function Pay({ route, navigation }) {
           {loading ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={{ color: "#fff", fontWeight: "bold" }}>
-              Book Now ${route.params.item.price}
-            </Text>
+            <Text style={{ color: "#fff", fontWeight: "bold" }}>Book Now</Text>
           )}
         </TouchableOpacity>
       </View>

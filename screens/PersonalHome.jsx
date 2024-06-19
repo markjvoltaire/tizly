@@ -133,7 +133,7 @@ export default function PersonalHome({ navigation }) {
         >
           {ntcList.map((item, index) => (
             <Pressable
-              onPress={() => navigation.navigate("Pay", { item })}
+              onPress={() => navigation.navigate("ServiceDetails", { item })}
               key={index}
             >
               <View style={{ marginRight: 5, elevation: 5 }}>
