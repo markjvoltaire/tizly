@@ -117,7 +117,7 @@ export default function ServiceDetails({ route, navigation }) {
   };
 
   const goToAddTime = () => {
-    navigation.navigate("AddDate");
+    navigation.navigate("AddDate", { serviceInfo: route.params.item });
   };
 
   const BusinessInfo = () => {
@@ -257,7 +257,9 @@ export default function ServiceDetails({ route, navigation }) {
           {loading ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={{ color: "#fff", fontWeight: "bold" }}>Book Now</Text>
+            <Text style={{ color: "#fff", fontWeight: "bold" }}>
+              Select Date
+            </Text>
           )}
         </TouchableOpacity>
       </View>

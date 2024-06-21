@@ -174,29 +174,34 @@ export default function PersonalHome({ navigation }) {
           }}
         >
           {ntcList.map((item, index) => (
-            <View style={{ elevation: 5, marginBottom: 30 }} key={index}>
-              <Image
-                source={{ uri: item.thumbnail }}
-                style={{
-                  width: screenWidth * 0.96,
-                  height: screenHeight * 0.25,
-                  marginBottom: 5,
-                  backgroundColor: "#ccc", // Changed to a lighter color for better visibility
+            <Pressable
+              onPress={() => navigation.navigate("ServiceDetails", { item })}
+              key={index}
+            >
+              <View style={{ elevation: 5, marginBottom: 30 }}>
+                <Image
+                  source={{ uri: item.thumbnail }}
+                  style={{
+                    width: screenWidth * 0.96,
+                    height: screenHeight * 0.25,
+                    marginBottom: 5,
+                    backgroundColor: "#ccc", // Changed to a lighter color for better visibility
 
-                  justifyContent: "center",
-                  alignItems: "center",
-                  borderRadius: 3, // Added border radius for better visual appeal
-                  resizeMode: "cover",
-                }}
-              />
-              <Text style={styles.scrollItemText}>{item.title}</Text>
-              <Text
-                style={{ fontWeight: "600", fontSize: 13, marginBottom: 6 }}
-              >
-                From ${item.price}
-              </Text>
-              <BusinessInfo item={item} />
-            </View>
+                    justifyContent: "center",
+                    alignItems: "center",
+                    borderRadius: 3, // Added border radius for better visual appeal
+                    resizeMode: "cover",
+                  }}
+                />
+                <Text style={styles.scrollItemText}>{item.title}</Text>
+                <Text
+                  style={{ fontWeight: "600", fontSize: 13, marginBottom: 6 }}
+                >
+                  From ${item.price}
+                </Text>
+                <BusinessInfo item={item} />
+              </View>
+            </Pressable>
           ))}
         </ScrollView>
       </ScrollView>

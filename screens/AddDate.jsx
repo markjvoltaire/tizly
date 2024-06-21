@@ -17,6 +17,8 @@ const AddDate = ({ route, navigation }) => {
   const [selectedTime, setSelectedTime] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  const serviceBlob = route.params.serviceInfo;
+
   const getDaysInMonth = useMemo(
     () => (year, month) => {
       const date = new Date(year, month, 1);
@@ -26,19 +28,6 @@ const AddDate = ({ route, navigation }) => {
         date.setDate(date.getDate() + 1);
       }
       return days;
-    },
-    []
-  );
-
-  const generateTimes = useMemo(
-    () => () => {
-      const times = [];
-      for (let i = 0; i < 24; i++) {
-        const time = new Date();
-        time.setHours(i, 0, 0, 0);
-        times.push(time);
-      }
-      return times;
     },
     []
   );
@@ -90,7 +79,11 @@ const AddDate = ({ route, navigation }) => {
     const handleDateSelection = () => {
       setSelectedDate(item);
       setSelectedTime(null);
-      navigation.navigate("SelectTime", { selectedDate: item.getTime() }); // Pass timestamp instead of Date object
+      navigation.navigate("SelectTime", {
+        selectedDate: item.getTime(),
+        serviceDetails: route.params.item,
+        serviceBlob,
+      }); // Pass timestamp instead of Date object
     };
 
     return (

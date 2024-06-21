@@ -42,6 +42,7 @@ import PostService from "../screens/PostService";
 import AddDate from "../screens/AddDate";
 import SelectTime from "../screens/SelectTime";
 import ServiceDetails from "../screens/ServiceDetails";
+import ConfirmBooking from "../screens/ConfirmBooking";
 
 export default function Auth() {
   const Stack = createNativeStackNavigator();
@@ -155,6 +156,18 @@ export default function Auth() {
             tabBarVisible: false,
             headerShown: true,
             headerTitle: "Select Date", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }} // Hide tab bar for this screen
+        />
+
+        <Stack.Screen
+          name="ConfirmBooking"
+          component={ConfirmBooking}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Confirm Booking", // Customizing the header title
             headerBackTitle: "Back", // Customizing the back button text
             headerTintColor: "black", // Changing the color of the back button text
           }} // Hide tab bar for this screen

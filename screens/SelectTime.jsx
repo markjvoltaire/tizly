@@ -22,6 +22,8 @@ hoursOfDay.push(`8:00 PM`);
 export default function SelectTime({ route, navigation }) {
   const [selectedTime, setSelectedTime] = useState(null);
 
+  const service = route.params.serviceBlob;
+
   const timestamp = route.params.selectedDate;
   const selectedDate = new Date(timestamp);
 
@@ -29,7 +31,12 @@ export default function SelectTime({ route, navigation }) {
     setSelectedTime(time);
 
     // Pass selectedTime back to the previous screen via navigation
-    navigation.navigate("PreviousScreen", { selectedTime });
+    navigation.navigate("ConfirmBooking", {
+      selectedDate: selectedDate.toISOString(),
+      selectedTime: time,
+      timestamp,
+      service,
+    });
   };
 
   return (
@@ -76,7 +83,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   selectedTimeItem: {
-    backgroundColor: "#007bff",
+    backgroundColor: "#46A05F",
   },
   timeText: {
     fontSize: 18,
