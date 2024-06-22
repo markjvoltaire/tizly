@@ -18,37 +18,79 @@ import { useUser } from "../context/UserContext";
 export default function PersonalHome({ navigation }) {
   const [ntcList, setNtcList] = useState([]);
   const [forYouList, setForYouList] = useState([]);
+  const [query, setQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
   const { user } = useUser();
 
   const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;
 
   async function getNewToCity() {
-    const resp = await supabase
+    const { data, error } = await supabase
       .from("services")
       .select("*")
       .order("id", { ascending: false })
       .limit(3);
 
-    setNtcList(resp.body);
-    return resp;
+    if (error) {
+      console.error("Error fetching New to City data:", error.message);
+      Alert.alert("Error", "Failed to fetch New to City data");
+      return;
+    }
+
+    setNtcList(data);
   }
 
   async function getForYou() {
-    const resp = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("type", "business")
-      .limit(3);
+    const { data, error } = await supabase.from("services").select("*");
 
-    setForYouList(resp.body);
-    return resp;
+    if (error) {
+      console.error("Error fetching For You data:", error.message);
+      Alert.alert("Error", "Failed to fetch For You data");
+      return;
+    }
+
+    const shuffledData = data.sort(() => 0.5 - Math.random());
+    const limitedData = shuffledData.slice(0, 5);
+
+    setForYouList(limitedData);
   }
 
-  const BusinessInfo = (item) => {
+  async function searchServices() {
+    try {
+      const { data, error } = await supabase
+        .from("services")
+        .select("*")
+        .ilike("title", `%${query}%`);
+
+      if (error) {
+        throw error;
+      }
+
+      setSearchResults(data); // Assuming setSearchResults is correctly defined elsewhere
+    } catch (error) {
+      console.error("Error searching services:", error.message);
+      Alert.alert("Error", "Failed to search services");
+    }
+  }
+
+  useEffect(() => {
+    getNewToCity();
+    getForYou();
+  }, []);
+
+  useEffect(() => {
+    if (query.trim() !== "") {
+      searchServices();
+    } else {
+      setSearchResults([]);
+    }
+  }, [query]);
+
+  const BusinessInfo = ({ item }) => {
     const [loading, setLoading] = useState(true);
     const [businessProfile, setBusinessProfile] = useState({});
-    const businessId = item.item.user_id;
+    const businessId = item.user_id;
 
     const getUser = async (businessId) => {
       try {
@@ -58,10 +100,12 @@ export default function PersonalHome({ navigation }) {
           .eq("user_id", businessId)
           .single();
 
+        if (error) {
+          throw error;
+        }
+
         setBusinessProfile(data);
         setLoading(false);
-        if (error) throw error;
-        return data;
       } catch (error) {
         console.error("Error fetching user data: ", error);
         Alert.alert("Error", "Failed to fetch user data");
@@ -100,11 +144,6 @@ export default function PersonalHome({ navigation }) {
     );
   };
 
-  useEffect(() => {
-    getNewToCity();
-    getForYou();
-  }, []);
-
   return (
     <SafeAreaView style={styles.safeArea}>
       <Text
@@ -118,62 +157,115 @@ export default function PersonalHome({ navigation }) {
       >
         tizly
       </Text>
-      <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
-        <TextInput
-          style={styles.textInput}
-          placeholder="Search..."
-          placeholderTextColor="#888"
-        />
-
-        <Text style={styles.sectionTitle}>{user.city}</Text>
+      <TextInput
+        style={styles.textInput}
+        placeholder="Search..."
+        placeholderTextColor="#888"
+        value={query}
+        onChangeText={(text) => setQuery(text)}
+      />
+      {query.length === 0 ? (
         <ScrollView
-          showsHorizontalScrollIndicator={false}
-          horizontal={true}
-          style={styles.horizontalScroll}
+          showsVerticalScrollIndicator={false}
+          style={styles.container}
         >
-          {ntcList.map((item, index) => (
-            <Pressable
-              onPress={() => navigation.navigate("ServiceDetails", { item })}
-              key={index}
-            >
-              <View style={{ marginRight: 5, elevation: 5 }}>
-                <Image
-                  source={{ uri: item.thumbnail }}
-                  style={styles.scrollItem}
-                />
-                <Text style={styles.scrollItemText}>{item.title}</Text>
-                <Text
-                  style={{ fontWeight: "600", fontSize: 13, marginBottom: 6 }}
-                >
-                  From ${item.price}
-                </Text>
-                <BusinessInfo item={item} />
-              </View>
-            </Pressable>
-          ))}
+          <Text style={styles.sectionTitle}>{user.city}</Text>
+          <ScrollView
+            showsHorizontalScrollIndicator={false}
+            horizontal={true}
+            style={styles.horizontalScroll}
+          >
+            {ntcList.map((item, index) => (
+              <Pressable
+                onPress={() => navigation.navigate("ServiceDetails", { item })}
+                key={index}
+              >
+                <View style={{ marginRight: 5, elevation: 5 }}>
+                  <Image
+                    source={{ uri: item.thumbnail }}
+                    style={styles.scrollItem}
+                  />
+                  <Text style={styles.scrollItemText}>{item.title}</Text>
+                  <Text
+                    style={{
+                      fontWeight: "600",
+                      fontSize: 13,
+                      marginBottom: 6,
+                    }}
+                  >
+                    From ${item.price}
+                  </Text>
+                  <BusinessInfo item={item} />
+                </View>
+              </Pressable>
+            ))}
+          </ScrollView>
+
+          <View
+            style={{
+              height: 0.8,
+              backgroundColor: "#e0e0e0",
+              marginBottom: 20,
+              width: screenWidth * 0.95,
+              alignSelf: "center",
+            }}
+          />
+
+          <Text style={[styles.sectionTitle, styles.secondSectionTitle]}>
+            Trending Near You
+          </Text>
+          <ScrollView
+            showsHorizontalScrollIndicator={false}
+            style={{
+              marginBottom: 30,
+              alignSelf: "center",
+            }}
+          >
+            {forYouList.map((item, index) => (
+              <Pressable
+                onPress={() => navigation.navigate("ServiceDetails", { item })}
+                key={index}
+              >
+                <View style={{ elevation: 5, marginBottom: 30 }}>
+                  <Image
+                    source={{ uri: item.thumbnail }}
+                    style={{
+                      width: screenWidth * 0.96,
+                      height: screenHeight * 0.25,
+                      marginBottom: 5,
+                      backgroundColor: "#ccc",
+
+                      justifyContent: "center",
+                      alignItems: "center",
+                      borderRadius: 3,
+                      resizeMode: "cover",
+                    }}
+                  />
+                  <Text style={styles.scrollItemText}>{item.title}</Text>
+                  <Text
+                    style={{
+                      fontWeight: "600",
+                      fontSize: 13,
+                      marginBottom: 6,
+                    }}
+                  >
+                    From ${item.price}
+                  </Text>
+                  <BusinessInfo item={item} />
+                </View>
+              </Pressable>
+            ))}
+          </ScrollView>
         </ScrollView>
-
-        <View
-          style={{
-            height: 0.8,
-            backgroundColor: "#e0e0e0",
-            marginBottom: 20,
-            width: screenWidth * 0.95,
-            alignSelf: "center",
-          }}
-        />
-
-        <Text style={[styles.sectionTitle, styles.secondSectionTitle]}>
-          Trending Near You
-        </Text>
+      ) : (
         <ScrollView
-          showsHorizontalScrollIndicator={false}
-          style={{
-            marginBottom: 30, // Reduce bottom margin of the first scroll view
-            alignSelf: "center",
-          }}
+          showsVerticalScrollIndicator={false}
+          style={styles.container}
         >
-          {ntcList.map((item, index) => (
+          <Text style={[styles.sectionTitle, { marginTop: 20 }]}>
+            Search Results
+          </Text>
+          {searchResults.map((item, index) => (
             <Pressable
               onPress={() => navigation.navigate("ServiceDetails", { item })}
               key={index}
@@ -185,17 +277,21 @@ export default function PersonalHome({ navigation }) {
                     width: screenWidth * 0.96,
                     height: screenHeight * 0.25,
                     marginBottom: 5,
-                    backgroundColor: "#ccc", // Changed to a lighter color for better visibility
+                    backgroundColor: "#ccc",
 
                     justifyContent: "center",
                     alignItems: "center",
-                    borderRadius: 3, // Added border radius for better visual appeal
+                    borderRadius: 3,
                     resizeMode: "cover",
                   }}
                 />
                 <Text style={styles.scrollItemText}>{item.title}</Text>
                 <Text
-                  style={{ fontWeight: "600", fontSize: 13, marginBottom: 6 }}
+                  style={{
+                    fontWeight: "600",
+                    fontSize: 13,
+                    marginBottom: 6,
+                  }}
                 >
                   From ${item.price}
                 </Text>
@@ -204,7 +300,7 @@ export default function PersonalHome({ navigation }) {
             </Pressable>
           ))}
         </ScrollView>
-      </ScrollView>
+      )}
     </SafeAreaView>
   );
 }
@@ -213,10 +309,8 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: "#fff",
-    paddingTop: 10, // Added padding for better spacing
+    paddingTop: 10,
   },
-  separator: { height: 1, backgroundColor: "#e0e0e0", marginBottom: 1 },
-
   container: {
     flex: 1,
     paddingHorizontal: 2,
@@ -233,16 +327,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#F3F3F9",
     alignSelf: "center",
   },
-  adBoard: {
-    height: 170,
-    width: "100%",
-    resizeMode: "cover",
-    marginBottom: 16,
-    borderRadius: 5,
-
-    backgroundColor: "#46A05F",
-    justifyContent: "center",
-  },
   sectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
@@ -250,34 +334,23 @@ const styles = StyleSheet.create({
     marginLeft: 4,
   },
   secondSectionTitle: {
-    marginTop: 4, // Reduce margin top to lower the space between sections
+    marginTop: 4,
   },
   horizontalScroll: {
     marginBottom: 20,
-    marginLeft: 1, // Reduce bottom margin of the first scroll view
+    marginLeft: 1,
   },
   scrollItem: {
     width: 200,
     height: 130,
     marginBottom: 5,
-    backgroundColor: "#ccc", // Changed to a lighter color for better visibility
+    backgroundColor: "#ccc",
     marginRight: 2,
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 5, // Added border radius for better visual appeal
-  },
-
-  profileImage: {
-    width: 100,
-    height: 100,
-    marginBottom: 15,
-    backgroundColor: "#ccc", // Changed to a lighter color for better visibility
-    marginRight: 10,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 100, // Added border radius for better visual appeal
+    borderRadius: 5,
   },
   scrollItemText: {
-    color: "#000", // Added text color for scroll items
+    color: "#000",
   },
 });
