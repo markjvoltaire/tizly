@@ -234,7 +234,6 @@ export default function PersonalHome({ navigation }) {
                       height: screenHeight * 0.25,
                       marginBottom: 5,
                       backgroundColor: "#ccc",
-
                       justifyContent: "center",
                       alignItems: "center",
                       borderRadius: 3,
@@ -262,43 +261,59 @@ export default function PersonalHome({ navigation }) {
           showsVerticalScrollIndicator={false}
           style={styles.container}
         >
-          <Text style={[styles.sectionTitle, { marginTop: 20 }]}>
-            Search Results
-          </Text>
-          {searchResults.map((item, index) => (
-            <Pressable
-              onPress={() => navigation.navigate("ServiceDetails", { item })}
-              key={index}
-            >
-              <View style={{ elevation: 5, marginBottom: 30 }}>
-                <Image
-                  source={{ uri: item.thumbnail }}
-                  style={{
-                    width: screenWidth * 0.96,
-                    height: screenHeight * 0.25,
-                    marginBottom: 5,
-                    backgroundColor: "#ccc",
-
-                    justifyContent: "center",
-                    alignItems: "center",
-                    borderRadius: 3,
-                    resizeMode: "cover",
-                  }}
-                />
-                <Text style={styles.scrollItemText}>{item.title}</Text>
-                <Text
-                  style={{
-                    fontWeight: "600",
-                    fontSize: 13,
-                    marginBottom: 6,
-                  }}
+          {searchResults.length === 0 ? (
+            <View>
+              <Text
+                style={[
+                  styles.sectionTitle,
+                  { marginTop: 20, alignSelf: "center" },
+                ]}
+              >
+                No Results Found
+              </Text>
+            </View>
+          ) : (
+            <View>
+              <Text style={[styles.sectionTitle, { marginTop: 9 }]}>
+                Search Results
+              </Text>
+              {searchResults.map((item, index) => (
+                <Pressable
+                  onPress={() =>
+                    navigation.navigate("ServiceDetails", { item })
+                  }
+                  key={index}
                 >
-                  From ${item.price}
-                </Text>
-                <BusinessInfo item={item} />
-              </View>
-            </Pressable>
-          ))}
+                  <View style={{ elevation: 5, marginBottom: 30 }}>
+                    <Image
+                      source={{ uri: item.thumbnail }}
+                      style={{
+                        width: screenWidth * 0.96,
+                        height: screenHeight * 0.25,
+                        marginBottom: 5,
+                        backgroundColor: "#ccc",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        borderRadius: 3,
+                        resizeMode: "cover",
+                      }}
+                    />
+                    <Text style={styles.scrollItemText}>{item.title}</Text>
+                    <Text
+                      style={{
+                        fontWeight: "600",
+                        fontSize: 13,
+                        marginBottom: 6,
+                      }}
+                    >
+                      From ${item.price}
+                    </Text>
+                    <BusinessInfo item={item} />
+                  </View>
+                </Pressable>
+              ))}
+            </View>
+          )}
         </ScrollView>
       )}
     </SafeAreaView>
