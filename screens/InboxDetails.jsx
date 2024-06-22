@@ -32,6 +32,8 @@ export default function InboxDetails({ route, navigation }) {
   const [threadId, setThreadId] = useState();
   const { user } = useUser();
 
+  console.log("profileDetails!!", profileDetails);
+
   async function getMessages() {
     try {
       const userId = supabase.auth.currentUser.id;

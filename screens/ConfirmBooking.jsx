@@ -36,6 +36,10 @@ export default function ConfirmBooking({ route, navigation }) {
         seller_id: route.params.service.user_id,
         purchaserId: user.user_id,
         orderStatus: "incomplete",
+        date: selectedDate,
+        time: selectedTime,
+        serviceId: service.id,
+        serviceTitle: service.title,
       };
       const resp = await supabase.from("orders").insert([newOrder]);
 

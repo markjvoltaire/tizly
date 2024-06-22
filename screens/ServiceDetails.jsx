@@ -12,6 +12,7 @@ import {
   Modal,
   Button,
   ScrollView,
+  Pressable,
 } from "react-native";
 import { useStripe } from "@stripe/stripe-react-native";
 import React, { useState, useEffect, useRef } from "react";
@@ -60,61 +61,7 @@ export default function ServiceDetails({ route, navigation }) {
     }
   }
 
-  const handlePayPress = async () => {
-    setLoading(true); // Set loading state to true
-    setProcessing(true);
-    try {
-      // sending request
-
-      const response = await fetch("https://tizlyexpress.onrender.com/pay", {
-        method: "POST",
-        body: JSON.stringify({ servicePrice: route.params.item.price }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        Alert.alert(data.message);
-        setLoading(false); // Set loading state to false
-        setProcessing(false);
-        console.log("LINE 83");
-
-        return;
-      }
-      const clientSecret = data.clientSecret;
-      const initSheet = await stripe.initPaymentSheet({
-        paymentIntentClientSecret: clientSecret,
-        returnURL: null,
-      });
-      if (initSheet.error) {
-        Alert.alert(initSheet.error.message);
-        setLoading(false); // Set loading state to false
-        setProcessing(false);
-
-        return;
-      }
-      const presentSheet = await stripe.presentPaymentSheet({
-        clientSecret,
-      });
-      if (presentSheet.error) {
-        console.log("presentSheet", presentSheet);
-        setLoading(false); // Set loading state to false
-        setProcessing(false);
-        return;
-      }
-      const order = await uploadOrder();
-      Alert.alert("Payment complete, thank you!");
-      navigation.navigate("OrderConfirmation", { order });
-      return order;
-    } catch (err) {
-      console.error(err);
-      Alert.alert("Something went wrong, try again later!");
-    } finally {
-      setLoading(false); // Ensure loading state is set to false in the finally block
-      setProcessing(false);
-    }
-  };
+  0;
 
   const goToAddTime = () => {
     navigation.navigate("AddDate", { serviceInfo: route.params.item });
@@ -156,21 +103,29 @@ export default function ServiceDetails({ route, navigation }) {
     }
 
     return (
-      <View style={{ flexDirection: "row" }}>
-        <Image
-          style={{
-            width: 24,
-            height: 24,
-            marginRight: 10,
-            borderRadius: 20,
-            backgroundColor: "grey",
-            borderWidth: 1,
-            borderColor: "green",
-          }}
-          source={{ uri: businessProfile.profileimage }}
-        />
-        <Text style={{ top: 4 }}>{businessProfile.username}</Text>
-      </View>
+      <Pressable
+        onPress={() =>
+          navigation.navigate("ProfileDetail", { item: businessProfile })
+        }
+      >
+        <View style={{ flexDirection: "row" }}>
+          <Image
+            style={{
+              width: 24,
+              height: 24,
+              marginRight: 10,
+              borderRadius: 20,
+              backgroundColor: "grey",
+              borderWidth: 1,
+              borderColor: "green",
+            }}
+            source={{ uri: businessProfile.profileimage }}
+          />
+          <Text style={{ top: 4, fontWeight: "700" }}>
+            {businessProfile.username}
+          </Text>
+        </View>
+      </Pressable>
     );
   };
 

@@ -37,7 +37,11 @@ const ProfileDetail = ({ route, navigation }) => {
   const screenHeight = Dimensions.get("window").height;
   const screenName = "UserProfile";
 
+  console.log("route", route.params);
+
   const profile = route.params.item;
+
+  console.log("profile", profile);
 
   const classes = [
     {
@@ -65,52 +69,6 @@ const ProfileDetail = ({ route, navigation }) => {
       image: require("../assets/photo3.jpg"),
     },
   ];
-
-  const handleLoginModal = () => setModalVisible(true);
-
-  const getUser = async (userid) => {
-    try {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("user_id", userid)
-        .single();
-
-      if (error) throw error;
-      return data;
-    } catch (error) {
-      console.error("Error fetching user data: ", error);
-      Alert.alert("Error", "Failed to fetch user data");
-    }
-  };
-
-  const loginWithEmail = async () => {
-    try {
-      const { user, error } = await supabase.auth.signIn({
-        email,
-        password,
-      });
-
-      if (error) throw error;
-
-      const userProfile = await getUser(user.id);
-      supabase.auth.setAuth(user.access_token);
-      setUser(userProfile);
-      setIsLoggedIn(true);
-      setModalVisible(false);
-    } catch (error) {
-      console.error("Login error: ", error);
-      Alert.alert("Login Error", error.message);
-    }
-  };
-
-  const logUserIn = () => loginWithEmail();
-
-  const signOutUser = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
-    setIsLoggedIn(false);
-  };
 
   useEffect(() => {
     const getUserInfo = async () => {
@@ -160,85 +118,6 @@ const ProfileDetail = ({ route, navigation }) => {
     </Animated.View>
   );
 
-  if (!isLoggedIn) {
-    return (
-      <SafeAreaView style={styles.loginContainer}>
-        <View style={styles.loginContent}>
-          <Text style={styles.loginTitle}>Profile</Text>
-          <Text style={styles.loginSubtitle}>Log in to see your profile</Text>
-          <Text style={styles.loginInfo}>
-            Once you login, you'll find your profile here
-          </Text>
-          <TouchableOpacity
-            style={styles.loginButton}
-            onPress={handleLoginModal}
-          >
-            <Text style={styles.loginButtonText}>Log In</Text>
-          </TouchableOpacity>
-        </View>
-        <Modal
-          animationType="slide"
-          visible={modalVisible}
-          onRequestClose={() => setModalVisible(!modalVisible)}
-        >
-          <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Login or Sign Up</Text>
-            <TextInput
-              style={styles.input}
-              placeholderTextColor="grey"
-              placeholder="Email"
-              value={email}
-              onChangeText={setEmail}
-            />
-            <TextInput
-              style={styles.input}
-              placeholderTextColor="grey"
-              placeholder="Password"
-              secureTextEntry
-              value={password}
-              onChangeText={setPassword}
-            />
-            <TouchableOpacity style={styles.modalButton} onPress={logUserIn}>
-              <Text style={styles.modalButtonText}>Log In</Text>
-            </TouchableOpacity>
-            <View style={styles.modalFooter}>
-              <Text>Don't have an account?</Text>
-              <Button
-                title="Sign Up"
-                color="#C52A66"
-                onPress={() => {
-                  setModalVisible(false);
-                  setEmail("");
-                  setPassword("");
-                  navigation.navigate("ProfileTypeSelect", { screenName });
-                }}
-              />
-            </View>
-            <TouchableOpacity
-              onPress={() => {
-                setModalVisible(false);
-                setEmail("");
-                setPassword("");
-                navigation.navigate("ResetPassword");
-              }}
-            >
-              <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-            </TouchableOpacity>
-            <Button
-              title="Not Yet"
-              onPress={() => {
-                setModalVisible(!modalVisible);
-                setEmail("");
-                setPassword("");
-              }}
-              color="grey"
-            />
-          </View>
-        </Modal>
-      </SafeAreaView>
-    );
-  }
-
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
@@ -266,30 +145,36 @@ const ProfileDetail = ({ route, navigation }) => {
             </View>
           </View>
         </View>
-        <TouchableOpacity
-          style={{
-            width: 300,
-            height: 40,
-            borderRadius: 10,
-            justifyContent: "center",
-            backgroundColor: "#C52A66",
-            alignSelf: "center",
-          }}
-        >
-          <Text
+        {profile.type === "business" ? (
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate("InboxDetails", { profileDetails: profile })
+            }
             style={{
+              width: 300,
+              height: 40,
+              borderRadius: 10,
+              justifyContent: "center",
+              backgroundColor: "#46A05F",
+
               alignSelf: "center",
-              color: "white",
-              fontFamily: "gilroy",
-              fontSize: 16,
             }}
           >
-            Add to favorites
-          </Text>
-        </TouchableOpacity>
+            <Text
+              style={{
+                alignSelf: "center",
+                color: "white",
+                fontFamily: "gilroy",
+                fontSize: 16,
+              }}
+            >
+              Send Message
+            </Text>
+          </TouchableOpacity>
+        ) : null}
         <View style={styles.separator} />
         <View style={styles.contentContainer}>
-          <Text style={styles.sectionTitle}>Reviews</Text>
+          {/* <Text style={styles.sectionTitle}>Reviews</Text>
           <FlatList
             style={{ right: 10, width: screenWidth * 0.94 }}
             horizontal
@@ -297,9 +182,9 @@ const ProfileDetail = ({ route, navigation }) => {
             keyExtractor={(item) => item.id}
             renderItem={renderReviewItem}
             showsHorizontalScrollIndicator={false}
-          />
-          <View style={styles.separator} />
-          <Text style={styles.sectionTitle}>Portfolio</Text>
+          /> */}
+          {/* <View style={styles.separator} /> */}
+          {/* <Text style={styles.sectionTitle}>Portfolio</Text>
           <FlatList
             horizontal
             style={{ right: 10, width: screenWidth * 0.94 }}
@@ -307,8 +192,8 @@ const ProfileDetail = ({ route, navigation }) => {
             keyExtractor={(item) => item.id}
             renderItem={renderPortfolioItem}
             showsHorizontalScrollIndicator={false}
-          />
-          <View style={styles.separator} />
+          /> */}
+          {/* <View style={styles.separator} /> */}
           <Text style={styles.sectionTitle}>Services</Text>
           <Pressable onPress={() => console.log("Service selected")}>
             <View style={styles.serviceItem}>
@@ -353,7 +238,7 @@ const styles = StyleSheet.create({
   profileInfo: { alignItems: "center" },
   profileStats: {
     flexDirection: "row",
-    marginTop: 16,
+    marginTop: 10,
     justifyContent: "space-around",
     width: "100%",
   },

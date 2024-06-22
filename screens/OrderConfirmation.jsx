@@ -9,7 +9,6 @@ import {
 
 export default function OrderConfirmation({ route, navigation }) {
   const order = route.params.order.body[0];
-  console.log("order", order);
   const {
     created_at,
     id,
@@ -18,7 +17,24 @@ export default function OrderConfirmation({ route, navigation }) {
     purchaserId,
     serviceId,
     user_id,
+    date,
+    time,
+    seller_id,
   } = order;
+
+  const formattedCreatedAt = new Date(created_at).toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
+  const formattedDate = new Date(date).toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 
   return (
     <View style={styles.screen}>
@@ -29,18 +45,19 @@ export default function OrderConfirmation({ route, navigation }) {
           <Text style={styles.value}>{orderId}</Text>
 
           <Text style={styles.label}>Payment Date:</Text>
-          <Text style={styles.value}>
-            {new Date(created_at).toLocaleString()}
-          </Text>
+          <Text style={styles.value}>{formattedCreatedAt}</Text>
 
           <Text style={styles.label}>Purchaser ID:</Text>
           <Text style={styles.value}>{purchaserId}</Text>
 
-          {/* <Text style={styles.label}>Service ID:</Text>
-          <Text style={styles.value}>{serviceId}</Text> */}
+          <Text style={styles.label}>Time:</Text>
+          <Text style={styles.value}>{time}</Text>
+
+          <Text style={styles.label}>Date:</Text>
+          <Text style={styles.value}>{formattedDate}</Text>
 
           <Text style={styles.label}>User ID:</Text>
-          <Text style={styles.value}>{order.seller_id}</Text>
+          <Text style={styles.value}>{seller_id}</Text>
         </View>
       </ScrollView>
       <View style={styles.bottomContainer}>

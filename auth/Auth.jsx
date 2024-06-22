@@ -137,6 +137,7 @@ export default function Auth() {
             headerTintColor: "black", // Changing the color of the back button text
           }}
         />
+
         <Stack.Screen
           name="EditLocation"
           component={EditLocation}
@@ -226,7 +227,7 @@ export default function Auth() {
           component={OrderConfirmation}
           options={{
             tabBarVisible: false,
-            headerShown: true,
+            headerShown: false,
             headerTitle: "Order Confirmation", // Customizing the header title
             headerBackTitle: "Back", // Customizing the back button text
             headerTintColor: "black", // Changing the color of the back button text
@@ -398,30 +399,6 @@ export default function Auth() {
             headerTintColor: "black", // Changing the color of the back button text
           }}
         />
-
-        <Stack.Screen
-          name="SignUp"
-          component={SignUp}
-          options={{
-            tabBarVisible: false,
-            headerShown: true,
-            headerTitle: "Sign Up", // Customizing the header title
-            headerBackTitle: "Back", // Customizing the back button text
-            headerTintColor: "black", // Changing the color of the back button text
-          }}
-        />
-
-        <Stack.Screen
-          name="ResetPassword"
-          component={ResetPassword}
-          options={{
-            tabBarVisible: false,
-            headerShown: true,
-            headerTitle: "Password Reset", // Customizing the header title
-            headerBackTitle: "Back", // Customizing the back button text
-            headerTintColor: "black", // Changing the color of the back button text
-          }}
-        />
       </Stack.Navigator>
     );
   };
@@ -433,6 +410,9 @@ export default function Auth() {
           name="OffersScreen"
           component={Offers}
           options={{
+            headerShown: true,
+
+            headerTitle: "Orders", // Customizing the header title
             tabBarVisible: false,
             headerBackTitle: "Back", // Customizing the back button text
             headerTintColor: "black", // Changing the color of the back button text
@@ -443,7 +423,20 @@ export default function Auth() {
           name="OrderDetails"
           component={OrderDetails}
           options={{
+            headerShown: true,
+
             tabBarVisible: false,
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+
+        <Stack.Screen
+          name="OrderConfirmation"
+          component={OrderConfirmation}
+          options={{
+            tabBarVisible: false,
+            headerTitle: "Order Details", // Customizing the header title
             headerBackTitle: "Back", // Customizing the back button text
             headerTintColor: "black", // Changing the color of the back button text
           }}
@@ -595,10 +588,10 @@ export default function Auth() {
         component={PostStack}
       />
 
-      {/* <Tab.Screen
+      <Tab.Screen
         options={{
           tabBarShowLabel: false,
-          headerShown: true,
+          headerShown: false,
           tabBarIcon: ({ color, size, focused }) =>
             focused ? (
               <Image
@@ -612,9 +605,9 @@ export default function Auth() {
               />
             ),
         }}
-        name="Offers"
+        name="Orders"
         component={OfferStack}
-      /> */}
+      />
 
       <Tab.Screen
         options={{
