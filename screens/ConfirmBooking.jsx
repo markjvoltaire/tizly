@@ -14,6 +14,8 @@ import { useStripe } from "@stripe/stripe-react-native";
 import { useUser } from "../context/UserContext";
 import LottieView from "lottie-react-native";
 import { supabase } from "../services/supabase";
+import { sendPushNotification } from "../services/notification";
+import { getUser } from "../services/user";
 
 export default function ConfirmBooking({ route, navigation }) {
   const { selectedDate, selectedTime } = route.params;
@@ -30,6 +32,10 @@ export default function ConfirmBooking({ route, navigation }) {
   const formattedDate = new Date(selectedDate).toLocaleDateString();
 
   async function uploadOrder() {
+    const resp = await getUser(service);
+    const tokenCode = resp.body.expo_push_token;
+    const body = `🎉 Great news! You've been booked.`;
+    const title = "New Booking";
     try {
       //   setAddingCarModal(true);
       const newOrder = {
@@ -42,7 +48,7 @@ export default function ConfirmBooking({ route, navigation }) {
         serviceTitle: service.title,
       };
       const resp = await supabase.from("orders").insert([newOrder]);
-
+      await sendPushNotification(body, title, tokenCode);
       return resp;
     } catch (error) {
       console.error("Error submitting comment:", error);
@@ -53,6 +59,7 @@ export default function ConfirmBooking({ route, navigation }) {
   const handlePayPress = async () => {
     setLoading(true); // Set loading state to true
     setProcessing(true);
+
     try {
       // sending request
 
@@ -68,7 +75,6 @@ export default function ConfirmBooking({ route, navigation }) {
         Alert.alert(data.message);
         setLoading(false); // Set loading state to false
         setProcessing(false);
-        console.log("LINE 83");
 
         return;
       }
@@ -95,7 +101,9 @@ export default function ConfirmBooking({ route, navigation }) {
       }
       const order = await uploadOrder();
       Alert.alert("Payment complete, thank you!");
+
       navigation.navigate("OrderConfirmation", { order });
+
       return order;
     } catch (err) {
       console.error(err);

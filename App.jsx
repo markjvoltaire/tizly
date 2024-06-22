@@ -8,6 +8,7 @@ import { supabase } from "./services/supabase";
 import { UserProvider } from "./context/UserContext";
 import Auth from "./auth/Auth";
 import { LocationProvider } from "./context/LocationContext";
+import NotificationProvider from "./context/NotificationContext";
 
 export default function App() {
   const [auth, setAuth] = useState(null);
@@ -51,7 +52,9 @@ export default function App() {
     <StripeProvider publishableKey="pk_test_51PGlQDFJMCoKq8PTWUUhTDRsSTmaos2cTY08TrmhkyGRH77d5EQQ0CaHCPKng4iwFNs1MAvLjYGDkuoHrj1yen1700sDnFHoTZ">
       <UserProvider>
         <NavigationContainer>
-          <Auth />
+          <NotificationProvider>
+            <Auth />
+          </NotificationProvider>
         </NavigationContainer>
       </UserProvider>
     </StripeProvider>

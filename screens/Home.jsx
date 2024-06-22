@@ -20,6 +20,10 @@ import {
 import { useFocusEffect, useScrollToTop } from "@react-navigation/native"; // Import useScrollToTop
 import { useUser } from "../context/UserContext";
 import { supabase } from "../services/supabase";
+import {
+  notifyUserAboutNewComment,
+  sendPushNotification,
+} from "../services/notification";
 
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
@@ -376,17 +380,19 @@ export default function Home({ navigation }) {
           borderColor: "#f5f5f5",
         }}
       >
-        <Text
-          style={{
-            alignSelf: "center",
-            fontFamily: "Poppins-Black",
-            color: "green",
-            fontSize: 25,
-            marginBottom: 10,
-          }}
-        >
-          tizly
-        </Text>
+        <Pressable onPress={async () => await sendPushNotification()}>
+          <Text
+            style={{
+              alignSelf: "center",
+              fontFamily: "Poppins-Black",
+              color: "green",
+              fontSize: 25,
+              marginBottom: 10,
+            }}
+          >
+            tizly
+          </Text>
+        </Pressable>
       </SafeAreaView>
 
       <ScrollView

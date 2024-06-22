@@ -19,6 +19,7 @@ import {
 import { useUser } from "../context/UserContext";
 import { supabase } from "../services/supabase";
 import { useFocusEffect, useScrollToTop } from "@react-navigation/native"; // Import useScrollToTop
+import { sendPushNotification } from "../services/notification";
 
 export default function InboxDetails({ route, navigation }) {
   const profileDetails = route.params.profileDetails;
@@ -32,7 +33,7 @@ export default function InboxDetails({ route, navigation }) {
   const [threadId, setThreadId] = useState();
   const { user } = useUser();
 
-  console.log("profileDetails!!", profileDetails);
+  console.log("profileDetails", profileDetails);
 
   async function getMessages() {
     try {
@@ -65,6 +66,11 @@ export default function InboxDetails({ route, navigation }) {
   const sendMessage = async () => {
     const userId = supabase.auth.currentUser.id;
 
+    const body = `New message from ${user.username}`;
+    console.log("body line 68", body);
+    const title = "New Message";
+    const tokenCode = profileDetails.expo_push_token;
+
     if (messageText.trim() !== "") {
       const res = await supabase.from("messages").insert([
         {
@@ -86,6 +92,7 @@ export default function InboxDetails({ route, navigation }) {
         ]);
 
         setMessageText("");
+        await sendPushNotification(body, title, tokenCode);
       } else {
         Alert.alert("An error has occured please try again");
       }
@@ -104,72 +111,6 @@ export default function InboxDetails({ route, navigation }) {
     retrieveMessages();
     setRefreshing(false);
   };
-
-  if (user === undefined) {
-    return (
-      <SafeAreaView
-        style={{
-          flex: 1,
-          backgroundColor: "#FFFFFF",
-          padding: 20,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <View style={{}}>
-          <Text
-            style={{
-              fontSize: 30,
-              marginBottom: 20,
-            }}
-          >
-            inbox
-          </Text>
-          <Text
-            style={{
-              fontSize: 15,
-              marginBottom: 10,
-
-              color: "#717171",
-            }}
-          >
-            Log in to see your send messages
-          </Text>
-          <Text
-            style={{
-              fontSize: 20,
-
-              marginBottom: 20,
-              color: "#717171",
-            }}
-          >
-            Once you login, you'll be able to send messages
-          </Text>
-
-          <TouchableOpacity
-            style={{
-              backgroundColor: "#007AFF",
-              paddingVertical: 12,
-              paddingHorizontal: 20,
-              borderRadius: 5,
-              alignSelf: "stretch",
-            }}
-          >
-            <Text
-              style={{
-                color: "#FFFFFF",
-                fontSize: 18,
-                fontWeight: "600",
-                textAlign: "center",
-              }}
-            >
-              Log In
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
-    );
-  }
 
   useFocusEffect(
     React.useCallback(() => {
@@ -226,7 +167,6 @@ export default function InboxDetails({ route, navigation }) {
       <View style={[styles.container, { height: screenHeight }]}>
         {messages.length === 0 ? (
           <ScrollView
-            showsVerticalScrollIndicator={false}
             refreshControl={
               <RefreshControl
                 refreshing={refreshing}
@@ -249,7 +189,7 @@ export default function InboxDetails({ route, navigation }) {
           </ScrollView>
         ) : (
           <ScrollView
-            showsVerticalScrollIndicator={false}
+            showsVerticalScrollIndicator={true}
             refreshControl={
               <RefreshControl
                 refreshing={refreshing}

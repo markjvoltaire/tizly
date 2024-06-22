@@ -54,11 +54,12 @@ export async function sendPushNotification(
   body: string,
   tokenCode: string
 ) {
+  console.log("tokenCode", tokenCode);
   const message = {
     to: tokenCode,
     sound: "default",
     title: "Tizly",
-    body,
+    body: title,
     data: { someData: "goes here" },
   };
 
