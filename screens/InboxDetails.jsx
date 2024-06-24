@@ -19,6 +19,7 @@ import {
 import { useUser } from "../context/UserContext";
 import { supabase } from "../services/supabase";
 import { useFocusEffect, useScrollToTop } from "@react-navigation/native"; // Import useScrollToTop
+import { sendPushNotification } from "../services/notification";
 
 export default function InboxDetails({ route, navigation }) {
   const profileDetails = route.params.profileDetails;
@@ -31,7 +32,6 @@ export default function InboxDetails({ route, navigation }) {
   const [isThereMessages, setIsThereMessages] = useState(false);
   const [threadId, setThreadId] = useState();
   const { user } = useUser();
-  console.log("route", route);
 
   async function getMessages() {
     try {
@@ -49,11 +49,8 @@ export default function InboxDetails({ route, navigation }) {
       }
 
       if (resp.body.length === 0) {
-        console.log("NO MESSAGES");
         setIsThereMessages(false);
       } else {
-        console.log("resp", resp.body[0].threadID);
-        console.log("THERE IS MESSAGES");
         setThreadId(resp.body[0].threadID);
         setIsThereMessages(true);
       }
@@ -66,8 +63,11 @@ export default function InboxDetails({ route, navigation }) {
   }
   const sendMessage = async () => {
     const userId = supabase.auth.currentUser.id;
-    const threadID = `${userId + profileDetails.user_id}`;
-    console.log("threadID", threadID);
+
+    const body = `New message from ${user.username}`;
+    console.log("body line 68", body);
+    const title = "New Message";
+    const tokenCode = profileDetails.expo_push_token;
 
     if (messageText.trim() !== "") {
       const res = await supabase.from("messages").insert([
@@ -76,6 +76,7 @@ export default function InboxDetails({ route, navigation }) {
           sender: userId,
           receiver: profileDetails.user_id,
           message: messageText,
+
           threadID:
             isThereMessages === false
               ? userId + profileDetails.user_id
@@ -87,8 +88,9 @@ export default function InboxDetails({ route, navigation }) {
           ...messages,
           { sender: userId, message: messageText.trim() },
         ]);
-        console.log("messages", messages);
+
         setMessageText("");
+        await sendPushNotification(body, title, tokenCode);
       } else {
         Alert.alert("An error has occured please try again");
       }
@@ -99,78 +101,17 @@ export default function InboxDetails({ route, navigation }) {
 
   const handleRefresh = async () => {
     setRefreshing(true); // Set refreshing to true when refreshing starts
+    const retrieveMessages = async () => {
+      const resp = await getMessages();
+      setMessages(resp);
+      setLoading(false);
+    };
+    retrieveMessages();
     setRefreshing(false);
   };
 
-  if (user === undefined) {
-    return (
-      <SafeAreaView
-        style={{
-          flex: 1,
-          backgroundColor: "#FFFFFF",
-          padding: 20,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <View style={{}}>
-          <Text
-            style={{
-              fontSize: 30,
-              marginBottom: 20,
-            }}
-          >
-            inbox
-          </Text>
-          <Text
-            style={{
-              fontSize: 15,
-              marginBottom: 10,
-
-              color: "#717171",
-            }}
-          >
-            Log in to see your send messages
-          </Text>
-          <Text
-            style={{
-              fontSize: 20,
-
-              marginBottom: 20,
-              color: "#717171",
-            }}
-          >
-            Once you login, you'll be able to send messages
-          </Text>
-
-          <TouchableOpacity
-            style={{
-              backgroundColor: "#007AFF",
-              paddingVertical: 12,
-              paddingHorizontal: 20,
-              borderRadius: 5,
-              alignSelf: "stretch",
-            }}
-          >
-            <Text
-              style={{
-                color: "#FFFFFF",
-                fontSize: 18,
-                fontWeight: "600",
-                textAlign: "center",
-              }}
-            >
-              Log In
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
-    );
-  }
-
   useFocusEffect(
     React.useCallback(() => {
-      console.log("FOCUSED");
       let isMounted = true;
 
       const fetchData = async () => {
@@ -188,7 +129,6 @@ export default function InboxDetails({ route, navigation }) {
 
       return () => {
         isMounted = false;
-        console.log("NOT FOCUSED");
       };
     }, [])
   );
@@ -225,7 +165,6 @@ export default function InboxDetails({ route, navigation }) {
       <View style={[styles.container, { height: screenHeight }]}>
         {messages.length === 0 ? (
           <ScrollView
-            showsVerticalScrollIndicator={false}
             refreshControl={
               <RefreshControl
                 refreshing={refreshing}
@@ -248,7 +187,7 @@ export default function InboxDetails({ route, navigation }) {
           </ScrollView>
         ) : (
           <ScrollView
-            showsVerticalScrollIndicator={false}
+            showsVerticalScrollIndicator={true}
             refreshControl={
               <RefreshControl
                 refreshing={refreshing}
@@ -258,18 +197,16 @@ export default function InboxDetails({ route, navigation }) {
             contentContainerStyle={styles.messagesContainer}
           >
             {messages.map((message, index) => (
-              <>
-                <Message
-                  message={message}
-                  user={user}
-                  profileDetails={profileDetails}
-                  key={index}
-                  sender={message.sender}
-                  navigation={navigation}
-                >
-                  {message.message}
-                </Message>
-              </>
+              <Message
+                message={message}
+                user={user}
+                profileDetails={profileDetails}
+                key={index}
+                sender={message.sender}
+                navigation={navigation}
+              >
+                {message.message}
+              </Message>
             ))}
             <View style={{ height: 100 }} />
           </ScrollView>
@@ -296,7 +233,7 @@ export default function InboxDetails({ route, navigation }) {
           <Pressable
             onPress={() => sendMessage()}
             style={{
-              backgroundColor: "#007AFF",
+              backgroundColor: "green",
               width: screenWidth * 0.25,
               height: screenHeight * 0.04,
               justifyContent: "center",
@@ -366,73 +303,34 @@ const Message = ({ sender, children, message, user, navigation }) => {
 
   const messageStyle =
     sender === user.user_id ? styles.userMessage : styles.businessMessage;
-  return message.type === "offering" ? (
-    <View style={[styles.messageContainer, messageStyle]}>
-      <Text
-        style={{
-          marginBottom: 10,
-          color: sender === user.user_id ? null : "white",
-          fontWeight: "600",
-        }}
-      >
-        New Offering
-      </Text>
-      <Text style={{ color: sender === user.user_id ? null : "white" }}>
-        {children}
-      </Text>
-      <Text
-        style={{
-          color: sender === user.user_id ? null : "white",
-          fontSize: 10,
-          fontFamily: "alata",
-          marginBottom: 30,
-        }}
-      >
-        {formattedDate}
-      </Text>
-      {/* Move time rendering here */}
 
-      <Pressable
-        onPress={() => navigation.navigate("OfferDetails")}
-        style={{
-          alignSelf: "center",
-          backgroundColor: "#007AFF",
-          width: 200,
-          height: 40,
-          justifyContent: "center",
-          borderRadius: 10,
-        }}
-      >
-        <Text
-          style={{
-            alignSelf: "center",
-            color: sender === user.user_id ? "white" : null,
-            fontWeight: "700",
-          }}
-        >
-          {sender === user.user_id ? "Manage Offer" : "View Offer"}
-        </Text>
-      </Pressable>
-    </View>
-  ) : (
+  return (
     <>
-      <Pressable onLongPress={() => console.log("Hello")}>
-        <View style={[styles.messageContainer, messageStyle]}>
-          <Text style={{ color: sender === user.user_id ? null : "white" }}>
-            {children}
-          </Text>
-          <Text
-            style={{
-              color: sender === user.user_id ? null : "white",
-              fontSize: 10,
-              fontFamily: "alata",
-            }}
-          >
-            {formattedDate}
-          </Text>
-          {/* Move time rendering here */}
-        </View>
-      </Pressable>
+      <>
+        <Pressable onLongPress={() => console.log("Hello")}>
+          <View style={[styles.messageContainer, messageStyle]}>
+            <Text
+              style={{
+                color: sender === user.user_id ? null : "white",
+                fontWeight: "600",
+                marginBottom: 5,
+              }}
+            >
+              {children}
+            </Text>
+            {/* Move time rendering here */}
+            <Text
+              style={{
+                color: sender === user.user_id ? null : "white",
+                fontSize: 11,
+                fontWeight: "400",
+              }}
+            >
+              {formattedDate}
+            </Text>
+          </View>
+        </Pressable>
+      </>
     </>
   );
 };
@@ -455,7 +353,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F3F3F9",
     width: 250,
     height: 40,
-    fontFamily: "Poppins-SemiBold",
+
     fontSize: 13,
     paddingTop: 12,
     justifyContent: "center",
@@ -471,7 +369,7 @@ const styles = StyleSheet.create({
     alignSelf: "flex-end",
   },
   businessMessage: {
-    backgroundColor: "#029EF6",
+    backgroundColor: "green",
     alignSelf: "flex-start",
   },
   sender: {

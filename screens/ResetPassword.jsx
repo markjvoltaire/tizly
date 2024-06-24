@@ -104,7 +104,7 @@ export default function ResetPassword({ navigation }) {
               <TouchableOpacity
                 onPress={() => sendEmail()}
                 style={{
-                  backgroundColor: "#C52A66",
+                  backgroundColor: "black",
                   paddingVertical: 12,
                   paddingHorizontal: 20,
                   borderRadius: 5,
@@ -148,7 +148,7 @@ export default function ResetPassword({ navigation }) {
               <TouchableOpacity
                 onPress={() => verifyOTP()}
                 style={{
-                  backgroundColor: "#C52A66",
+                  backgroundColor: "black",
                   paddingVertical: 12,
                   paddingHorizontal: 20,
                   borderRadius: 5,
@@ -191,7 +191,7 @@ export default function ResetPassword({ navigation }) {
               <TouchableOpacity
                 onPress={() => changePassword()}
                 style={{
-                  backgroundColor: "#C52A66",
+                  backgroundColor: "black",
                   paddingVertical: 12,
                   paddingHorizontal: 20,
                   borderRadius: 5,

@@ -11,6 +11,8 @@ import {
   Image,
   Modal,
   Button,
+  ScrollView,
+  Pressable,
 } from "react-native";
 import { useStripe } from "@stripe/stripe-react-native";
 import React, { useState, useEffect, useRef } from "react";
@@ -19,7 +21,7 @@ import { useUser } from "../context/UserContext";
 import LottieView from "lottie-react-native";
 import { supabase } from "../services/supabase";
 
-export default function Pay({ route, navigation }) {
+export default function ServiceDetails({ route, navigation }) {
   const [loading, setLoading] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [orderList, setOrderList] = useState([]);
@@ -46,9 +48,8 @@ export default function Pay({ route, navigation }) {
     try {
       //   setAddingCarModal(true);
       const newOrder = {
-        seller_id: profile.user_id,
+        seller_id: route.params.item.user_id,
         purchaserId: user.user_id,
-        serviceId: "fhshfhskjdfhjk",
         orderStatus: "incomplete",
       };
       const resp = await supabase.from("orders").insert([newOrder]);
@@ -60,148 +61,147 @@ export default function Pay({ route, navigation }) {
     }
   }
 
-  const handlePayPress = async () => {
-    setLoading(true); // Set loading state to true
-    setProcessing(true);
-    try {
-      // sending request
+  0;
 
-      const response = await fetch("https://tizlyexpress.onrender.com/pay", {
-        method: "POST",
-        body: JSON.stringify({ servicePrice }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        Alert.alert(data.message);
-        setLoading(false); // Set loading state to false
-        setProcessing(false);
-        console.log("LINE 83");
+  const goToAddTime = () => {
+    navigation.navigate("AddDate", { serviceInfo: route.params.item });
+  };
 
-        return;
-      }
-      const clientSecret = data.clientSecret;
-      const initSheet = await stripe.initPaymentSheet({
-        paymentIntentClientSecret: clientSecret,
-        returnURL: null,
-      });
-      if (initSheet.error) {
-        Alert.alert(initSheet.error.message);
-        setLoading(false); // Set loading state to false
-        setProcessing(false);
+  const BusinessInfo = () => {
+    const [loading, setLoading] = useState(true);
+    const [businessProfile, setBusinessProfile] = useState({});
+    const businessId = route.params.item.user_id;
 
-        return;
+    const getUser = async (businessId) => {
+      try {
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("user_id", businessId)
+          .single();
+
+        setBusinessProfile(data);
+        setLoading(false);
+        if (error) throw error;
+        return data;
+      } catch (error) {
+        console.error("Error fetching user data: ", error);
+        Alert.alert("Error", "Failed to fetch user data");
       }
-      const presentSheet = await stripe.presentPaymentSheet({
-        clientSecret,
-      });
-      if (presentSheet.error) {
-        console.log("presentSheet", presentSheet);
-        setLoading(false); // Set loading state to false
-        setProcessing(false);
-        return;
-      }
-      const order = await uploadOrder();
-      Alert.alert("Payment complete, thank you!");
-      navigation.navigate("OrderConfirmation", { order });
-      return order;
-    } catch (err) {
-      console.error(err);
-      Alert.alert("Something went wrong, try again later!");
-    } finally {
-      setLoading(false); // Ensure loading state is set to false in the finally block
-      setProcessing(false);
+    };
+
+    useEffect(() => {
+      getUser(businessId);
+    }, []);
+
+    if (loading) {
+      return (
+        <View>
+          <ActivityIndicator size="small" />
+        </View>
+      );
     }
+
+    return (
+      <Pressable
+        onPress={() =>
+          navigation.navigate("ProfileDetail", { item: businessProfile })
+        }
+      >
+        <View style={{ flexDirection: "row" }}>
+          <Image
+            style={{
+              width: 24,
+              height: 24,
+              marginRight: 10,
+              borderRadius: 20,
+              backgroundColor: "grey",
+              borderWidth: 1,
+              borderColor: "green",
+            }}
+            source={{ uri: businessProfile.profileimage }}
+          />
+          <Text style={{ top: 4, fontWeight: "700" }}>
+            {businessProfile.username}
+          </Text>
+        </View>
+      </Pressable>
+    );
   };
 
   return (
     <View style={styles.container}>
-      <Animated.Image
-        source={{ uri: profile.profileimage }}
-        style={[
-          {
+      <ScrollView>
+        <Animated.Image
+          source={{ uri: route.params.item.thumbnail }}
+          style={[
+            {
+              width: screenWidth,
+              height: screenHeight * 0.55,
+              resizeMode: "cover",
+              backgroundColor: "black",
+            },
+            { opacity: fadeAnim },
+          ]}
+        />
+        <View
+          style={{
             width: screenWidth,
             height: screenHeight * 0.55,
-            resizeMode: "cover",
             backgroundColor: "black",
-          },
-          { opacity: fadeAnim },
-        ]}
-      />
-      <View
-        style={{
-          width: screenWidth,
-          height: screenHeight * 0.55,
-          backgroundColor: "black",
-          position: "absolute",
-          opacity: 0.5,
-        }}
-      ></View>
-
-      <View style={{ margin: 20, bottom: screenHeight * 0.1 }}>
-        <Text
-          style={{
-            color: "white",
-            fontWeight: "800",
-            fontSize: 25,
+            position: "absolute",
+            opacity: 0.5,
           }}
-        >
-          1 hour Photo Shoot
-        </Text>
+        ></View>
 
-        <Text style={{ color: "white", fontWeight: "600", fontSize: 18 }}>
-          ${servicePrice}
-        </Text>
-      </View>
-
-      <View style={{ bottom: screenHeight * 0.094 }}>
-        <Text style={{ fontSize: 18, margin: 12, fontWeight: "500" }}>
-          What's Included
-        </Text>
-        <View
-          style={{
-            margin: 10,
-            bottom: 6,
-          }}
-        >
-          <Text>
-            {`•`} Personalized consultation to discuss your vision, preferences,
-            and specific requirements.
+        <View style={{ margin: 20, bottom: screenHeight * 0.1 }}>
+          <Text
+            style={{
+              color: "white",
+              fontWeight: "800",
+              fontSize: 25,
+            }}
+          >
+            {route.params.item.title}
           </Text>
-        </View>
-        <View
-          style={{
-            margin: 10,
-            bottom: 6,
-          }}
-        >
-          <Text>
-            {`•`} Delivery of high-resolution digital images, ready for print or
-            online use.
+
+          <Text style={{ color: "white", fontWeight: "600", fontSize: 18 }}>
+            ${route.params.item.price}
           </Text>
         </View>
 
-        <View
-          style={{
-            margin: 10,
-            bottom: 6,
-          }}
-        >
-          <Text>
-            {" "}
-            {`•`} Professional editing and retouching of all selected images.
+        <View style={{ bottom: screenHeight * 0.1 }}>
+          <View
+            style={{
+              margin: 10,
+              bottom: 6,
+            }}
+          >
+            <BusinessInfo route={route} />
+          </View>
+
+          <Text
+            style={{ fontSize: 18, margin: 10, fontWeight: "500", bottom: 0 }}
+          >
+            Service Description
           </Text>
+          <View
+            style={{
+              margin: 10,
+              bottom: 6,
+            }}
+          >
+            <Text>{route.params.item.description}</Text>
+          </View>
         </View>
-      </View>
+      </ScrollView>
 
       <View style={styles.bottomBar}>
         <TouchableOpacity
-          onPress={handlePayPress}
+          onPress={goToAddTime}
           disabled={loading}
           style={{
-            backgroundColor: "#635BFF",
+            backgroundColor: "#46A05F",
             height: screenHeight * 0.06,
             width: screenWidth * 0.9,
             borderRadius: 10,
@@ -213,14 +213,14 @@ export default function Pay({ route, navigation }) {
             <ActivityIndicator color="#fff" />
           ) : (
             <Text style={{ color: "#fff", fontWeight: "bold" }}>
-              Book Now ${servicePrice}
+              Select Date
             </Text>
           )}
         </TouchableOpacity>
       </View>
 
       <Modal visible={processing} animationType="fade">
-        <SafeAreaView style={{ backgroundColor: "#635BFF", flex: 1 }}>
+        <SafeAreaView style={{ backgroundColor: "#46A05F", flex: 1 }}>
           <LottieView
             style={{
               height: 500,

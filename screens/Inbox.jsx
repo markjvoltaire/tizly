@@ -19,6 +19,7 @@ import { supabase } from "../services/supabase";
 import { getUser } from "../services/user";
 import InboxCard from "../component/InboxCard";
 import { useFocusEffect, useScrollToTop } from "@react-navigation/native"; // Import useScrollToTop
+import Login from "./Login";
 
 const Inbox = ({ navigation }) => {
   const { user, setUser } = useUser();
@@ -34,9 +35,8 @@ const Inbox = ({ navigation }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(!user ? false : true);
   const screenName = "Inbox";
 
-  console.log("isLoggedIn", isLoggedIn);
-
   async function getUser(userid) {
+    console.log("userid", userid);
     const resp = await supabase
       .from("profiles")
       .select("*")
@@ -82,12 +82,13 @@ const Inbox = ({ navigation }) => {
       email,
       password,
     });
+
     if (error) {
       Alert.alert(error.message);
     } else {
       const resp = await getUser(user.id);
-      supabase.auth.setAuth(user.access_token);
       console.log("resp", resp);
+      supabase.auth.setAuth(user.access_token);
       setUser(resp.body);
     }
   }
@@ -142,7 +143,6 @@ const Inbox = ({ navigation }) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      console.log("FOCUSED");
       let isMounted = true;
 
       const fetchData = async () => {
@@ -163,7 +163,6 @@ const Inbox = ({ navigation }) => {
 
       return () => {
         isMounted = false;
-        console.log("NOT FOCUSED");
       };
     }, [])
   );
@@ -191,213 +190,17 @@ const Inbox = ({ navigation }) => {
   };
 
   if (isLoggedIn === false) {
-    return (
-      <SafeAreaView
-        style={{
-          flex: 1,
-          backgroundColor: "#FFFFFF",
-          padding: 20,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <View style={{}}>
-          <Text
-            style={{
-              fontSize: 30,
-              marginBottom: 20,
-            }}
-          >
-            Inbox
-          </Text>
-          <Text
-            style={{
-              fontSize: 15,
-              marginBottom: 10,
-              color: "#717171",
-            }}
-          >
-            Log in to see your messages
-          </Text>
-          <Text
-            style={{
-              fontSize: 20,
-
-              marginBottom: 20,
-              color: "#717171",
-            }}
-          >
-            Once you login, you'll find your messages here
-          </Text>
-
-          <TouchableOpacity
-            style={{
-              backgroundColor: "#007AFF",
-              paddingVertical: 12,
-              paddingHorizontal: 20,
-              borderRadius: 5,
-              alignSelf: "stretch",
-            }}
-            onPress={handleLoginModal}
-          >
-            <Text
-              style={{
-                color: "#FFFFFF",
-                fontSize: 18,
-                fontWeight: "600",
-                textAlign: "center",
-              }}
-            >
-              Log In
-            </Text>
-          </TouchableOpacity>
-        </View>
-        <Modal
-          animationType="slide"
-          visible={modalVisible}
-          onRequestClose={() => {
-            setModalVisible(!modalVisible);
-          }}
-        >
-          <View
-            style={{
-              margin: 20,
-              backgroundColor: "white",
-              borderRadius: 10,
-              top: 200,
-              padding: 20,
-              alignItems: "center",
-              shadowColor: "#000",
-              shadowOffset: {
-                width: 0,
-                height: 2,
-              },
-              shadowOpacity: 0.25,
-              shadowRadius: 4,
-              elevation: 5,
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 20,
-                marginBottom: 15,
-                textAlign: "center",
-                fontWeight: "600",
-              }}
-            >
-              Login or Sign Up
-            </Text>
-            <TextInput
-              style={{
-                height: 40,
-                width: "100%",
-                borderColor: "gray",
-                borderWidth: 1,
-                borderRadius: 12,
-                marginBottom: 10,
-                paddingHorizontal: 10,
-                fontFamily: "alata",
-                borderWidth: 1,
-                borderColor: "#BBBBBB",
-                backgroundColor: "#F3F3F9",
-              }}
-              placeholderTextColor="grey"
-              placeholder="Email"
-              value={email}
-              onChangeText={(text) => setEmail(text)}
-            />
-            <TextInput
-              style={{
-                height: 40,
-                width: "100%",
-                borderColor: "gray",
-                borderWidth: 1,
-                borderRadius: 10,
-                marginBottom: 10,
-                paddingHorizontal: 10,
-                fontFamily: "alata",
-                borderWidth: 1,
-                borderColor: "#BBBBBB",
-                backgroundColor: "#F3F3F9",
-              }}
-              placeholderTextColor="grey"
-              placeholder="Password"
-              secureTextEntry
-              value={password}
-              onChangeText={(text) => setPassword(text)}
-            />
-
-            <TouchableOpacity
-              style={{
-                backgroundColor: "#007AFF",
-                paddingVertical: 12,
-                paddingHorizontal: 20,
-                borderRadius: 5,
-                alignSelf: "stretch",
-              }}
-              onPress={logUserIn}
-            >
-              <Text
-                style={{
-                  color: "#FFFFFF",
-                  fontSize: 18,
-                  fontWeight: "600",
-                  textAlign: "center",
-                }}
-              >
-                Log In
-              </Text>
-            </TouchableOpacity>
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                marginTop: 10,
-                marginBottom: 20,
-              }}
-            >
-              <Text style={{ marginRight: 5 }}>Don't have an account?</Text>
-              <Button
-                title="Sign Up"
-                onPress={() => {
-                  // Add your sign up functionality here
-                  setModalVisible(false);
-                  navigation.navigate("ProfileTypeSelect", { screenName });
-                }}
-              />
-            </View>
-            <TouchableOpacity
-              style={{
-                marginBottom: 10,
-                marginBottom: 20,
-              }}
-              onPress={() => {
-                // Add your forgot password functionality here
-                setModalVisible(false);
-                navigation.navigate("ResetPassword");
-              }}
-            >
-              <Text style={{ color: "#007AFF", fontSize: 16 }}>
-                Forgot Password?
-              </Text>
-            </TouchableOpacity>
-
-            <Button
-              title="Not Yet"
-              onPress={() => setModalVisible(!modalVisible)}
-              color="grey"
-            />
-          </View>
-        </Modal>
-      </SafeAreaView>
-    );
+    return <Login />;
   }
 
-  const renderInboxItem = ({ item }) => (
-    <View style={styles.itemContainer}>
-      <InboxCard navigation={navigation} user={user} item={item} />
-    </View>
-  );
+  const renderInboxItem = ({ item }) => {
+    return (
+      <View>
+        <InboxCard navigation={navigation} user={user} item={item} />
+        <View style={styles.separator} />
+      </View>
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -431,6 +234,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "white",
   },
+  separator: { height: 1, backgroundColor: "#e0e0e0" },
   list: {
     flex: 1,
     paddingHorizontal: 10,
