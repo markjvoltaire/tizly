@@ -25,13 +25,12 @@ const ProfileDetail = ({ route, navigation }) => {
 
   const profile = route.params.item;
 
-  console.log("profile", profile);
-
   async function getProfileService() {
     const resp = await supabase
       .from("services")
       .select("*")
-      .eq("user_id", profile.user_id);
+      .eq("user_id", profile.user_id)
+      .eq("deactivated", false);
 
     return resp;
   }
