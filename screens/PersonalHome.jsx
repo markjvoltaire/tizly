@@ -36,6 +36,7 @@ export default function PersonalHome({ navigation }) {
       .from("services")
       .select("*")
       .eq("deactivated", false)
+      .neq("user_id", user.user_id)
       .order("id", { ascending: false })
       .limit(3);
 
@@ -52,7 +53,8 @@ export default function PersonalHome({ navigation }) {
     const { data, error } = await supabase
       .from("services")
       .select("*")
-      .eq("deactivated", false);
+      .eq("deactivated", false)
+      .neq("user_id", user.user_id);
 
     if (error) {
       console.error("Error fetching For You data:", error.message);
