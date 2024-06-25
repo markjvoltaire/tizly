@@ -382,7 +382,7 @@ export default function Home({ navigation }) {
               marginBottom: 10,
             }}
           >
-            taskio
+            tizly{" "}
           </Text>
         </Pressable>
       </SafeAreaView>

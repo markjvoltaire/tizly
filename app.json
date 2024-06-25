@@ -14,12 +14,12 @@
         }
       ]
     ],
-    "version": "59",
+    "version": "60",
     "orientation": "portrait",
-    "icon": "./assets/taskio.png",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/TaskioSplash.png",
+      "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "black"
     },
@@ -30,7 +30,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.markjvoltaire.TizlyNative",
-      "buildNumber": "177",
+      "buildNumber": "178",
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "Allow access to photos to upload photos from your library."
       }

@@ -58,7 +58,7 @@ export async function sendPushNotification(
   const message = {
     to: tokenCode,
     sound: "default",
-    title: "Taskio",
+    title: "Tizly",
     body: title,
     data: { someData: "goes here" },
   };

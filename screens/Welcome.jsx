@@ -84,7 +84,7 @@ export default function Welcome({ navigation }) {
                 },
               ]}
             >
-              Taskio
+              tizly
             </Animated.Text>
 
             {/* {Tagline} */}

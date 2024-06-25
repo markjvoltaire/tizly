@@ -168,7 +168,7 @@ export default function PersonalHome({ navigation }) {
           marginBottom: 10,
         }}
       >
-        taskio
+        tizly
       </Text>
       <TextInput
         style={styles.textInput}
