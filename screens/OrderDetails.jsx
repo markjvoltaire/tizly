@@ -227,9 +227,12 @@ export default function OrderDetails({ route, navigation }) {
               <Text style={styles.buttonText}>Mark as Complete</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.modalButton}>
-              <Text style={styles.buttonText}>Cancel Order</Text>
-            </TouchableOpacity>
+            {/* <TouchableOpacity
+              onPress={() => console.log("HELLO")}
+              style={styles.modalButton}
+            >
+              <Text style={styles.buttonText}>Refund Order</Text>
+            </TouchableOpacity> */}
 
             <TouchableOpacity
               style={styles.modalButton}

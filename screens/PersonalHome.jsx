@@ -166,7 +166,7 @@ export default function PersonalHome({ navigation }) {
           marginBottom: 10,
         }}
       >
-        tizly
+        taskio
       </Text>
       <TextInput
         style={styles.textInput}
@@ -368,7 +368,7 @@ const styles = StyleSheet.create({
   },
   scrollItem: {
     width: 200,
-    height: 130,
+    height: 150,
     marginBottom: 5,
     backgroundColor: "#ccc",
     marginRight: 2,
