@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
-  Keyboard,
   SafeAreaView,
   Dimensions,
   Pressable,
@@ -18,7 +17,7 @@ import {
 } from "react-native";
 import { useUser } from "../context/UserContext";
 import { supabase } from "../services/supabase";
-import { useFocusEffect, useScrollToTop } from "@react-navigation/native"; // Import useScrollToTop
+import { useFocusEffect } from "@react-navigation/native";
 import { sendPushNotification } from "../services/notification";
 
 export default function InboxDetails({ route, navigation }) {
@@ -33,20 +32,17 @@ export default function InboxDetails({ route, navigation }) {
   const [threadId, setThreadId] = useState();
   const { user } = useUser();
 
-  async function getMessages() {
+  const getMessages = async () => {
     try {
       const userId = supabase.auth.currentUser.id;
       const resp = await supabase
         .from("messages")
         .select("*")
-        .in("sender", [profileDetails.user_id, userId]) // Separate strings for each field
+        .in("sender", [profileDetails.user_id, userId])
         .in("receiver", [profileDetails.user_id, userId])
         .order("created_at", { ascending: true });
 
-      // Assuming your response structure is like { data: [], error: null }
-      if (resp.error) {
-        throw new Error(resp.error.message);
-      }
+      if (resp.error) throw new Error(resp.error.message);
 
       if (resp.body.length === 0) {
         setIsThereMessages(false);
@@ -54,59 +50,64 @@ export default function InboxDetails({ route, navigation }) {
         setThreadId(resp.body[0].threadID);
         setIsThereMessages(true);
       }
-
-      return resp.data; // Assuming data is where the actual message data is stored
+      return resp.data;
     } catch (error) {
       console.error("Error fetching messages:", error);
-      return []; // or handle error as per your application's requirement
+      return [];
     }
-  }
+  };
+
   const sendMessage = async () => {
-    const userId = supabase.auth.currentUser.id;
+    try {
+      const userId = supabase.auth.currentUser.id;
+      const body = `New message from ${user.username}`;
+      const title = "New Message";
+      const tokenCode = profileDetails.expo_push_token;
 
-    const body = `New message from ${user.username}`;
-    console.log("body line 68", body);
-    const title = "New Message";
-    const tokenCode = profileDetails.expo_push_token;
+      if (messageText.trim() !== "") {
+        const res = await supabase.from("messages").insert([
+          {
+            type: "message",
+            sender: userId,
+            receiver: profileDetails.user_id,
+            message: messageText.trim(),
+            threadID: isThereMessages
+              ? threadId
+              : `${userId}${profileDetails.user_id}`,
+          },
+        ]);
 
-    if (messageText.trim() !== "") {
-      const res = await supabase.from("messages").insert([
-        {
-          type: "message",
-          sender: userId,
-          receiver: profileDetails.user_id,
-          message: messageText,
+        if (res.error) {
+          console.error("Error inserting message:", res.error);
+          Alert.alert("An error has occurred, please try again.");
+          return;
+        }
 
-          threadID:
-            isThereMessages === false
-              ? userId + profileDetails.user_id
-              : threadId,
-        },
-      ]);
-      if (res.error === null) {
         setMessages([
           ...messages,
           { sender: userId, message: messageText.trim() },
         ]);
-
         setMessageText("");
-        await sendPushNotification(body, title, tokenCode);
+
+        try {
+          await sendPushNotification(body, title, tokenCode);
+        } catch (notificationError) {
+          console.error("Error sending push notification:", notificationError);
+        }
       } else {
-        Alert.alert("An error has occured please try again");
+        Alert.alert("Please enter a message before sending.");
       }
-    } else {
-      Alert.alert("Please enter a message before sending.");
+    } catch (error) {
+      console.error("Error sending message:", error);
+      Alert.alert("An error has occurred, please try again.");
     }
   };
 
   const handleRefresh = async () => {
-    setRefreshing(true); // Set refreshing to true when refreshing starts
-    const retrieveMessages = async () => {
-      const resp = await getMessages();
-      setMessages(resp);
-      setLoading(false);
-    };
-    retrieveMessages();
+    setRefreshing(true);
+    const resp = await getMessages();
+    setMessages(resp);
+    setLoading(false);
     setRefreshing(false);
   };
 
@@ -117,16 +118,13 @@ export default function InboxDetails({ route, navigation }) {
       const fetchData = async () => {
         try {
           const resp = await getMessages();
-          if (isMounted) {
-            setMessages(resp);
-          }
+          if (isMounted) setMessages(resp);
         } catch (error) {
           console.error("Error fetching messages:", error);
         }
       };
 
       fetchData();
-
       return () => {
         isMounted = false;
       };
@@ -144,18 +142,12 @@ export default function InboxDetails({ route, navigation }) {
 
   if (loading) {
     return (
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: "white",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
+      <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" />
       </View>
     );
   }
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -173,14 +165,8 @@ export default function InboxDetails({ route, navigation }) {
             }
             contentContainerStyle={styles.messagesContainer}
           >
-            <View
-              style={{
-                flex: 1,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Text style={{ fontFamily: "alata", fontSize: 16 }}>
+            <View style={styles.noMessagesContainer}>
+              <Text style={styles.noMessagesText}>
                 Be the first to start the conversation
               </Text>
             </View>
@@ -211,27 +197,17 @@ export default function InboxDetails({ route, navigation }) {
             <View style={{ height: 100 }} />
           </ScrollView>
         )}
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-            paddingHorizontal: 16,
-            paddingVertical: 8,
-            backgroundColor: "white",
-          }}
-        >
+        <View style={styles.inputContainer}>
           <TextInput
             placeholderTextColor="#080A0B"
             style={styles.commentInput}
             placeholder="Add a message "
             multiline
             value={messageText}
-            onChangeText={(text) => setMessageText(text)}
+            onChangeText={setMessageText}
           />
-
           <Pressable
-            onPress={() => sendMessage()}
+            onPress={sendMessage}
             style={{
               backgroundColor: "green",
               width: screenWidth * 0.25,
@@ -240,15 +216,7 @@ export default function InboxDetails({ route, navigation }) {
               borderRadius: 10,
             }}
           >
-            <Text
-              style={{
-                color: "white",
-                fontWeight: "800",
-                alignSelf: "center",
-              }}
-            >
-              Send
-            </Text>
+            <Text style={styles.sendButtonText}>Send</Text>
           </Pressable>
         </View>
       </View>
@@ -305,33 +273,24 @@ const Message = ({ sender, children, message, user, navigation }) => {
     sender === user.user_id ? styles.userMessage : styles.businessMessage;
 
   return (
-    <>
-      <>
-        <Pressable onLongPress={() => console.log("Hello")}>
-          <View style={[styles.messageContainer, messageStyle]}>
-            <Text
-              style={{
-                color: sender === user.user_id ? null : "white",
-                fontWeight: "600",
-                marginBottom: 5,
-              }}
-            >
-              {children}
-            </Text>
-            {/* Move time rendering here */}
-            <Text
-              style={{
-                color: sender === user.user_id ? null : "white",
-                fontSize: 11,
-                fontWeight: "400",
-              }}
-            >
-              {formattedDate}
-            </Text>
-          </View>
-        </Pressable>
-      </>
-    </>
+    <Pressable onLongPress={() => console.log("Hello")}>
+      <View style={[styles.messageContainer, messageStyle]}>
+        <Text
+          style={
+            sender === user.user_id ? styles.userText : styles.businessText
+          }
+        >
+          {children}
+        </Text>
+        <Text
+          style={
+            sender === user.user_id ? styles.userText : styles.businessText
+          }
+        >
+          {formattedDate}
+        </Text>
+      </View>
+    </Pressable>
   );
 };
 
@@ -340,9 +299,24 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "white",
   },
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: "white",
+    justifyContent: "center",
+    alignItems: "center",
+  },
   messagesContainer: {
     flexGrow: 1,
     padding: 20,
+  },
+  noMessagesContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  noMessagesText: {
+    fontFamily: "alata",
+    fontSize: 16,
   },
   commentInput: {
     alignSelf: "center",
@@ -353,7 +327,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#F3F3F9",
     width: 250,
     height: 40,
-
     fontSize: 13,
     paddingTop: 12,
     justifyContent: "center",
@@ -372,34 +345,28 @@ const styles = StyleSheet.create({
     backgroundColor: "green",
     alignSelf: "flex-start",
   },
-  sender: {
-    fontWeight: "bold",
+  userText: {
+    color: "black",
+    fontWeight: "600",
+    marginBottom: 5,
+  },
+  businessText: {
+    color: "white",
+    fontWeight: "600",
     marginBottom: 5,
   },
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderTopWidth: 1,
-    borderTopColor: "#ccc",
+    justifyContent: "space-between",
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    backgroundColor: "white",
   },
-  textInput: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 20,
-    paddingHorizontal: 15,
-    marginRight: 10,
-  },
-  sendButton: {
-    backgroundColor: "#007bff",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 20,
-  },
+  sendButton: {},
   sendButtonText: {
-    color: "#fff",
-    fontWeight: "bold",
+    color: "white",
+    fontWeight: "800",
+    alignSelf: "center",
   },
 });
