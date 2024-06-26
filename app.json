@@ -37,9 +37,10 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/taskio",
+        "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.markjvoltaire.TizlyNative"
     },
     "web": {
       "favicon": "./assets/favicon.png"
