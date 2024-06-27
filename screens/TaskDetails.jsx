@@ -196,8 +196,6 @@ export default function TaskDetails({ route, navigation }) {
       : navigation.navigate("Messages");
   };
 
-  console.log("profile", profile);
-
   return (
     <View style={styles.container}>
       <View style={{ marginBottom: 25 }}>

@@ -25,11 +25,14 @@ export default function SignUp({ route, navigation }) {
     // Input validation
     if (password.length < 8) {
       Alert.alert("Password should be 8 or more characters");
+      setModal(false);
       return;
     }
 
     if (!email) {
       Alert.alert("Please fill in all field inputs");
+      setModal(false);
+
       return;
     }
 
@@ -63,12 +66,14 @@ export default function SignUp({ route, navigation }) {
         Alert.alert(error.message);
         console.error("Error during sign-up:", error);
       }
+      setModal(false);
 
       return { user, error };
     } catch (error) {
       setModal(false);
       console.error("An error occurred during sign-up:", error);
       Alert.alert("An error occurred. Please try again later.");
+
       return { user: null, error };
     }
   };

@@ -124,7 +124,7 @@ export default function Auth() {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen
           name="HomeScreen"
-          component={user.type === "business" ? Home : PersonalHome}
+          component={PersonalHome}
           options={{ tabBarVisible: false }} // Hide tab bar for this screen
         />
 
@@ -405,10 +405,53 @@ export default function Auth() {
     );
   };
 
-  const OfferStack = () => {
+  const CommunityStack = () => {
     return (
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen
+          name="HomeScreen"
+          component={Home}
+          options={{ tabBarVisible: false }} // Hide tab bar for this screen
+        />
+
+        <Stack.Screen
+          name="TaskDetails"
+          component={TaskDetails}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Task Details", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }} // Hide tab bar for this screen
+        />
+
+        <Stack.Screen
+          name="InboxDetails"
+          component={InboxDetails}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Message Thread", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+
+        <Stack.Screen
+          name="ProfileDetail"
+          component={ProfileDetail}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Profile Details", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+            headerTransparent: true,
+          }}
+        />
+
+        {/* <Stack.Screen
           name="OffersScreen"
           component={Offers}
           options={{
@@ -454,7 +497,7 @@ export default function Auth() {
             headerBackTitle: "Back", // Customizing the back button text
             headerTintColor: "black", // Changing the color of the back button text
           }}
-        />
+        /> */}
       </Stack.Navigator>
     );
   };
@@ -546,6 +589,54 @@ export default function Auth() {
             headerTintColor: "black", // Changing the color of the back button text
           }}
         />
+
+        <Stack.Screen
+          name="OffersScreen"
+          component={Offers}
+          options={{
+            headerShown: true,
+
+            headerTitle: "Orders", // Customizing the header title
+            tabBarVisible: false,
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+
+        <Stack.Screen
+          name="OrderDetails"
+          component={OrderDetails}
+          options={{
+            headerShown: true,
+
+            tabBarVisible: false,
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+
+        <Stack.Screen
+          name="LeaveReview"
+          component={LeaveReview}
+          options={{
+            headerShown: true,
+            headerTitle: "Review",
+            tabBarVisible: false,
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+
+        <Stack.Screen
+          name="OrderConfirmation"
+          component={OrderConfirmation}
+          options={{
+            tabBarVisible: false,
+            headerTitle: "Order Details", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
       </Stack.Navigator>
     );
   };
@@ -623,18 +714,18 @@ export default function Auth() {
           tabBarIcon: ({ color, size, focused }) =>
             focused ? (
               <Image
-                source={require("../assets/Calendar.png")}
+                source={require("../assets/communityActive.png")}
                 style={{ width: size, height: size }}
               />
             ) : (
               <Image
-                source={require("../assets/CalendarNotActive.png")}
+                source={require("../assets/communityNotActive.png")}
                 style={{ width: size, height: size }}
               />
             ),
         }}
         name="Orders"
-        component={OfferStack}
+        component={CommunityStack}
       />
 
       <Tab.Screen

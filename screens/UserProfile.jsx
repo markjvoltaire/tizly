@@ -247,6 +247,17 @@ const UserProfile = ({ route, navigation }) => {
           <Text style={styles.optionText}>Edit Profile</Text>
         </TouchableOpacity>
 
+        <TouchableOpacity
+          onPress={() => navigation.navigate("OffersScreen")}
+          style={styles.optionContainer}
+        >
+          <Image
+            source={require("../assets/CalendarNotActive.png")}
+            style={styles.icon}
+          />
+          <Text style={styles.optionText}>My Orders</Text>
+        </TouchableOpacity>
+
         {user.type === "business" ? (
           <TouchableOpacity
             onPress={() => navigation.navigate("MyOffers")}

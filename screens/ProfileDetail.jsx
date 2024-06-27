@@ -118,26 +118,23 @@ const ProfileDetail = ({ route, navigation }) => {
               <Text style={styles.statValue}>{ratingAverage}</Text>
               <Text style={styles.statLabel}>Rating</Text>
             </View>
-            {/* <View style={styles.statItem}>
-              <Text style={styles.statValue}>15</Text>
-              <Text style={styles.statLabel}>Reviews</Text>
-            </View> */}
+
             <View style={styles.statItem}>
               <Text style={styles.statValue}>{bookingCount}</Text>
               <Text style={styles.statLabel}>Bookings</Text>
             </View>
           </View>
         </View>
-        {profile.type === "business" ? (
-          <TouchableOpacity
-            onPress={() =>
-              navigation.navigate("InboxDetails", { profileDetails: profile })
-            }
-            style={styles.messageButton}
-          >
-            <Text style={styles.messageButtonText}>Send Message</Text>
-          </TouchableOpacity>
-        ) : null}
+
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate("InboxDetails", { profileDetails: profile })
+          }
+          style={styles.messageButton}
+        >
+          <Text style={styles.messageButtonText}>Send Message</Text>
+        </TouchableOpacity>
+
         <View style={styles.separator} />
         <View style={styles.contentContainer}>
           <Text style={styles.sectionTitle}>Services</Text>
