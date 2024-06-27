@@ -1,292 +1,279 @@
+import React, { useState, useEffect } from "react";
 import {
+  Alert,
   StyleSheet,
   Text,
   View,
   Dimensions,
-  Alert,
-  ScrollView,
-  RefreshControl,
-  ActivityIndicator,
   Pressable,
   Image,
+  ScrollView,
+  Modal,
+  TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
-import React, { useEffect, useState } from "react";
 import { supabase } from "../services/supabase";
 import { useUser } from "../context/UserContext";
+import { RefreshControl } from "react-native";
 
-export default function MyServices({ navigation }) {
-  const [taskList, setTaskList] = useState([]);
-  const [refreshing, setRefreshing] = useState(false);
-  const screenWidth = Dimensions.get("window").width;
-  const screenHeight = Dimensions.get("window").height;
+const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
-  async function getTasks() {
-    const userId = supabase.auth.currentUser.id;
-    let { data: tasks, error } = await supabase
-      .from("tasks")
+const MyServices = ({ navigation }) => {
+  const { user } = useUser();
+  const [serviceList, setServiceList] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Function to fetch services from Supabase
+  const fetchServices = async () => {
+    setIsLoading(true);
+    const { data, error } = await supabase
+      .from("services")
       .select("*")
-      .eq("taskCreator", userId)
+      .eq("user_id", user.user_id)
+      .eq("deactivated", false)
       .order("id", { ascending: false });
-    return tasks;
-  }
 
-  const fetchTasks = async () => {
-    const resp = await getTasks();
-    console.log("resp", resp);
-    setTaskList(resp);
+    setIsLoading(false);
+
+    if (error) {
+      console.error("Error fetching data:", error.message);
+      Alert.alert("Error", "Failed to fetch Services");
+    } else {
+      setServiceList(data);
+      console.log("data", data);
+    }
   };
 
-  const ServiceItem = ({ service, navigation }) => {
-    const [loading, setLoading] = useState(true);
-    const [serviceUser, setServiceUser] = useState({});
+  // Function to delete a service
+  async function deleteTask(task) {
+    const { data, error } = await supabase
+      .from("services")
+      .update({ deactivated: true })
+      .eq("id", task.id)
+      .eq("user_id", user.user_id);
 
-    const date = new Date(service.created_at);
-    const currentDate = new Date();
-    const timeDifference = currentDate.getTime() - date.getTime();
-    const secondsDifference = Math.floor(timeDifference / 1000);
-    const minutesDifference = Math.floor(secondsDifference / 60);
-    const hoursDifference = Math.floor(minutesDifference / 60);
-    const daysDifference = Math.floor(hoursDifference / 24);
-
-    let formattedDate;
-
-    if (daysDifference > 7) {
-      const monthNames = [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
-      ];
-
-      const month = date.getMonth();
-      const monthName = monthNames[month];
-      formattedDate = `${monthName} ${date.getDate()}, ${date.getFullYear()}`;
-    } else if (daysDifference > 0) {
-      formattedDate =
-        daysDifference === 1 ? "1 day ago" : `${daysDifference} days ago`;
-    } else if (hoursDifference > 0) {
-      formattedDate =
-        hoursDifference === 1 ? "1 hour ago" : `${hoursDifference} hours ago`;
-    } else if (minutesDifference > 0) {
-      formattedDate =
-        minutesDifference === 1
-          ? "1 minute ago"
-          : `${minutesDifference} minutes ago`;
+    if (error) {
+      Alert.alert("Error", "Failed to delete service");
     } else {
-      formattedDate = "Just now";
-    }
-
-    async function getUser() {
-      const resp = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("user_id", service.taskCreator)
-        .single()
-        .limit(1);
-
-      return resp;
-    }
-
-    const fetchUser = async () => {
-      const resp = await getUser();
-      setServiceUser(resp.body);
-      setLoading(false);
-    };
-
-    const createAlert = async (service) =>
-      Alert.alert(
-        "Report Task",
-        "This action cannot be undone. Are you sure you want to delete?",
-        [
-          {
-            text: "Cancel",
-            onPress: () => console.log("Cancel Pressed"),
-            style: "cancel",
-          },
-          {
-            text: "Report",
-            onPress: async () => {
-              console.log("REPORT");
-
-              // Add your delete logic here
-            },
-          },
-        ]
-      );
-
-    useEffect(() => {
-      fetchUser();
-    }, []);
-
-    if (loading) {
-      return (
-        <View style={{ flex: 1 }}>
-          <ActivityIndicator />
-        </View>
+      Alert.alert("Service Deleted");
+      setModalVisible(false);
+      // Update local state to remove the deleted service
+      setServiceList((prevList) =>
+        prevList.filter((item) => item.id !== task.id)
       );
     }
 
-    return (
-      <Pressable
-        style={{ backgroundColor: "white" }}
-        onPress={() =>
-          service.completed === "F"
-            ? navigation.navigate("TaskDetails", { service, serviceUser })
-            : createAlert(service)
-        }
-      >
-        <View style={{ padding: 10, marginBottom: 1 }}>
-          <View style={{ flexDirection: "row" }}>
-            <Text
-              style={{
-                fontSize: 17,
-                fontWeight: "bold",
-                marginBottom: 10,
-                color: "#313131",
+    return data;
+  }
 
-                width: screenWidth * 0.8,
-                marginRight: 20,
-              }}
-            >
-              {service.taskDescription}
-            </Text>
-
-            <Image
-              source={require("../assets/moreButton.png")}
-              style={styles.icon}
-            />
-          </View>
-
-          <View style={styles.optionContainer}>
-            <Image
-              source={{ uri: serviceUser.profileimage }}
-              style={styles.profileimage}
-            />
-            <Text style={{ fontSize: 14, color: "#313131" }}>
-              {serviceUser.username}
-            </Text>
-          </View>
-
-          <View style={styles.optionContainer}>
-            <Image
-              source={require("../assets/CalendarNotActive.png")}
-              style={styles.icon}
-            />
-            <Text style={{ fontSize: 14, color: "#313131" }}>
-              {formattedDate}
-            </Text>
-          </View>
-
-          <View style={styles.optionContainer}>
-            <Image
-              source={require("../assets/Location.png")}
-              style={styles.icon}
-            />
-            <View style={{ flexDirection: "row" }}>
-              <Text
-                style={{
-                  fontSize: 14,
-                  color: "#313131",
-
-                  width: screenWidth * 0.5,
-                  marginRight: 30,
-                }}
-              >
-                {service.city}, {service.state}
-              </Text>
-
-              <View
-                style={{
-                  width: screenWidth * 0.2,
-                  flexDirection: "row",
-                  justifyContent: "center",
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 12,
-                    color: "black",
-                    fontWeight: "800",
-                    alignSelf: "center",
-                  }}
-                >
-                  {service.completed === "F"
-                    ? "Open"
-                    : service.completed === "Y"
-                    ? "Completed"
-                    : null}
-                </Text>
-              </View>
-            </View>
-          </View>
-        </View>
-      </Pressable>
+  // Function to show delete confirmation alert
+  const showDeleteAlert = (task) => {
+    Alert.alert(
+      "Warning!",
+      "This action cannot be undone. Are you sure you want to delete?",
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel",
+        },
+        {
+          style: "destructive",
+          text: "Delete",
+          onPress: async () => {
+            await deleteTask(task);
+          },
+        },
+      ]
     );
   };
 
+  // Function to open modal and set selected item
+  const openModal = (item) => {
+    setSelectedItem(item);
+    setModalVisible(true);
+  };
+
+  // Function to handle refresh of services
+  const refreshServices = () => {
+    fetchServices(); // Call fetchServices to refresh the list
+  };
+
   useEffect(() => {
-    fetchTasks();
-  }, []);
+    fetchServices(); // Initial fetch of services when component mounts
+  }, [user.user_id]); // Re-fetch when user_id changes
 
   return (
-    <View style={{ flex: 1 }}>
-      <ScrollView
-        contentContainerStyle={styles.servicesContainer}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={fetchTasks} />
-        }
-      >
-        {taskList.length === 0 ? (
-          <Text style={styles.emptyMessage}>No tasks available.</Text>
-        ) : (
-          taskList.map((service) => (
-            <View style={{ marginBottom: 3 }} key={service.id}>
-              <ServiceItem navigation={navigation} service={service} />
+    <ScrollView
+      style={styles.container}
+      refreshControl={
+        <RefreshControl refreshing={isLoading} onRefresh={refreshServices} />
+      }
+    >
+      {isLoading && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="green" />
+          <Text>Loading services...</Text>
+        </View>
+      )}
+      {!isLoading && serviceList.length === 0 && (
+        <View style={styles.noServicesContainer}>
+          <Text style={styles.noServicesText}>You have no services!.</Text>
+        </View>
+      )}
+      {!isLoading &&
+        serviceList.map((item, index) => (
+          <Pressable
+            key={index}
+            style={styles.pressable}
+            onPress={() => openModal(item)}
+          >
+            <View style={styles.card}>
+              <Image source={{ uri: item.thumbnail }} style={styles.image} />
+              <Text style={styles.serviceTitle}>{item.title}</Text>
+              <Text style={styles.price}>From ${item.price}</Text>
             </View>
-          ))
-        )}
-      </ScrollView>
-    </View>
+          </Pressable>
+        ))}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Manage Service</Text>
+            {selectedItem && (
+              <>
+                <Text style={styles.modalServiceTitle}>
+                  {selectedItem.title}
+                </Text>
+                <Text style={styles.modalPrice}>
+                  From ${selectedItem.price}
+                </Text>
+                <TouchableOpacity
+                  onPress={() => showDeleteAlert(selectedItem)}
+                  style={[styles.modalButton, styles.deleteButton]}
+                >
+                  <Text style={styles.buttonText}>Delete Service</Text>
+                </TouchableOpacity>
+              </>
+            )}
+            <TouchableOpacity
+              onPress={() => setModalVisible(false)}
+              style={styles.modalButton}
+            >
+              <Text style={styles.cancelButtonText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    </ScrollView>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  servicesContainer: {
-    flexGrow: 1,
-    padding: 10,
+  container: {
+    flex: 1,
     backgroundColor: "white",
   },
-  emptyMessage: {
-    textAlign: "center",
-    marginTop: 20,
+  pressable: {
+    marginBottom: 30,
+  },
+  card: {
+    elevation: 5,
+    backgroundColor: "#fff",
+    borderRadius: 3,
+    padding: 10,
+  },
+  image: {
+    width: screenWidth * 0.96,
+    height: screenHeight * 0.25,
+    marginBottom: 5,
+    backgroundColor: "#ccc",
+    borderRadius: 3,
+    resizeMode: "cover",
+  },
+  serviceTitle: {
     fontSize: 16,
-    color: "#888",
+    fontWeight: "bold",
+    marginBottom: 5,
   },
-  optionContainer: {
-    flexDirection: "row",
+  price: {
+    fontWeight: "600",
+    fontSize: 13,
+    marginBottom: 6,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
     alignItems: "center",
-    marginBottom: 10,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
-  icon: {
-    width: 22,
-    height: 22,
-    marginRight: 10,
+  modalContent: {
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 10,
+    alignItems: "center",
+    width: 350,
   },
-  profileimage: {
-    width: 24,
-    height: 24,
-    marginRight: 10,
-    borderRadius: 20,
-    backgroundColor: "grey",
-    borderWidth: 1,
-    borderColor: "green",
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+  modalServiceTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 5,
+  },
+  modalPrice: {
+    fontWeight: "600",
+    fontSize: 13,
+    marginBottom: 15,
+  },
+  modalButton: {
+    backgroundColor: "white",
+    height: screenHeight * 0.07,
+    width: screenWidth * 0.6,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 20,
+    borderWidth: 0.4,
+  },
+  deleteButton: {
+    backgroundColor: "red",
+    marginBottom: 25,
+  },
+  buttonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 18,
+  },
+  cancelButtonText: {
+    color: "black",
+    fontWeight: "bold",
+    fontSize: 18,
+  },
+  noServicesContainer: {
+    flex: 1,
+    top: 200,
+    alignItems: "center",
+    height: screenHeight,
+  },
+  noServicesText: {
+    fontSize: 18,
+    color: "gray",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
+
+export default MyServices;

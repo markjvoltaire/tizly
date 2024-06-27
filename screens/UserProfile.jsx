@@ -248,7 +248,7 @@ const UserProfile = ({ route, navigation }) => {
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => navigation.navigate("OffersScreen")}
+          onPress={() => navigation.navigate("Orders")}
           style={styles.optionContainer}
         >
           <Image
@@ -260,7 +260,7 @@ const UserProfile = ({ route, navigation }) => {
 
         {user.type === "business" ? (
           <TouchableOpacity
-            onPress={() => navigation.navigate("MyOffers")}
+            onPress={() => navigation.navigate("MyServices")}
             style={styles.optionContainer}
           >
             <Image
@@ -272,7 +272,7 @@ const UserProfile = ({ route, navigation }) => {
         ) : null}
 
         <TouchableOpacity
-          onPress={() => navigation.navigate("MyServices")}
+          onPress={() => navigation.navigate("MyTasks")}
           style={styles.optionContainer}
         >
           <Image source={require("../assets/Wallet.png")} style={styles.icon} />

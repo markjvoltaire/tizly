@@ -21,10 +21,8 @@ import SignUp from "../screens/SignUp";
 
 import ResetPassword from "../screens/ResetPassword";
 import TaskSearch from "../screens/TaskSearch";
-import Orders from "../screens/Offers";
 import OrderConfirmation from "../screens/OrderConfirmation";
 import OrderDetails from "../screens/OrderDetails";
-import MyServices from "../screens/MyServices";
 import Post from "../screens/Post";
 
 import AddTime from "../screens/AddDate";
@@ -32,7 +30,7 @@ import AddPrice from "../screens/AddDate";
 import TaskDetails from "../screens/TaskDetails";
 import AddLocation from "../screens/AddLocation";
 import ReviewTask from "../screens/ReviewTask";
-import Offers from "../screens/Offers";
+import Offers from "../screens/MyOrders";
 import EditLocation from "../screens/EditLocation";
 import EditProfile from "../screens/EditProfile";
 import Login from "../screens/Login";
@@ -44,7 +42,11 @@ import SelectTime from "../screens/SelectTime";
 import ServiceDetails from "../screens/ServiceDetails";
 import ConfirmBooking from "../screens/ConfirmBooking";
 import LeaveReview from "../screens/LeaveReview";
-import MyOffers from "../screens/MyOffers";
+
+import MyOffers from "../screens/MyServices";
+import MyServices from "../screens/MyServices";
+import MyOrders from "../screens/MyOrders";
+import MyTasks from "../screens/MyTasks";
 
 export default function Auth() {
   const Stack = createNativeStackNavigator();
@@ -214,7 +216,7 @@ export default function Auth() {
 
         <Stack.Screen
           name="Orders"
-          component={Orders}
+          component={MyOrders}
           options={{
             tabBarVisible: false,
             headerShown: true,
@@ -516,33 +518,6 @@ export default function Auth() {
         />
 
         <Stack.Screen
-          name="MyServices"
-          component={MyServices}
-          options={{
-            tabBarVisible: false,
-            headerShown: true,
-            headerBackTitle: "Back", // Customizing the back button text
-            headerTintColor: "black", // Changing the color of the back button text
-            headerTitle: "My Tasks", // Customizing the header title
-            headerBackTitle: "Back", // Customizing the back button text
-            headerTintColor: "black", // Changing the color of the back button text
-          }}
-        />
-
-        <Stack.Screen
-          name="MyOffers"
-          component={MyOffers}
-          options={{
-            tabBarVisible: false,
-            headerShown: true,
-            headerBackTitle: "Back", // Customizing the back button text
-            headerTintColor: "black", // Changing the color of the back button text
-            headerTitle: "My Services", // Customizing the header title
-            headerBackTitle: "Back", // Customizing the back button text
-            headerTintColor: "black", // Changing the color of the back button text
-          }}
-        />
-        <Stack.Screen
           name="TaskDetails"
           component={TaskDetails}
           options={{
@@ -591,12 +566,35 @@ export default function Auth() {
         />
 
         <Stack.Screen
-          name="OffersScreen"
-          component={Offers}
+          name="Orders"
+          component={MyOrders}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Orders", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+
+        <Stack.Screen
+          name="MyServices"
+          component={MyServices}
           options={{
             headerShown: true,
+            headerTitle: "My Services", // Customizing the header title
+            tabBarVisible: false,
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
 
-            headerTitle: "Orders", // Customizing the header title
+        <Stack.Screen
+          name="MyTasks"
+          component={MyTasks}
+          options={{
+            headerShown: true,
+            headerTitle: "My Tasks", // Customizing the header title
             tabBarVisible: false,
             headerBackTitle: "Back", // Customizing the back button text
             headerTintColor: "black", // Changing the color of the back button text
@@ -607,8 +605,8 @@ export default function Auth() {
           name="OrderDetails"
           component={OrderDetails}
           options={{
+            headerTitle: "Order details", // Customizing the header title
             headerShown: true,
-
             tabBarVisible: false,
             headerBackTitle: "Back", // Customizing the back button text
             headerTintColor: "black", // Changing the color of the back button text

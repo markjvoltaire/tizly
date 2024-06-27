@@ -196,14 +196,15 @@ export default function OrderDetails({ route, navigation }) {
             </TouchableOpacity>
           )}
 
-        {order.seller_id === user.user_id && (
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => setManageModal(true)}
-          >
-            <Text style={styles.buttonText}>Manage Order</Text>
-          </TouchableOpacity>
-        )}
+        {order.seller_id === user.user_id &&
+          order.orderStatus !== "complete" && (
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => setManageModal(true)}
+            >
+              <Text style={styles.buttonText}>Manage Order</Text>
+            </TouchableOpacity>
+          )}
 
         <TouchableOpacity style={styles.button} onPress={handleReportPress}>
           <Text style={styles.buttonText}>Report Order</Text>
@@ -226,13 +227,6 @@ export default function OrderDetails({ route, navigation }) {
             >
               <Text style={styles.buttonText}>Mark as Complete</Text>
             </TouchableOpacity>
-
-            {/* <TouchableOpacity
-              onPress={() => console.log("HELLO")}
-              style={styles.modalButton}
-            >
-              <Text style={styles.buttonText}>Refund Order</Text>
-            </TouchableOpacity> */}
 
             <TouchableOpacity
               style={styles.modalButton}

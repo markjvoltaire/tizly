@@ -16,7 +16,7 @@ import { useUser } from "../context/UserContext";
 import LottieView from "lottie-react-native";
 import { getUser } from "../services/user";
 
-export default function Offers({ navigation }) {
+export default function MyOrders({ navigation }) {
   const { user } = useUser();
   const [orderList, setOrderList] = useState([]);
   const [loading, setLoading] = useState(true);
