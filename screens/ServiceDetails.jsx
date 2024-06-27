@@ -121,7 +121,7 @@ export default function ServiceDetails({ route, navigation }) {
             }}
             source={{ uri: businessProfile.profileimage }}
           />
-          <Text style={{ top: 4, fontWeight: "700" }}>
+          <Text style={{ top: 4, fontWeight: "700", fontSize: 17 }}>
             {businessProfile.username}
           </Text>
         </View>
@@ -166,7 +166,7 @@ export default function ServiceDetails({ route, navigation }) {
           </Text>
 
           <Text style={{ color: "white", fontWeight: "600", fontSize: 18 }}>
-            ${route.params.item.price}
+            from ${route.params.item.price}
           </Text>
         </View>
 
@@ -181,7 +181,7 @@ export default function ServiceDetails({ route, navigation }) {
           </View>
 
           <Text
-            style={{ fontSize: 18, margin: 10, fontWeight: "500", bottom: 0 }}
+            style={{ fontSize: 18, margin: 10, fontWeight: "500", bottom: 10 }}
           >
             Service Description
           </Text>

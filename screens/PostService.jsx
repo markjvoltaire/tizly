@@ -4,7 +4,6 @@ import {
   Text,
   TextInput,
   View,
-  Button,
   Image,
   TouchableOpacity,
   ScrollView,
@@ -13,8 +12,8 @@ import {
   Platform,
   Alert,
   Modal,
-  Pressable,
   Dimensions,
+  Switch,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { supabase } from "../services/supabase";
@@ -27,16 +26,19 @@ export default function PostService() {
   const [price, setPrice] = useState("");
   const [imageData, setImageData] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [byHour, setByHour] = useState(false);
   const { user } = useUser();
-  let height = Dimensions.get("window").height;
-  let width = Dimensions.get("window").width;
+  const height = Dimensions.get("window").height;
+  const width = Dimensions.get("window").width;
+
+  console.log("byHour", byHour);
 
   const pickImage = async () => {
     const permissionResult =
       await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (permissionResult.granted === false) {
-      alert("You've refused to allow this app to access your photos!");
+      Alert.alert("You've refused to allow this app to access your photos!");
       return;
     }
 
@@ -92,16 +94,22 @@ export default function PostService() {
           title: title,
           thumbnail: resp.secure_url,
           price: price,
+          byHour: byHour,
         },
       ]);
 
+      console.log("data", data);
+      console.log("error", error);
+
       Alert.alert("Your Service Was Added");
       setModalVisible(false);
-      setDescription();
-      setThumbnail();
-      setPrice();
-      setTitle();
-      setImageData();
+      setDescription("");
+      setThumbnail(null);
+      setPrice("");
+      setTitle("");
+      setImageData(null);
+      setByHour(false);
+      return data;
     } else {
       console.log("Upload to Cloudinary failed.");
       handleUploadFailure();
@@ -117,13 +125,14 @@ export default function PostService() {
     Alert.alert("An error occurred during the upload");
   };
 
-  const handleClear = async () => {
+  const handleClear = () => {
     console.log("CLEAR");
-    setDescription();
-    setImageData();
-    setPrice();
-    setThumbnail();
-    setTitle();
+    setDescription("");
+    setImageData(null);
+    setPrice("");
+    setThumbnail(null);
+    setTitle("");
+    setByHour(false);
   };
 
   const handleSubmit = async () => {
@@ -132,6 +141,7 @@ export default function PostService() {
       thumbnail,
       description,
       price,
+      byHour,
     };
 
     if (!description || !imageData || !title || !thumbnail || !price) {
@@ -154,9 +164,7 @@ export default function PostService() {
         animationType="slide"
         transparent={true}
         visible={modalVisible}
-        onRequestClose={() => {
-          // Handle modal close if needed
-        }}
+        onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
@@ -201,7 +209,7 @@ export default function PostService() {
 
             <Text style={styles.label}>Service Description</Text>
             <TextInput
-              style={styles.inputDesciption}
+              style={styles.inputDescription}
               value={description}
               onChangeText={setDescription}
               placeholder="Describe your service in detail, highlighting key features, benefits, and any unique aspects."
@@ -216,6 +224,12 @@ export default function PostService() {
               onChangeText={setPrice}
               keyboardType="numeric"
             />
+
+            <View style={styles.switchContainer}>
+              <Text style={styles.label}>Charge by the hour</Text>
+              <Switch value={byHour} onValueChange={setByHour} />
+            </View>
+
             <View style={{ paddingBottom: 50 }}>
               <TouchableOpacity
                 onPress={handleSubmit}
@@ -285,7 +299,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginVertical: 8,
   },
-  inputDesciption: {
+  inputDescription: {
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 4,
@@ -319,16 +333,21 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
   },
+  switchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginVertical: 12,
+  },
   modalContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContent: {
     backgroundColor: "white",
     padding: 10,
-
     borderRadius: 10,
   },
 });

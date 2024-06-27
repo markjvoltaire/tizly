@@ -22,11 +22,9 @@ export default function ConfirmBooking({ route, navigation }) {
   const service = route.params.service;
   const [loading, setLoading] = useState(false);
   const [processing, setProcessing] = useState(false);
+  const [hours, setHours] = useState(1); // Default to 1 hour
   const stripe = useStripe();
   const { user } = useUser();
-
-  // Get screen dimensions
-  const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
   // Convert selectedDate to a readable format
   const formattedDate = new Date(selectedDate).toLocaleDateString();
@@ -37,7 +35,6 @@ export default function ConfirmBooking({ route, navigation }) {
     const body = `🎉 Great news! You've been booked.`;
     const title = "New Booking";
     try {
-      //   setAddingCarModal(true);
       const newOrder = {
         seller_id: route.params.service.user_id,
         purchaserId: user.user_id,
@@ -46,6 +43,7 @@ export default function ConfirmBooking({ route, navigation }) {
         time: selectedTime,
         serviceId: service.id,
         serviceTitle: service.title,
+        hours: hours, // Include selected hours in the order
       };
       const resp = await supabase.from("orders").insert([newOrder]);
       await sendPushNotification(body, title, tokenCode);
@@ -61,11 +59,9 @@ export default function ConfirmBooking({ route, navigation }) {
     setProcessing(true);
 
     try {
-      // sending request
-
       const response = await fetch("https://tizlyexpress.onrender.com/pay", {
         method: "POST",
-        body: JSON.stringify({ servicePrice: service.price }),
+        body: JSON.stringify({ servicePrice: service.price * hours }), // Multiply price by hours if byHour is true
         headers: {
           "Content-Type": "application/json",
         },
@@ -75,7 +71,6 @@ export default function ConfirmBooking({ route, navigation }) {
         Alert.alert(data.message);
         setLoading(false); // Set loading state to false
         setProcessing(false);
-
         return;
       }
       const clientSecret = data.clientSecret;
@@ -87,7 +82,6 @@ export default function ConfirmBooking({ route, navigation }) {
         Alert.alert(initSheet.error.message);
         setLoading(false); // Set loading state to false
         setProcessing(false);
-
         return;
       }
       const presentSheet = await stripe.presentPaymentSheet({
@@ -114,12 +108,6 @@ export default function ConfirmBooking({ route, navigation }) {
     }
   };
 
-  // Function to handle booking action (can be replaced with actual booking logic)
-  const handleBookNow = () => {
-    // Implement booking logic here
-    alert("Booking confirmed!");
-  };
-
   return (
     <View style={styles.container}>
       <View style={styles.detailsContainer}>
@@ -127,25 +115,50 @@ export default function ConfirmBooking({ route, navigation }) {
           <Image style={styles.thumbnail} source={{ uri: service.thumbnail }} />
           <View style={styles.textDetails}>
             <Text style={styles.title}>{service.title}</Text>
-
             <Text style={styles.detailText}>Date: {formattedDate}</Text>
             <Text style={styles.detailText}>Time: {selectedTime}</Text>
-            <Text style={styles.detailText}>Price: ${service.price}</Text>
+            <Text style={styles.detailText}>
+              Price: ${service.price} {service.byHour ? "per hour" : null}
+            </Text>
           </View>
         </View>
         <Text style={styles.description}>{service.description}</Text>
       </View>
+
+      {service.byHour && (
+        <View style={styles.hoursSelector}>
+          <Text style={styles.hoursText}>Select Hours:</Text>
+          <View style={styles.hoursControl}>
+            <TouchableOpacity
+              style={styles.hoursButton}
+              onPress={() => setHours(hours - 1 >= 1 ? hours - 1 : 1)}
+            >
+              <Text>-</Text>
+            </TouchableOpacity>
+            <Text style={styles.hours}>{hours}</Text>
+            <TouchableOpacity
+              style={styles.hoursButton}
+              onPress={() => setHours(hours + 1)}
+            >
+              <Text>+</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
+      {service.byHour && (
+        <Text style={styles.totalPrice}>
+          Total Price: ${service.price * hours}
+        </Text>
+      )}
+
       <TouchableOpacity style={styles.bookNowButton} onPress={handlePayPress}>
         <Text style={styles.buttonText}>Complete Purchase</Text>
       </TouchableOpacity>
+
       <Modal visible={processing} animationType="fade">
-        <SafeAreaView style={{ backgroundColor: "#46A05F", flex: 1 }}>
+        <SafeAreaView style={styles.modalContainer}>
           <LottieView
-            style={{
-              height: 500,
-              width: 500,
-              alignSelf: "center",
-            }}
+            style={styles.animation}
             source={require("../assets/lottie/3Dots.json")}
             autoPlay
           />
@@ -159,7 +172,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-
     alignItems: "center",
     padding: 20,
   },
@@ -191,7 +203,7 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 16,
-    marginBottom: 5,
+    marginBottom: 10,
     color: "#666",
   },
   detailText: {
@@ -206,10 +218,51 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
     justifyContent: "center",
+    marginTop: 10,
   },
   buttonText: {
     color: "#fff",
     fontWeight: "bold",
     fontSize: 18,
+  },
+  hoursSelector: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 10,
+    marginBottom: 15,
+  },
+  hoursText: {
+    fontWeight: "500",
+    fontSize: 17,
+    marginRight: 10,
+  },
+  hoursControl: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  hoursButton: {
+    backgroundColor: "#ddd",
+    padding: 8,
+    borderRadius: 5,
+  },
+  hours: {
+    fontWeight: "500",
+    fontSize: 20,
+    marginHorizontal: 10,
+  },
+  totalPrice: {
+    fontWeight: "700",
+    fontSize: 17,
+    marginBottom: 10,
+  },
+  modalContainer: {
+    backgroundColor: "#46A05F",
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  animation: {
+    width: 200,
+    height: 200,
   },
 });
