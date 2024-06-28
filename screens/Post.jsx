@@ -17,8 +17,6 @@ export default function Post({ route, navigation }) {
   const { user } = useUser();
   const maxCharacters = 60;
 
-  console.log("user", user);
-
   const handleNext = () => {
     if (taskDescription.length < 3) {
       Alert.alert("Task description must be at least 3 characters long.");

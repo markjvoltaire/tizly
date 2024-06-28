@@ -18,7 +18,6 @@ export default function LeaveReview({ defaultRating = 0, route, navigation }) {
   const [showSubmitButton, setShowSubmitButton] = useState(defaultRating !== 0);
   let height = Dimensions.get("window").height;
   let width = Dimensions.get("window").width;
-  console.log("route", route.params);
 
   const leaveRating = async () => {
     const userId = supabase.auth.currentUser.id;

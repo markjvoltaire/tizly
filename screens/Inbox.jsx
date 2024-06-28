@@ -36,7 +36,6 @@ const Inbox = ({ navigation }) => {
   const screenName = "Inbox";
 
   async function getUser(userid) {
-    console.log("userid", userid);
     const resp = await supabase
       .from("profiles")
       .select("*")
@@ -87,7 +86,6 @@ const Inbox = ({ navigation }) => {
       Alert.alert(error.message);
     } else {
       const resp = await getUser(user.id);
-      console.log("resp", resp);
       supabase.auth.setAuth(user.access_token);
       setUser(resp.body);
     }
@@ -96,7 +94,6 @@ const Inbox = ({ navigation }) => {
   const handleRefresh = async () => {
     const resp = await getLatestMessages();
     setInboxMessages(resp);
-    console.log("REFRESHING");
   };
 
   async function getLatestMessages() {

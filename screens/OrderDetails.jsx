@@ -50,7 +50,6 @@ export default function OrderDetails({ route, navigation }) {
     day: "numeric",
   });
 
-  console.log(route.params.service);
 
   async function reportTask() {
     try {

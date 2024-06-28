@@ -42,7 +42,6 @@ const MyServices = ({ navigation }) => {
       Alert.alert("Error", "Failed to fetch Services");
     } else {
       setServiceList(data);
-      console.log("data", data);
     }
   };
 

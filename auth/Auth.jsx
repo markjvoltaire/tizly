@@ -47,6 +47,7 @@ import MyOffers from "../screens/MyServices";
 import MyServices from "../screens/MyServices";
 import MyOrders from "../screens/MyOrders";
 import MyTasks from "../screens/MyTasks";
+import MyHours from "../screens/MyHours";
 
 export default function Auth() {
   const Stack = createNativeStackNavigator();
@@ -536,6 +537,18 @@ export default function Auth() {
             tabBarVisible: false,
             headerShown: true,
             headerTitle: "Edit Location", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }} // Hide tab bar for this screen
+        />
+
+        <Stack.Screen
+          name="MyHours"
+          component={MyHours}
+          options={{
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: "Set Business Hours", // Customizing the header title
             headerBackTitle: "Back", // Customizing the back button text
             headerTintColor: "black", // Changing the color of the back button text
           }} // Hide tab bar for this screen

@@ -32,7 +32,6 @@ export default function MyTasks({ navigation }) {
 
   const fetchTasks = async () => {
     const resp = await getTasks();
-    console.log("resp", resp);
     setTaskList(resp);
   };
 

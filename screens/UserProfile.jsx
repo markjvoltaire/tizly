@@ -260,6 +260,19 @@ const UserProfile = ({ route, navigation }) => {
 
         {user.type === "business" ? (
           <TouchableOpacity
+            onPress={() => navigation.navigate("MyHours")}
+            style={styles.optionContainer}
+          >
+            <Image
+              source={require("../assets/Clock.png")}
+              style={styles.icon}
+            />
+            <Text style={styles.optionText}>My Hours</Text>
+          </TouchableOpacity>
+        ) : null}
+
+        {user.type === "business" ? (
+          <TouchableOpacity
             onPress={() => navigation.navigate("MyServices")}
             style={styles.optionContainer}
           >

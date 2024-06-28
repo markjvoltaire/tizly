@@ -57,7 +57,6 @@ const AddDate = ({ route, navigation }) => {
       if (error) throw error;
 
       Alert.alert("Task Posted");
-      console.log("Selected Date:", selectedDate); // Log selected date
     } catch (error) {
       console.error("Error uploading to Supabase:", error.message);
       Alert.alert(
