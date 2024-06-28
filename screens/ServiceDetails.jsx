@@ -44,25 +44,6 @@ export default function ServiceDetails({ route, navigation }) {
     }).start();
   }, []);
 
-  async function uploadOrder() {
-    try {
-      //   setAddingCarModal(true);
-      const newOrder = {
-        seller_id: route.params.item.user_id,
-        purchaserId: user.user_id,
-        orderStatus: "incomplete",
-      };
-      const resp = await supabase.from("orders").insert([newOrder]);
-
-      return resp;
-    } catch (error) {
-      console.error("Error submitting comment:", error);
-      throw error;
-    }
-  }
-
-  0;
-
   const goToAddTime = () => {
     navigation.navigate("AddDate", { serviceInfo: route.params.item });
   };

@@ -746,13 +746,25 @@ export default function Auth() {
           tabBarIcon: ({ color, size, focused }) =>
             focused ? (
               <Image
-                source={require("../assets/profileActive.png")}
-                style={{ width: size, height: size }}
+                source={{ uri: user.profileimage }}
+                style={{
+                  width: size,
+                  height: size,
+                  borderRadius: 100,
+                  borderWidth: 2.5,
+                  borderColor: "green",
+                  backgroundColor: "grey",
+                }}
               />
             ) : (
               <Image
-                source={require("../assets/profileNotActive.png")}
-                style={{ width: size, height: size }}
+                source={{ uri: user.profileimage }}
+                style={{
+                  width: size,
+                  height: size,
+                  borderRadius: 100,
+                  backgroundColor: "grey",
+                }}
               />
             ),
         }}

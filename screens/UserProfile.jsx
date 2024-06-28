@@ -15,6 +15,7 @@ import {
   Alert,
   Dimensions,
   ScrollView,
+  Switch,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { getPosts } from "../services/user";
@@ -36,11 +37,37 @@ const UserProfile = ({ route, navigation }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(!!user);
   const [userID, setUserID] = useState(user?.user_id);
 
+  const [isBusinessAccount, setIsBusinessAccount] = useState(
+    user.accountType === "business"
+  );
+  const [isEnabled, setIsEnabled] = useState(user.type === "business");
+
+  // Function to toggle account type switch
+  const toggleSwitch = async () => {
+    setIsEnabled((previousState) => !previousState);
+    await updateAccountType();
+  };
+
   if (!user) {
     return <Login />;
   }
 
-  const handleLoginModal = () => setModalVisible(true);
+  // Function to update the account type in the database
+  const updateAccountType = async () => {
+    const userId = supabase.auth.currentUser.id;
+    const accountType = isEnabled ? "personal" : "business";
+    const res = await supabase
+      .from("profiles")
+      .update({ type: accountType })
+      .eq("user_id", userId);
+
+    if (res.error) {
+      console.log("ERROR", res.error);
+      Alert.alert("Something Went Wrong");
+    } else {
+      setUser(res.data[0]);
+    }
+  };
 
   const getUser = async (userid) => {
     try {
@@ -212,27 +239,25 @@ const UserProfile = ({ route, navigation }) => {
               style={{
                 fontSize: 20,
                 color: "grey",
-                marginBottom: 1,
+                marginBottom: 25,
                 alignSelf: "center",
               }}
             >
               {user.type}
             </Text>
           </View>
-          {/* <View style={styles.profileStats}>
-            <View style={styles.statItem}>
-              <Text style={styles.statValue}>5.0</Text>
-              <Text style={styles.statLabel}>Rating</Text>
-            </View>
-            <View style={styles.statItem}>
-              <Text style={styles.statValue}>15</Text>
-              <Text style={styles.statLabel}>Reviews</Text>
-            </View>
-            <View style={styles.statItem}>
-              <Text style={styles.statValue}>28</Text>
-              <Text style={styles.statLabel}>Bookings</Text>
-            </View>
-          </View> */}
+        </View>
+        {/* Account type switch */}
+        <View style={styles.toggleContainer}>
+          <Text style={styles.toggleLabel}>Personal</Text>
+          <Switch
+            trackColor={{ false: "#767577", true: "green" }}
+            thumbColor={isEnabled ? "white" : "#f4f3f4"}
+            ios_backgroundColor="#3e3e3e"
+            onValueChange={toggleSwitch}
+            value={isEnabled}
+          />
+          <Text style={styles.toggleLabel}>Business</Text>
         </View>
         <View style={styles.separator} />
 
@@ -325,7 +350,7 @@ const styles = StyleSheet.create({
   // Main containers
   container: { flex: 1, backgroundColor: "white" },
   scrollView: { padding: 16 },
-  separator: { height: 1, backgroundColor: "#e0e0e0", marginVertical: 16 },
+  separator: { height: 1, backgroundColor: "#e0e0e0", marginBottom: 20 },
   statItem: { alignItems: "center" },
   statValue: { fontSize: 18, fontWeight: "bold" },
   statLabel: { fontSize: 14, color: "#636363" },
@@ -449,6 +474,38 @@ const styles = StyleSheet.create({
   optionText: {
     fontSize: 18,
     fontWeight: "500",
+  },
+  optionText: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#313131",
+  },
+  textInput: {
+    height: 40,
+    width: "100%",
+    borderColor: "gray",
+    borderWidth: 0.3,
+    borderRadius: 12,
+    marginBottom: 30,
+    paddingHorizontal: 10,
+    backgroundColor: "#F3F3F9",
+  },
+  toggleContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "100%",
+    height: 60,
+    borderRadius: 12,
+    backgroundColor: "#F3F3F9",
+    borderColor: "gray",
+    borderWidth: 0.3,
+    paddingHorizontal: 10,
+    marginBottom: 25,
+  },
+  toggleLabel: {
+    fontSize: 18,
+    color: "#313131",
   },
 });
 

@@ -10,6 +10,7 @@ import {
   Pressable,
   Dimensions,
   ScrollView,
+  Switch,
 } from "react-native";
 import { useUser } from "../context/UserContext";
 import { supabase } from "../services/supabase";
@@ -113,6 +114,7 @@ const ProfileDetail = ({ route, navigation }) => {
             <Text style={styles.profileName}>{profile.username}</Text>
             <Text style={styles.profileProfession}>{profile.profession}</Text>
           </View>
+
           <View style={styles.profileStats}>
             <View style={styles.statItem}>
               <Text style={styles.statValue}>{ratingAverage}</Text>

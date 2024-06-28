@@ -13,6 +13,7 @@ import { useUser } from "../context/UserContext";
 import { supabase } from "../services/supabase";
 
 const timeOptions = [
+  "None", // Option to clear the time
   "7:00 AM",
   "7:30 AM",
   "8:00 AM",
@@ -43,7 +44,6 @@ const timeOptions = [
   "8:30 PM",
   "9:00 PM",
 ];
-
 const MyHours = () => {
   const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;
@@ -78,6 +78,7 @@ const MyHours = () => {
   };
 
   const updateTime = async (column, time) => {
+    console.log("time", time);
     const resp = await supabase
       .from("profiles")
       .update({ [column]: time })

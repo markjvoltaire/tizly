@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -10,69 +10,24 @@ import {
   Alert,
 } from "react-native";
 import { supabase } from "../services/supabase";
+import { useUser } from "../context/UserContext";
 
 const AddDate = ({ route, navigation }) => {
+  const { user, setUser } = useUser();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
-  const [loading, setLoading] = useState(false);
-
   const serviceBlob = route.params.serviceInfo;
 
-  const getDaysInMonth = useMemo(
-    () => (year, month) => {
-      const date = new Date(year, month, 1);
-      const days = [];
-      while (date.getMonth() === month) {
-        days.push(new Date(date));
-        date.setDate(date.getDate() + 1);
-      }
-      return days;
-    },
-    []
-  );
-
-  const uploadToSupabase = async () => {
-    setLoading(true);
-    try {
-      const user = supabase.auth.currentUser;
-      if (!user) {
-        throw new Error("User not authenticated");
-      }
-
-      const userId = user.id;
-
-      const selectedDateTime = new Date(selectedDate);
-      selectedDateTime.setHours(selectedTime.getHours());
-      selectedDateTime.setMinutes(selectedTime.getMinutes());
-
-      const { data, error } = await supabase.from("tasks").insert([
-        {
-          taskCreator: userId,
-          taskDescription: route.params.taskDescription,
-          dateNeeded: selectedDateTime.toISOString(),
-        },
-      ]);
-
-      if (error) throw error;
-
-      Alert.alert("Task Posted");
-    } catch (error) {
-      console.error("Error uploading to Supabase:", error.message);
-      Alert.alert(
-        "Error",
-        `There was an issue posting the task: ${error.message}`
-      );
-    } finally {
-      setLoading(false);
+  const getDaysInMonth = useCallback((year, month) => {
+    const date = new Date(year, month, 1);
+    const days = [];
+    while (date.getMonth() === month) {
+      days.push(new Date(date));
+      date.setDate(date.getDate() + 1);
     }
-  };
-
-  const handleNext = () => {
-    if (selectedDate) {
-      uploadToSupabase(); // Call upload function directly to log and upload
-    }
-  };
+    return days;
+  }, []);
 
   const renderDateItem = ({ item }) => {
     const isPastDate = item < new Date().setHours(0, 0, 0, 0); // Set to start of current day
@@ -101,26 +56,13 @@ const AddDate = ({ route, navigation }) => {
         onPress={handleDateSelection}
         disabled={isPastDate}
       >
-        <Text style={styles.itemText}>{item.getDate()}</Text>
+        <Text style={styles.dateText}>{item.getDate()}</Text>
+        <Text style={styles.dayText}>
+          {item.toLocaleString("default", { weekday: "short" })}
+        </Text>
       </TouchableOpacity>
     );
   };
-
-  const renderTimeItem = ({ item }) => (
-    <TouchableOpacity
-      style={[
-        styles.timeItem,
-        selectedTime &&
-          selectedTime.getHours() === item.getHours() &&
-          styles.selectedItem,
-      ]}
-      onPress={() => setSelectedTime(item)}
-    >
-      <Text style={styles.itemText}>
-        {item.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-      </Text>
-    </TouchableOpacity>
-  );
 
   const changeMonth = (increment) => {
     const newDate = new Date(currentDate);
@@ -133,7 +75,14 @@ const AddDate = ({ route, navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.monthContainer}>
-        <Button title="Prev" onPress={() => changeMonth(-1)} />
+        <Button
+          title="Prev"
+          onPress={() => changeMonth(-1)}
+          disabled={
+            currentDate.getMonth() === new Date().getMonth() &&
+            currentDate.getFullYear() === new Date().getFullYear()
+          }
+        />
         <Text style={styles.monthText}>
           {currentDate.toLocaleString("default", { month: "long" })}{" "}
           {currentDate.getFullYear()}
@@ -149,12 +98,6 @@ const AddDate = ({ route, navigation }) => {
         numColumns={7}
         columnWrapperStyle={styles.row}
       />
-
-      {loading && (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#0000ff" />
-        </View>
-      )}
     </View>
   );
 };
@@ -188,23 +131,22 @@ const styles = StyleSheet.create({
   },
   dateItem: {
     flex: 1,
-    paddingVertical: 10,
+    paddingVertical: 15,
     margin: 3,
     backgroundColor: "#f9f9f9",
-    borderRadius: 55,
+    borderRadius: 155,
     borderWidth: 1,
     borderColor: "#ddd",
     alignItems: "center",
     minWidth: 44, // Ensures double-digit numbers fit
   },
-  timeItem: {
-    padding: 16,
-    marginVertical: 8,
-    backgroundColor: "#f9f9f9",
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    alignItems: "center",
+  dateText: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  dayText: {
+    fontSize: 12,
+    textAlign: "center",
   },
   selectedItem: {
     backgroundColor: "#cce5ff",

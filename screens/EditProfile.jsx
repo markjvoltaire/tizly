@@ -189,20 +189,6 @@ export default function EditProfile({ navigation }) {
         onChangeText={setName}
       />
 
-      {/* Account type switch */}
-      <Text style={styles.optionText}>Account Type</Text>
-      <View style={styles.toggleContainer}>
-        <Text style={styles.toggleLabel}>Personal</Text>
-        <Switch
-          trackColor={{ false: "#767577", true: "green" }}
-          thumbColor={isEnabled ? "white" : "#f4f3f4"}
-          ios_backgroundColor="#3e3e3e"
-          onValueChange={toggleSwitch}
-          value={isEnabled}
-        />
-        <Text style={styles.toggleLabel}>Business</Text>
-      </View>
-
       {/* Update profile button */}
       <TouchableOpacity onPress={editProfile} style={styles.button}>
         <Text style={styles.buttonText}>Update Profile</Text>
@@ -230,6 +216,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "700",
     color: "#313131",
+    marginBottom: 10,
   },
   textInput: {
     height: 40,
