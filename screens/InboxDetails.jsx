@@ -315,7 +315,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   noMessagesText: {
-    fontFamily: "alata",
     fontSize: 16,
   },
   commentInput: {
