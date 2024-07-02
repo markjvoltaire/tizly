@@ -298,13 +298,23 @@ const UserProfile = ({ route, navigation }) => {
 
         {user.type === "business" ? (
           <TouchableOpacity
-            onPress={() => navigation.navigate("MyServices")}
+            onPress={() => navigation.navigate("Payments")}
             style={styles.optionContainer}
           >
             <Image
-              source={require("../assets/Document.png")}
+              source={require("../assets/Wallet.png")}
               style={styles.icon}
             />
+            <Text style={styles.optionText}>Payments</Text>
+          </TouchableOpacity>
+        ) : null}
+
+        {user.type === "business" ? (
+          <TouchableOpacity
+            onPress={() => navigation.navigate("MyServices")}
+            style={styles.optionContainer}
+          >
+            <Image source={require("../assets/Work.png")} style={styles.icon} />
             <Text style={styles.optionText}>My Services</Text>
           </TouchableOpacity>
         ) : null}
@@ -313,7 +323,7 @@ const UserProfile = ({ route, navigation }) => {
           onPress={() => navigation.navigate("MyTasks")}
           style={styles.optionContainer}
         >
-          <Image source={require("../assets/Wallet.png")} style={styles.icon} />
+          <Image source={require("../assets/Swap.png")} style={styles.icon} />
           <Text style={styles.optionText}>My Tasks</Text>
         </TouchableOpacity>
 

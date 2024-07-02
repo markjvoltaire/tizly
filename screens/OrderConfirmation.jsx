@@ -8,15 +8,15 @@ import {
 } from "react-native";
 
 export default function OrderConfirmation({ route, navigation }) {
+  console.log("route", route);
   const order = route.params.order.body[0];
   const {
     created_at,
-    id,
+
     orderId,
-    orderStatus,
+
     purchaserId,
-    serviceId,
-    user_id,
+
     date,
     time,
     seller_id,

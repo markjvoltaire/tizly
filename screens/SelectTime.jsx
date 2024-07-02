@@ -102,8 +102,6 @@ export default function SelectTime({ route, navigation }) {
     const getUserInfo = async () => {
       const profileData = await getProfileService();
       if (profileData) {
-        console.log("Profile data", profileData);
-
         const timestamp = route.params.selectedDate;
         const selectedDate = new Date(timestamp);
         const selectedDay = selectedDate

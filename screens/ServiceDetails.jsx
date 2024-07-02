@@ -27,9 +27,6 @@ export default function ServiceDetails({ route, navigation }) {
   const [orderList, setOrderList] = useState([]);
   const { profile, serviceTitle, serviceDescription, servicePrice } =
     route.params;
-  const { confirmPayment } = useStripe();
-  const stripe = useStripe();
-  const { user, setUser } = useUser();
 
   const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;
@@ -199,7 +196,6 @@ export default function ServiceDetails({ route, navigation }) {
           )}
         </TouchableOpacity>
       </View>
-
       <Modal visible={processing} animationType="fade">
         <SafeAreaView style={{ backgroundColor: "#46A05F", flex: 1 }}>
           <LottieView

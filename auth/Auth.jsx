@@ -48,6 +48,7 @@ import MyServices from "../screens/MyServices";
 import MyOrders from "../screens/MyOrders";
 import MyTasks from "../screens/MyTasks";
 import MyHours from "../screens/MyHours";
+import Payments from "../screens/Payments";
 
 export default function Auth() {
   const Stack = createNativeStackNavigator();
@@ -515,6 +516,18 @@ export default function Auth() {
             tabBarVisible: false,
             headerBackTitle: "Back", // Customizing the back button text
             headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+
+        <Stack.Screen
+          name="Payments"
+          component={Payments}
+          options={{
+            tabBarVisible: false,
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+            headerShown: true,
+            headerTitle: "Payment Settings", // Customizing the header title
           }}
         />
 

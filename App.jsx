@@ -48,7 +48,7 @@ export default function App() {
   }
 
   return (
-    <StripeProvider publishableKey="pk_live_51PVMhrJ0o91xj4miX08JQC1jkXFJUbIZLYai2U2YMvz4LgQjuwOZeuPWypfjun5oHy3FEnJuSgWcplAzauSGzwmy00EiRpqFYE">
+    <StripeProvider publishableKey="pk_test_51PVMhrJ0o91xj4miuVh7rhXrOWNTtC1conZos5lB4uC5szMkZDTbQOurUFxLJEQKO3d9QQ29nDrjHKTVyXZ6NMI800pqZVCizt">
       <UserProvider>
         <NavigationContainer>
           {auth === null ? (

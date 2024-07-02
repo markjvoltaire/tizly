@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Image,
   StyleSheet,
@@ -9,6 +9,7 @@ import {
   Alert,
   Modal,
   SafeAreaView,
+  ActivityIndicator,
 } from "react-native";
 import { useStripe } from "@stripe/stripe-react-native";
 import { useUser } from "../context/UserContext";
@@ -20,11 +21,12 @@ import { getUser } from "../services/user";
 export default function ConfirmBooking({ route, navigation }) {
   const { selectedDate, selectedTime } = route.params;
   const service = route.params.service;
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [hours, setHours] = useState(1); // Default to 1 hour
   const stripe = useStripe();
   const { user } = useUser();
+  const [sellerBlob, setSellerBlob] = useState();
 
   // Convert selectedDate to a readable format
   const formattedDate = new Date(selectedDate).toLocaleDateString();
@@ -43,9 +45,10 @@ export default function ConfirmBooking({ route, navigation }) {
         time: selectedTime,
         serviceId: service.id,
         serviceTitle: service.title,
-        hours: hours, // Include selected hours in the order
       };
       const resp = await supabase.from("orders").insert([newOrder]);
+
+      console.log("upload order response", resp);
       await sendPushNotification(body, title, tokenCode);
       return resp;
     } catch (error) {
@@ -57,11 +60,14 @@ export default function ConfirmBooking({ route, navigation }) {
   const handlePayPress = async () => {
     setLoading(true); // Set loading state to true
     setProcessing(true);
-
+    const sellerStripeId = sellerBlob.stripeAccountId;
     try {
-      const response = await fetch("https://tizlyexpress.onrender.com/pay", {
+      const response = await fetch("http://localhost:8080/pay", {
         method: "POST",
-        body: JSON.stringify({ servicePrice: service.price * hours }), // Multiply price by hours if byHour is true
+        body: JSON.stringify({
+          servicePrice: service.price * hours,
+          sellerStripeId: sellerStripeId,
+        }), // Multiply price by hours if byHour is true
         headers: {
           "Content-Type": "application/json",
         },
@@ -107,6 +113,25 @@ export default function ConfirmBooking({ route, navigation }) {
       setProcessing(false);
     }
   };
+
+  useEffect(() => {
+    const getSellerBlob = async () => {
+      const resp = await getUser(service);
+      setSellerBlob(resp.body);
+      setLoading(false);
+    };
+    getSellerBlob();
+  }, []);
+
+  if (loading) {
+    return (
+      <View
+        style={{ justifyContent: "center", flex: 1, backgroundColor: "white" }}
+      >
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
