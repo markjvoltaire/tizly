@@ -61,8 +61,9 @@ export default function ConfirmBooking({ route, navigation }) {
     setLoading(true); // Set loading state to true
     setProcessing(true);
     const sellerStripeId = sellerBlob.stripeAccountId;
+    console.log("sellerStripeId", sellerStripeId);
     try {
-      const response = await fetch("http://localhost:8080/pay", {
+      const response = await fetch("https://tizlyexpress.onrender.com/pay", {
         method: "POST",
         body: JSON.stringify({
           servicePrice: service.price * hours,

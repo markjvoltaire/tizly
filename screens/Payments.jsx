@@ -94,21 +94,25 @@ export default function BillingScreen() {
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:8080/account", {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: email,
-          userId: user.user_id,
-          username: user.username,
-          email: user.email,
-        }),
-      });
+      const response = await fetch(
+        "https://tizlyexpress.onrender.com/account",
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: email,
+            userId: user.user_id,
+            username: user.username,
+            email: user.email,
+          }),
+        }
+      );
 
       if (!response.ok) {
+        console.log("response", response);
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
@@ -142,24 +146,25 @@ export default function BillingScreen() {
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:8080/accountLink", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          account: connectedAccountId,
-          userId: user.user_id,
-        }),
-      });
+      const response = await fetch(
+        "https://tizlyexpress.onrender.com/accountLink",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            account: connectedAccountId,
+            userId: user.user_id,
+          }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
       const json = await response.json();
-
-      console.log("json", json.stepsLeft);
 
       if (json.accountLink.url) {
         Linking.openURL(json.accountLink.url);
