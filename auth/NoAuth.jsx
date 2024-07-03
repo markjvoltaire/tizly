@@ -22,7 +22,7 @@ export default function NoAuth() {
         component={Login}
         options={{
           tabBarVisible: false,
-          headerShown: true,
+          headerShown: false,
           headerTintColor: "black",
           headerBackTitle: "Back",
         }} // Hide tab bar for this screen
@@ -32,7 +32,7 @@ export default function NoAuth() {
         name="SignUp"
         component={SignUp}
         options={{
-          headerShown: true,
+          headerShown: false,
           headerTintColor: "black",
           headerBackTitle: "Back",
         }}

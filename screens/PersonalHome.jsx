@@ -31,24 +31,6 @@ export default function PersonalHome({ navigation }) {
   const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;
 
-  async function getNewToCity() {
-    const { data, error } = await supabase
-      .from("services")
-      .select("*")
-      .eq("deactivated", false)
-      .neq("user_id", user.user_id)
-      .order("id", { ascending: false })
-      .limit(3);
-
-    if (error) {
-      console.error("Error fetching New to City data:", error.message);
-      Alert.alert("Error", "Failed to fetch New to City data");
-      return;
-    }
-
-    setNtcList(data);
-  }
-
   async function getForYou() {
     const { data, error } = await supabase
       .from("services")
@@ -61,6 +43,8 @@ export default function PersonalHome({ navigation }) {
       Alert.alert("Error", "Failed to fetch For You data");
       return;
     }
+
+    console.log("data", data);
 
     const shuffledData = data.sort(() => 0.5 - Math.random());
     const limitedData = shuffledData.slice(0, 5);
@@ -88,7 +72,6 @@ export default function PersonalHome({ navigation }) {
   }
 
   useEffect(() => {
-    getNewToCity();
     getForYou();
   }, []);
 
@@ -100,79 +83,11 @@ export default function PersonalHome({ navigation }) {
     }
   }, [query]);
 
-  const BusinessInfo = ({ item }) => {
-    const [loading, setLoading] = useState(true);
-    const [businessProfile, setBusinessProfile] = useState({});
-    const businessId = item.user_id;
-
-    const getUser = async (businessId) => {
-      try {
-        const { data, error } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("user_id", businessId)
-          .single();
-
-        if (error) {
-          throw error;
-        }
-
-        setBusinessProfile(data);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching user data: ", error);
-        Alert.alert("Error", "Failed to fetch user data");
-      }
-    };
-
-    useEffect(() => {
-      getUser(businessId);
-    }, []);
-
-    if (loading) {
-      return (
-        <View>
-          <ActivityIndicator size="small" />
-        </View>
-      );
-    }
-
-    return (
-      <View style={{ flexDirection: "row" }}>
-        <Image
-          style={{
-            width: 24,
-            height: 24,
-            marginRight: 10,
-            borderRadius: 20,
-            backgroundColor: "grey",
-            borderWidth: 1,
-            borderColor: "green",
-            marginBottom: 4,
-          }}
-          source={{ uri: businessProfile.profileimage }}
-        />
-        <Text style={{ top: 4 }}>{businessProfile.username}</Text>
-      </View>
-    );
-  };
-
   return (
     <SafeAreaView style={styles.safeArea}>
-      <Text
-        style={{
-          alignSelf: "center",
-          fontFamily: "Poppins-Black",
-          color: "green",
-          fontSize: 25,
-          marginBottom: 10,
-        }}
-      >
-        tizly
-      </Text>
       <TextInput
         style={styles.textInput}
-        placeholder="Search..."
+        placeholder="What are you looking for?"
         placeholderTextColor="#888"
         value={query}
         onChangeText={(text) => setQuery(text)}
@@ -182,43 +97,20 @@ export default function PersonalHome({ navigation }) {
           showsVerticalScrollIndicator={false}
           style={styles.container}
         >
-          <Text style={styles.sectionTitle}>{user.city}</Text>
-          <ScrollView
-            showsHorizontalScrollIndicator={false}
-            horizontal={true}
-            style={styles.horizontalScroll}
-          >
-            {ntcList.map((item, index) => (
-              <Pressable
-                onPress={() => navigation.navigate("ServiceDetails", { item })}
-                key={index}
-              >
-                <View style={{ marginRight: 5, elevation: 5 }}>
-                  <Image
-                    source={{ uri: item.thumbnail }}
-                    style={styles.scrollItem}
-                  />
-                  <Text style={styles.scrollItemText}>{item.title}</Text>
-                  <Text
-                    style={{
-                      fontWeight: "600",
-                      fontSize: 13,
-                      marginBottom: 6,
-                    }}
-                  >
-                    From ${item.price}
-                  </Text>
-                  <BusinessInfo item={item} />
-                </View>
-              </Pressable>
-            ))}
-          </ScrollView>
-
+          <Image
+            resizeMode="contain"
+            style={{
+              height: screenHeight * 0.16,
+              alignSelf: "center",
+              marginBottom: 15,
+            }}
+            source={require("../assets/homeBanner.png")}
+          />
           <View
             style={{
               height: 0.8,
               backgroundColor: "#e0e0e0",
-              marginBottom: 20,
+              marginBottom: 10,
               width: screenWidth * 0.95,
               alignSelf: "center",
             }}
@@ -253,17 +145,72 @@ export default function PersonalHome({ navigation }) {
                       resizeMode: "cover",
                     }}
                   />
-                  <Text style={styles.scrollItemText}>{item.title}</Text>
+
                   <Text
                     style={{
-                      fontWeight: "600",
+                      color: "#2C3624",
+                      fontFamily: "interSemiBold",
+                      fontSize: 16,
+                      marginBottom: 5,
+                      width: screenWidth * 0.75,
+                      marginRight: 15,
+                    }}
+                  >
+                    {item.title}
+                  </Text>
+
+                  <Text
+                    style={{
+                      fontFamily: "interRegular",
                       fontSize: 13,
-                      marginBottom: 6,
+                      marginBottom: 5,
                     }}
                   >
                     From ${item.price}
                   </Text>
-                  <BusinessInfo item={item} />
+
+                  <Text
+                    style={{
+                      fontFamily: "interRegular",
+                      fontSize: 13,
+                      color: "#676C5E",
+                      marginBottom: 5,
+                      marginRight: 19,
+                    }}
+                  >
+                    {item.city}, {item.state}
+                  </Text>
+                  <View style={{ flexDirection: "row" }}>
+                    <Image
+                      style={{ height: 15, width: 15 }}
+                      source={require("../assets/greenStar.png")}
+                    />
+                    <Image
+                      style={{ height: 15, width: 15 }}
+                      source={require("../assets/greenStar.png")}
+                    />
+                    <Image
+                      style={{ height: 15, width: 15 }}
+                      source={require("../assets/greenStar.png")}
+                    />
+                    <Image
+                      style={{ height: 15, width: 15 }}
+                      source={require("../assets/greenStar.png")}
+                    />
+                    <Image
+                      style={{ height: 15, width: 15, marginRight: 5 }}
+                      source={require("../assets/greenStar.png")}
+                    />
+                    <Text
+                      style={{
+                        fontFamily: "interRegular",
+                        fontSize: 13,
+                        color: "#676C5E",
+                      }}
+                    >
+                      (10)
+                    </Text>
+                  </View>
                 </View>
               </Pressable>
             ))}
@@ -314,14 +261,12 @@ export default function PersonalHome({ navigation }) {
                     <Text style={styles.scrollItemText}>{item.title}</Text>
                     <Text
                       style={{
-                        fontWeight: "600",
                         fontSize: 13,
                         marginBottom: 6,
                       }}
                     >
                       From ${item.price}
                     </Text>
-                    <BusinessInfo item={item} />
                   </View>
                 </Pressable>
               ))}
@@ -352,7 +297,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
 
     paddingHorizontal: 10,
-    backgroundColor: "#F3F3F9",
+
     alignSelf: "center",
   },
   sectionTitle: {
@@ -379,6 +324,9 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   scrollItemText: {
-    color: "#000",
+    color: "#2C3624",
+    fontFamily: "interSemiBold",
+    fontSize: 16,
+    marginBottom: 5,
   },
 });

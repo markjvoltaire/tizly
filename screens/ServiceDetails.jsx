@@ -158,18 +158,15 @@ export default function ServiceDetails({ route, navigation }) {
             <BusinessInfo route={route} />
           </View>
 
-          <Text
-            style={{ fontSize: 18, margin: 10, fontWeight: "500", bottom: 10 }}
-          >
-            Service Description
-          </Text>
           <View
             style={{
               margin: 10,
-              bottom: 6,
+              bottom: 13,
             }}
           >
-            <Text>{route.params.item.description}</Text>
+            <Text style={{ color: "#2C3624" }}>
+              {route.params.item.description}
+            </Text>
           </View>
         </View>
       </ScrollView>

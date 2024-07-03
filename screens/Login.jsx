@@ -68,8 +68,20 @@ export default function Login({ navigation }) {
   };
 
   return (
-    <View style={styles.modalView}>
+    <SafeAreaView style={styles.modalView}>
       <View style={{ marginBottom: 30 }} />
+
+      <Text
+        style={{
+          alignSelf: "center",
+          fontFamily: "Poppins-Black",
+          color: "green",
+          fontSize: 45,
+          marginBottom: 10,
+        }}
+      >
+        tizly
+      </Text>
 
       <TextInput
         style={styles.input}
@@ -102,7 +114,16 @@ export default function Login({ navigation }) {
       >
         <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
       </TouchableOpacity>
-    </View>
+
+      <TouchableOpacity
+        style={styles.forgotPassword}
+        onPress={() => {
+          navigation.navigate("SignUp");
+        }}
+      >
+        <Text style={styles.forgotPasswordText}>Create an account</Text>
+      </TouchableOpacity>
+    </SafeAreaView>
   );
 }
 

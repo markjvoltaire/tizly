@@ -14,6 +14,8 @@ export default function App() {
   const [auth, setAuth] = useState(null);
   const [fontsLoaded] = useFonts({
     gilroy: require("./assets/fonts/gilroy.ttf"),
+    interSemiBold: require("./assets/fonts/Inter-SemiBold.ttf"),
+    interRegular: require("./assets/fonts/Inter-Regular.ttf"),
     // Add more fonts if needed
   });
 

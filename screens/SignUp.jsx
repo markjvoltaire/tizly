@@ -79,6 +79,17 @@ export default function SignUp({ route, navigation }) {
   };
   return (
     <View style={styles.container}>
+      <Text
+        style={{
+          alignSelf: "center",
+          fontFamily: "Poppins-Black",
+          color: "green",
+          fontSize: 45,
+          marginBottom: 10,
+        }}
+      >
+        tizly
+      </Text>
       <View style={styles.formContainer}>
         <TextInput
           style={styles.input}
@@ -114,6 +125,15 @@ export default function SignUp({ route, navigation }) {
         </TouchableOpacity>
       </View>
 
+      <TouchableOpacity
+        style={styles.forgotPassword}
+        onPress={() => {
+          navigation.navigate("Login");
+        }}
+      >
+        <Text style={styles.forgotPasswordText}>Login Here</Text>
+      </TouchableOpacity>
+
       <Modal animationType={"slide"} visible={modal}>
         <View style={{ top: 200 }}>
           <Text
@@ -142,7 +162,15 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#ffffff",
     paddingHorizontal: 20,
-    paddingTop: 50,
+    paddingTop: 80,
+  },
+  forgotPassword: {
+    marginBottom: 20,
+    alignSelf: "center",
+  },
+  forgotPasswordText: {
+    color: "green",
+    fontSize: 16,
   },
   formContainer: {
     width: "100%",
@@ -165,6 +193,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: "center",
     marginTop: 20,
+    marginBottom: 20,
   },
   buttonText: {
     color: "#ffffff",
