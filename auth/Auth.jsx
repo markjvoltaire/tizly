@@ -527,7 +527,7 @@ export default function Auth() {
             headerBackTitle: "Back", // Customizing the back button text
             headerTintColor: "black", // Changing the color of the back button text
             headerShown: true,
-            headerTitle: "Payment Settings", // Customizing the header title
+            headerTitle: "Payments", // Customizing the header title
           }}
         />
 

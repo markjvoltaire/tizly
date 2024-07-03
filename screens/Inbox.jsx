@@ -33,7 +33,6 @@ const Inbox = ({ navigation }) => {
   const [forgotEmail, setForgotEmail] = useState("");
   const [otp, setOTP] = useState();
   const [isLoggedIn, setIsLoggedIn] = useState(!user ? false : true);
-  const screenName = "Inbox";
 
   async function getUser(userid) {
     const resp = await supabase

@@ -8,6 +8,7 @@ import {
   TextInput,
   Button,
   Alert,
+  Image,
 } from "react-native";
 import React, { useState } from "react";
 import { supabase } from "../services/supabase";
@@ -69,6 +70,7 @@ export default function Login({ navigation }) {
   return (
     <View style={styles.modalView}>
       <View style={{ marginBottom: 30 }} />
+
       <TextInput
         style={styles.input}
         placeholderTextColor="grey"

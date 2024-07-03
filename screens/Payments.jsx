@@ -1,12 +1,22 @@
-import React, { useState } from "react";
-import { View, Text, Button, Linking, TextInput, Alert } from "react-native";
+import React, { useState, useEffect, useRef } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  Alert,
+  Image,
+  ActivityIndicator,
+  StyleSheet,
+  TouchableOpacity,
+  Linking,
+  Animated,
+} from "react-native";
 import { useUser } from "../context/UserContext";
-import { useStripe } from "@stripe/stripe-react-native";
 
 export default function BillingScreen() {
   const { user } = useUser();
   const [accountCreatePending, setAccountCreatePending] = useState(false);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState(null);
   const [accountLinkCreatePending, setAccountLinkCreatePending] =
     useState(false);
   const [connectedAccountId, setConnectedAccountId] = useState(
@@ -14,6 +24,20 @@ export default function BillingScreen() {
   );
   const [email, setEmail] = useState("");
   const [onBoard, setOnBoard] = useState(user.businessOnBoardComplete);
+  const [isLoading, setIsLoading] = useState(true);
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    // Simulate a loading period then fade in
+    setTimeout(() => {
+      setIsLoading(false);
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }).start();
+    }, 1000);
+  }, [fadeAnim]);
 
   const validateEmail = (email) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -27,7 +51,7 @@ export default function BillingScreen() {
     }
 
     setAccountCreatePending(true);
-    setError(false);
+    setError(null);
 
     try {
       const response = await fetch("http://localhost:8080/account", {
@@ -55,25 +79,25 @@ export default function BillingScreen() {
         }
 
         if (json.error) {
-          setError(true);
+          setError(json.error);
         }
       } else {
         const text = await response.text();
         console.warn("Received non-JSON response:", text);
-        setError(true);
+        setError("Unexpected response format.");
       }
 
       setAccountCreatePending(false);
     } catch (error) {
       console.error("Error creating account:", error);
-      setError(true);
+      setError(error.message);
       setAccountCreatePending(false);
     }
   };
 
   const addInformation = async () => {
     setAccountLinkCreatePending(true);
-    setError(false);
+    setError(null);
 
     try {
       const response = await fetch("http://localhost:8080/accountLink", {
@@ -98,122 +122,161 @@ export default function BillingScreen() {
       }
 
       if (json.error) {
-        setError(true);
+        setError(json.error);
       }
 
       setAccountLinkCreatePending(false);
     } catch (error) {
       console.error("Error creating account link:", error);
-      setError(true);
+      setError(error.message);
       setAccountLinkCreatePending(false);
     }
   };
 
-  return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#f0f0f0",
-      }}
+  const CustomButton = ({ title, onPress, disabled }) => (
+    <TouchableOpacity
+      style={[styles.button, disabled && styles.buttonDisabled]}
+      onPress={onPress}
+      disabled={disabled}
     >
-      <View style={{ marginVertical: 20 }}>
-        <Text style={{ fontSize: 28, fontWeight: "bold", color: "#333" }}>
-          Tizly
-        </Text>
-      </View>
-      <View style={{ paddingHorizontal: 20, width: "100%" }}>
-        {!connectedAccountId && (
-          <>
-            <Text style={{ fontSize: 18, marginBottom: 10 }}>
-              Enter your email to get started
-            </Text>
-            <TextInput
-              style={{
-                height: 40,
-                borderColor: "#ccc",
-                borderWidth: 1,
-                borderRadius: 5,
-                paddingHorizontal: 10,
-                marginBottom: 20,
-                backgroundColor: "#fff",
-              }}
-              placeholder="Email"
-              keyboardType="email-address"
-              value={email}
-              onChangeText={setEmail}
-            />
-            <Button
-              title="Create an account!"
-              onPress={createAccount}
-              disabled={accountCreatePending || connectedAccountId}
-              color="#5cb85c"
-            />
-          </>
-        )}
-        {connectedAccountId && (
-          <>
-            <Text style={{ fontSize: 18, marginBottom: 10 }}>
-              Add information to start accepting money
-            </Text>
-            <Text style={{ marginBottom: 20, color: "#666" }}>
-              Matt's Mats partners with Stripe to help you receive payments and
-              keep your personal bank and details secure.
-            </Text>
-            <Button
-              title="Add information"
-              onPress={addInformation}
-              disabled={accountLinkCreatePending}
-              color="#5cb85c"
-            />
-          </>
-        )}
-        {error && (
-          <Text style={{ color: "red", marginTop: 10 }}>
-            Something went wrong!
-          </Text>
-        )}
-        {(connectedAccountId ||
-          accountCreatePending ||
-          accountLinkCreatePending) && (
-          <View style={{ marginTop: 20 }}>
-            {connectedAccountId && (
-              <Text style={{ fontSize: 16, marginBottom: 5 }}>
-                Your connected account ID is:{" "}
-                <Text style={{ fontWeight: "bold", color: "#333" }}>
-                  {connectedAccountId}
-                </Text>
-              </Text>
-            )}
-            {accountCreatePending && (
-              <Text style={{ fontSize: 16, marginBottom: 5 }}>
-                Creating a connected account...
-              </Text>
-            )}
-            {accountLinkCreatePending && (
-              <Text style={{ fontSize: 16, marginBottom: 5 }}>
-                Creating a new Account Link...
-              </Text>
-            )}
-          </View>
-        )}
-        <View style={{ marginTop: 20 }}>
-          <Text style={{ fontSize: 14, color: "#666" }}>
-            This is a sample app for Stripe-hosted Connect onboarding.{" "}
-            <Text
-              style={{ color: "#007bff" }}
-              onPress={() =>
-                Linking.openURL(
-                  "https://docs.stripe.com/connect/onboarding/quickstart?connect-onboarding-surface=hosted"
-                )
-              }
-            >
-              View docs
-            </Text>
-          </Text>
+      <Text style={styles.buttonText}>{title}</Text>
+    </TouchableOpacity>
+  );
+
+  return (
+    <View style={styles.container}>
+      {isLoading ? (
+        <View style={{ flex: 1, justifyContent: "center" }}>
+          <ActivityIndicator size="large" color="grey" />
         </View>
-      </View>
+      ) : (
+        <Animated.View style={[styles.content, { opacity: fadeAnim }]}>
+          <View style={styles.imageContainer}>
+            <Image
+              style={styles.image}
+              source={require("../assets/introImage.png")}
+            />
+          </View>
+          <View style={styles.formContainer}>
+            {!connectedAccountId && (
+              <>
+                <Text style={styles.title}>
+                  Enter your email to get started
+                </Text>
+                <TextInput
+                  autoCapitalize="none"
+                  style={styles.input}
+                  placeholder="Email"
+                  keyboardType="email-address"
+                  value={email}
+                  onChangeText={setEmail}
+                />
+                <CustomButton
+                  title="Get Started"
+                  onPress={createAccount}
+                  disabled={accountCreatePending}
+                />
+                {accountCreatePending && (
+                  <ActivityIndicator size="large" color="#5cb85c" />
+                )}
+              </>
+            )}
+            {connectedAccountId && (
+              <>
+                <Text style={styles.title}>
+                  Add information to start accepting money
+                </Text>
+                <Text style={styles.description}>
+                  Tizly partners with Stripe to help you receive payments and
+                  keep your personal bank and details secure.
+                </Text>
+                <CustomButton
+                  title="Add information"
+                  onPress={addInformation}
+                  disabled={accountLinkCreatePending}
+                />
+                {accountLinkCreatePending && (
+                  <ActivityIndicator size="large" color="#5cb85c" />
+                )}
+              </>
+            )}
+            {error && <Text style={styles.errorText}>{error}</Text>}
+          </View>
+        </Animated.View>
+      )}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+    backgroundColor: "white",
+  },
+  content: {
+    flex: 1,
+    width: "100%",
+    alignItems: "center",
+  },
+  imageContainer: {
+    marginVertical: 20,
+  },
+  image: {
+    height: 200,
+    width: 200,
+  },
+  formContainer: {
+    paddingHorizontal: 20,
+    width: "100%",
+  },
+  title: {
+    fontSize: 19,
+    marginBottom: 10,
+    alignSelf: "center",
+  },
+  input: {
+    height: 40,
+    borderColor: "#ccc",
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    marginBottom: 20,
+    backgroundColor: "#fff",
+  },
+  description: {
+    marginBottom: 20,
+    color: "grey",
+    alignSelf: "center",
+    fontSize: 15,
+  },
+  errorText: {
+    color: "red",
+    marginTop: 10,
+  },
+  statusContainer: {
+    marginTop: 20,
+  },
+  statusText: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  boldText: {
+    fontWeight: "bold",
+    color: "#333",
+  },
+  button: {
+    backgroundColor: "#5cb85c",
+    padding: 15,
+    borderRadius: 5,
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  buttonDisabled: {
+    backgroundColor: "#ccc",
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
+  },
+});
