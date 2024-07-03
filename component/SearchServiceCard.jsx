@@ -14,9 +14,9 @@ import { supabase } from "../services/supabase";
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
 
-const ServiceCard = ({ navigation, item, index }) => {
-  const [loading, setLoading] = useState(true);
+const SearchServiceCard = ({ navigation, item, index }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const [loading, setLoading] = useState(true);
   const [orderCount, setOrderCount] = useState();
 
   useEffect(() => {
@@ -138,4 +138,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ServiceCard;
+export default SearchServiceCard;

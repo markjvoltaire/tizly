@@ -19,6 +19,9 @@ import {
 } from "react-native";
 import { supabase } from "../services/supabase";
 import { useUser } from "../context/UserContext";
+import StarRating from "../component/StarRating";
+import ServiceCard from "../component/ServiceCard";
+import SearchServiceCard from "../component/SearchServiceCard";
 
 export default function PersonalHome({ navigation }) {
   const [ntcList, setNtcList] = useState([]);
@@ -131,7 +134,7 @@ export default function PersonalHome({ navigation }) {
           />
 
           <Text style={[styles.sectionTitle, styles.secondSectionTitle]}>
-            Trending Near You
+            Services You May Like
           </Text>
           <ScrollView
             showsHorizontalScrollIndicator={false}
@@ -141,152 +144,48 @@ export default function PersonalHome({ navigation }) {
             }}
           >
             {forYouList.map((item, index) => (
-              <Pressable
-                onPress={() => navigation.navigate("ServiceDetails", { item })}
-                key={index}
-              >
-                <View style={{ elevation: 5, marginBottom: 30 }}>
-                  <Image
-                    source={{ uri: item.thumbnail }}
-                    style={{
-                      width: screenWidth * 0.96,
-                      height: screenHeight * 0.25,
-                      marginBottom: 5,
-                      backgroundColor: "#ccc",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      borderRadius: 10,
-                      resizeMode: "cover",
-                    }}
-                  />
-
-                  <Text
-                    style={{
-                      color: "#2C3624",
-                      fontFamily: "interSemiBold",
-                      fontSize: 16,
-                      marginBottom: 5,
-                      width: screenWidth * 0.75,
-                      marginRight: 15,
-                    }}
-                  >
-                    {item.title}
-                  </Text>
-
-                  <Text
-                    style={{
-                      fontFamily: "interRegular",
-                      fontSize: 13,
-                      marginBottom: 5,
-                    }}
-                  >
-                    From ${item.price}
-                  </Text>
-
-                  <Text
-                    style={{
-                      fontFamily: "interRegular",
-                      fontSize: 13,
-                      color: "#676C5E",
-                      marginBottom: 5,
-                      marginRight: 19,
-                    }}
-                  >
-                    {item.city}, {item.state}
-                  </Text>
-                  <View style={{ flexDirection: "row" }}>
-                    <Image
-                      style={{ height: 15, width: 15 }}
-                      source={require("../assets/greenStar.png")}
-                    />
-                    <Image
-                      style={{ height: 15, width: 15 }}
-                      source={require("../assets/greenStar.png")}
-                    />
-                    <Image
-                      style={{ height: 15, width: 15 }}
-                      source={require("../assets/greenStar.png")}
-                    />
-                    <Image
-                      style={{ height: 15, width: 15 }}
-                      source={require("../assets/greenStar.png")}
-                    />
-                    <Image
-                      style={{ height: 15, width: 15, marginRight: 5 }}
-                      source={require("../assets/greenStar.png")}
-                    />
-                    <Text
-                      style={{
-                        fontFamily: "interRegular",
-                        fontSize: 13,
-                        color: "#676C5E",
-                      }}
-                    >
-                      (10)
-                    </Text>
-                  </View>
-                </View>
-              </Pressable>
+              <ServiceCard
+                key={index} // Use a unique identifier here, like item.id if available
+                navigation={navigation}
+                item={item}
+                index={index}
+              />
             ))}
           </ScrollView>
         </ScrollView>
       ) : (
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          style={styles.container}
-        >
-          {searchResults.length === 0 ? (
-            <View>
-              <Text
-                style={[
-                  styles.sectionTitle,
-                  { marginTop: 20, alignSelf: "center" },
-                ]}
-              >
-                No Results Found
-              </Text>
-            </View>
-          ) : (
-            <View>
-              <Text style={[styles.sectionTitle, { marginTop: 9 }]}>
-                Search Results
-              </Text>
-              {searchResults.map((item, index) => (
-                <Pressable
-                  onPress={() =>
-                    navigation.navigate("ServiceDetails", { item })
-                  }
-                  key={index}
+        <>
+          <Text style={[styles.sectionTitle, {}]}>Search Results</Text>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            style={styles.container}
+          >
+            {searchResults.length === 0 ? (
+              <View>
+                <Text
+                  style={[
+                    styles.sectionTitle,
+                    { marginTop: 20, alignSelf: "center" },
+                  ]}
                 >
-                  <View style={{ elevation: 5, marginBottom: 30 }}>
-                    <Image
-                      source={{ uri: item.thumbnail }}
-                      style={{
-                        width: screenWidth * 0.96,
-                        height: screenHeight * 0.25,
-                        marginBottom: 5,
-                        backgroundColor: "#ccc",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        borderRadius: 3,
-                        resizeMode: "cover",
-                      }}
+                  No Results Found
+                </Text>
+              </View>
+            ) : (
+              <View style={{ alignSelf: "center" }}>
+                {searchResults.map((item, index) => (
+                  <View index={index.id}>
+                    <SearchServiceCard
+                      navigation={navigation}
+                      item={item}
+                      index={index}
                     />
-                    <Text style={styles.scrollItemText}>{item.title}</Text>
-                    <Text
-                      style={{
-                        fontSize: 13,
-                        marginBottom: 6,
-                      }}
-                    >
-                      From ${item.price}
-                    </Text>
                   </View>
-                </Pressable>
-              ))}
-            </View>
-          )}
-        </ScrollView>
+                ))}
+              </View>
+            )}
+          </ScrollView>
+        </>
       )}
     </SafeAreaView>
   );
@@ -318,7 +217,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 15,
-    marginLeft: 4,
+    marginLeft: 10,
   },
   secondSectionTitle: {
     marginTop: 4,

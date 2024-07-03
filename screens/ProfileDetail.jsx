@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import { useUser } from "../context/UserContext";
 import { supabase } from "../services/supabase";
+import ServiceCard from "../component/ServiceCard";
 
 const ProfileDetail = ({ route, navigation }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -139,23 +140,32 @@ const ProfileDetail = ({ route, navigation }) => {
 
         <View style={styles.separator} />
         <View style={styles.contentContainer}>
-          <Text style={styles.sectionTitle}>Services</Text>
-          {listOfServices.map((item, index) => (
-            <Pressable
-              onPress={() => navigation.navigate("ServiceDetails", { item })}
-              key={index}
-              style={{ marginBottom: 20 }}
-            >
-              <View style={styles.serviceContainer}>
-                <Image
-                  source={{ uri: item.thumbnail }}
-                  style={styles.scrollItem}
-                />
-                <Text style={styles.scrollItemText}>{item.title}</Text>
-                <Text style={styles.scrollItemPrice}>From ${item.price}</Text>
-              </View>
-            </Pressable>
-          ))}
+          {listOfServices.length === 0 ? (
+            <View style={{ justifyContent: "center", top: 15 }}>
+              <Text
+                style={{ alignSelf: "center", fontSize: 20, marginBottom: 20 }}
+              >
+                No Services At The Moment
+              </Text>
+              <Image
+                source={require("../assets/introImage.png")}
+                style={{ height: 200, width: 200, alignSelf: "center" }}
+              />
+            </View>
+          ) : (
+            <>
+              <Text style={styles.sectionTitle}>Services</Text>
+              {listOfServices.map((item, index) => (
+                <View key={index} style={{ alignSelf: "center" }}>
+                  <ServiceCard
+                    navigation={navigation}
+                    item={item}
+                    index={index}
+                  />
+                </View>
+              ))}
+            </>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -179,7 +189,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     width: "100%",
   },
-  contentContainer: { marginBottom: 50 },
+  contentContainer: { marginBottom: 50, flex: 1 },
   separator: { height: 1, backgroundColor: "#e0e0e0", marginVertical: 16 },
 
   // Profile info

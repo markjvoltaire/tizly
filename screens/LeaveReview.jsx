@@ -9,31 +9,76 @@ import {
   TextInput,
   Dimensions,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import { useUser } from "../context/UserContext";
 import { supabase } from "../services/supabase";
 
 export default function LeaveReview({ defaultRating = 0, route, navigation }) {
   const [rating, setRating] = useState(defaultRating);
+  const [loading, setLoading] = useState(true);
   const [showSubmitButton, setShowSubmitButton] = useState(defaultRating !== 0);
+  const [service, setService] = useState();
   let height = Dimensions.get("window").height;
   let width = Dimensions.get("window").width;
 
+  async function getService() {
+    const resp = await supabase
+      .from("services")
+      .select("*")
+      .eq("id", route.params.serviceId)
+      .single();
+
+    return resp.body;
+  }
+
   const leaveRating = async () => {
     const userId = supabase.auth.currentUser.id;
+    const newRating = rating; // Assuming rating is the new rating given by the user
+
+    // Update the order with the new rating
     const res = await supabase
       .from("orders")
-      .update({ rating: rating })
+      .update({ rating: newRating })
       .eq("purchaserId", userId)
       .eq("serviceId", route.params.serviceId);
 
     if (res.error) {
-      console.log("ERROR", res.error);
+      console.error("Error updating order:", res.error);
+      Alert.alert("Something Went Wrong");
+      return;
+    }
+
+    // Fetch all ratings for the service
+    const { data: ratings, error: fetchError } = await supabase
+      .from("orders")
+      .select("rating")
+      .eq("serviceId", route.params.serviceId);
+
+    if (fetchError) {
+      console.error("Error fetching ratings:", fetchError);
+      Alert.alert("Something Went Wrong");
+      return;
+    }
+
+    // Calculate the new average rating
+    const totalRatings = ratings.length;
+    const sumOfRatings = ratings.reduce((sum, r) => sum + r.rating, 0);
+    const newAverageRating = sumOfRatings / totalRatings;
+
+    // Update the service with the new average rating
+    const updateService = await supabase
+      .from("services")
+      .update({ rating: newAverageRating })
+      .eq("id", route.params.serviceId);
+
+    if (updateService.error) {
+      console.error("Error updating service rating:", updateService.error);
       Alert.alert("Something Went Wrong");
     } else {
       Alert.alert("Thank you for your review");
       navigation.goBack();
-      navigation.goBack();
+      navigation.goBack(); // Assuming you navigate back twice to return to the previous screen
     }
   };
 
@@ -63,6 +108,27 @@ export default function LeaveReview({ defaultRating = 0, route, navigation }) {
     }
     return stars;
   };
+
+  useEffect(() => {
+    const fetchService = async () => {
+      const resp = await getService();
+      setService(resp);
+      setLoading(false);
+    };
+    fetchService();
+  }, []);
+
+  console.log("service", service);
+
+  if (loading) {
+    return (
+      <View
+        style={{ flex: 1, justifyContent: "center", backgroundColor: "white" }}
+      >
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.ratingContainer}>

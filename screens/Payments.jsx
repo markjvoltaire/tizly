@@ -52,9 +52,7 @@ export default function BillingScreen() {
         try {
           const resp = await getUser();
           if (isMounted) {
-            resp.businessOnBoardComplete
-              ? console.log("On BOard Complete")
-              : setOnBoard(null);
+            resp.businessOnBoardComplete ? null : setOnBoard(null);
           }
         } catch (error) {
           console.error("Failed to fetch user:", error);
@@ -303,7 +301,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 19,
     marginBottom: 10,
-    alignSelf: "center",
   },
   input: {
     height: 40,
