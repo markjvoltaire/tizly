@@ -12,9 +12,11 @@ import {
   Animated,
 } from "react-native";
 import { useUser } from "../context/UserContext";
+import { useFocusEffect } from "@react-navigation/native";
+import { supabase } from "../services/supabase";
 
 export default function BillingScreen() {
-  const { user } = useUser();
+  const { user, setUser } = useUser();
   const [accountCreatePending, setAccountCreatePending] = useState(false);
   const [error, setError] = useState(null);
   const [accountLinkCreatePending, setAccountLinkCreatePending] =
@@ -26,6 +28,46 @@ export default function BillingScreen() {
   const [onBoard, setOnBoard] = useState(user.businessOnBoardComplete);
   const [isLoading, setIsLoading] = useState(true);
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  async function getUser() {
+    try {
+      const resp = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("user_id", user.user_id)
+        .single()
+        .limit(1);
+
+      return resp.body ?? null;
+    } catch (error) {
+      console.error("Failed to fetch user:", error);
+      return null;
+    }
+  }
+
+  useFocusEffect(
+    React.useCallback(() => {
+      let isMounted = true;
+
+      const fetchData = async () => {
+        try {
+          const resp = await getUser();
+          if (isMounted) {
+            resp.businessOnBoardComplete
+              ? console.log("On BOard Complete")
+              : setOnBoard(null);
+          }
+        } catch (error) {
+          console.error("Failed to fetch user:", error);
+        }
+      };
+
+      fetchData();
+
+      return () => {
+        isMounted = false;
+      };
+    }, [setUser])
+  );
 
   useEffect(() => {
     // Simulate a loading period then fade in
@@ -63,6 +105,8 @@ export default function BillingScreen() {
         body: JSON.stringify({
           email: email,
           userId: user.user_id,
+          username: user.username,
+          email: user.email,
         }),
       });
 
@@ -117,8 +161,16 @@ export default function BillingScreen() {
 
       const json = await response.json();
 
-      if (json.url) {
-        Linking.openURL(json.url);
+      console.log("json", json.stepsLeft);
+
+      if (json.accountLink.url) {
+        Linking.openURL(json.accountLink.url);
+      }
+
+      if (json.stepsLeft === 0) {
+        const resp = await getUser();
+        setUser(resp);
+        setOnBoard(true);
       }
 
       if (json.error) {
@@ -208,7 +260,7 @@ export default function BillingScreen() {
                   title={
                     onBoard === true
                       ? "Edit Payment Information"
-                      : "Add information"
+                      : "Review Form"
                   }
                   onPress={addInformation}
                   disabled={accountLinkCreatePending}

@@ -45,35 +45,6 @@ const Inbox = ({ navigation }) => {
     return resp;
   }
 
-  async function sendEmail() {
-    const { data, error } = await supabase.auth.api.resetPasswordForEmail(
-      forgotEmail
-    );
-
-    if (error) {
-      Alert.alert(error.message);
-    } else {
-      setState("awaitOTP");
-      Alert.alert(`A 6 Digit Code Has Been Sent To ${forgotEmail}`);
-    }
-  }
-
-  async function verifyOTP() {
-    const { data, error } = await supabase.auth.api.verifyOTP({
-      email: forgotEmail,
-      token: otp,
-      type: "recovery",
-    });
-
-    if (error) {
-      Alert.alert(error.message);
-    } else {
-      setUser(data);
-      setState("changePassword");
-      Alert.alert("OTP Verified! You Can Now Change Your Password");
-    }
-  }
-
   async function loginWithEmail() {
     // setModalLoader(true);
     const { user, error } = await supabase.auth.signIn({

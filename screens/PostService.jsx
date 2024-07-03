@@ -18,6 +18,7 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import { supabase } from "../services/supabase";
 import { useUser } from "../context/UserContext";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function PostService({ navigation }) {
   const [title, setTitle] = useState("");
@@ -27,9 +28,49 @@ export default function PostService({ navigation }) {
   const [imageData, setImageData] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [byHour, setByHour] = useState(false);
-  const { user } = useUser();
+  const { user, setUser } = useUser();
   const height = Dimensions.get("window").height;
   const width = Dimensions.get("window").width;
+  const [onBoard, setOnBoard] = useState(user.businessOnBoardComplete);
+
+  async function getUser() {
+    try {
+      const resp = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("user_id", user.user_id)
+        .single()
+        .limit(1);
+
+      return resp.body ?? null;
+    } catch (error) {
+      console.error("Failed to fetch user:", error);
+      return null;
+    }
+  }
+
+  useFocusEffect(
+    React.useCallback(() => {
+      let isMounted = true;
+
+      const fetchData = async () => {
+        try {
+          const resp = await getUser();
+          if (isMounted) {
+            resp.businessOnBoardComplete ? null : setOnBoard(null);
+          }
+        } catch (error) {
+          console.error("Failed to fetch user:", error);
+        }
+      };
+
+      fetchData();
+
+      return () => {
+        isMounted = false;
+      };
+    }, [setUser])
+  );
 
   const pickImage = async () => {
     const permissionResult =
@@ -183,7 +224,7 @@ export default function PostService({ navigation }) {
     </TouchableOpacity>
   );
 
-  if (!user.businessOnBoardComplete) {
+  if (!onBoard) {
     return (
       <View style={{ flex: 1, backgroundColor: "white" }}>
         <Image

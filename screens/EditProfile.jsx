@@ -180,7 +180,9 @@ export default function EditProfile({ navigation }) {
       <View style={styles.separator} />
 
       {/* Name input */}
-      <Text style={styles.optionText}>Name</Text>
+      <Text style={styles.optionText}>
+        {user.type === "business" ? "Business Name" : "Name"}
+      </Text>
       <TextInput
         placeholder="Enter your name"
         placeholderTextColor="grey"
