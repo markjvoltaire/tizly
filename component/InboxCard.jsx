@@ -42,7 +42,6 @@ export default function InboxCard({ item, user, navigation }) {
       setLoading(true); // Set loading to true when fetching data
 
       const resp = await getUser(otherId);
-      console.log("resp", resp);
 
       setProfileDetails(resp); // Set profile details
       setLoading(false); // Set loading to false when data is fetched

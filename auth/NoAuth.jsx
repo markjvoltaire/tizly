@@ -23,8 +23,6 @@ export default function NoAuth() {
         options={{
           tabBarVisible: false,
           headerShown: false,
-          headerTintColor: "black",
-          headerBackTitle: "Back",
         }} // Hide tab bar for this screen
       />
 
@@ -34,7 +32,6 @@ export default function NoAuth() {
         options={{
           headerShown: false,
           headerTintColor: "black",
-          headerBackTitle: "Back",
         }}
       />
       <Stack.Screen

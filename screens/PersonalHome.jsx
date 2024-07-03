@@ -32,24 +32,38 @@ export default function PersonalHome({ navigation }) {
   const screenHeight = Dimensions.get("window").height;
 
   async function getForYou() {
-    const { data, error } = await supabase
-      .from("services")
-      .select("*")
-      .eq("deactivated", false)
-      .neq("user_id", user.user_id);
+    try {
+      let query = supabase
+        .from("services")
+        .select("*")
+        .eq("deactivated", false)
+        .neq("user_id", user.user_id);
 
-    if (error) {
+      // Check if the user object exists and has both "city" and "state" properties.
+      if (user && user.city && user.state) {
+        // If the user object is defined, add additional filters for "city" and "state".
+        query = query.eq("city", user.city).eq("state", user.state);
+      }
+
+      const { data, error } = await query;
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      if (!data) {
+        throw new Error("No data returned");
+      }
+
+      // Shuffle and limit the data to 5 items
+      const shuffledData = data.sort(() => 0.5 - Math.random());
+      const limitedData = shuffledData.slice(0, 5);
+
+      setForYouList(limitedData);
+    } catch (error) {
       console.error("Error fetching For You data:", error.message);
       Alert.alert("Error", "Failed to fetch For You data");
-      return;
     }
-
-    console.log("data", data);
-
-    const shuffledData = data.sort(() => 0.5 - Math.random());
-    const limitedData = shuffledData.slice(0, 5);
-
-    setForYouList(limitedData);
   }
 
   async function searchServices() {

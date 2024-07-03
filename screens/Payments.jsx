@@ -183,15 +183,33 @@ export default function BillingScreen() {
             )}
             {connectedAccountId && (
               <>
-                <Text style={styles.title}>
-                  Add information to start accepting money
-                </Text>
-                <Text style={styles.description}>
-                  Tizly partners with Stripe to help you receive payments and
-                  keep your personal bank and details secure.
-                </Text>
+                {onBoard === true ? (
+                  <>
+                    <Text style={styles.title}>
+                      You can now start accepting payments.
+                    </Text>
+                    <Text style={styles.description}>
+                      Tizly partners with Stripe to help you receive payments
+                      and keep your personal bank and details secure.
+                    </Text>
+                  </>
+                ) : (
+                  <>
+                    <Text style={styles.title}>
+                      Add information to start accepting money
+                    </Text>
+                    <Text style={styles.description}>
+                      Tizly partners with Stripe to help you receive payments
+                      and keep your personal bank and details secure.
+                    </Text>
+                  </>
+                )}
                 <CustomButton
-                  title="Add information"
+                  title={
+                    onBoard === true
+                      ? "Edit Payment Information"
+                      : "Add information"
+                  }
                   onPress={addInformation}
                   disabled={accountLinkCreatePending}
                 />

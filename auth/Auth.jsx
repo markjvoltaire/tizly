@@ -344,6 +344,18 @@ export default function Auth() {
         />
 
         <Stack.Screen
+          name="Payments"
+          component={Payments}
+          options={{
+            tabBarVisible: false,
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+            headerShown: true,
+            headerTitle: "Payments", // Customizing the header title
+          }}
+        />
+
+        <Stack.Screen
           name="AddTime"
           component={AddTime}
           options={{

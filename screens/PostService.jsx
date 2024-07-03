@@ -19,7 +19,7 @@ import * as ImagePicker from "expo-image-picker";
 import { supabase } from "../services/supabase";
 import { useUser } from "../context/UserContext";
 
-export default function PostService() {
+export default function PostService({ navigation }) {
   const [title, setTitle] = useState("");
   const [thumbnail, setThumbnail] = useState(null);
   const [description, setDescription] = useState("");
@@ -30,8 +30,6 @@ export default function PostService() {
   const { user } = useUser();
   const height = Dimensions.get("window").height;
   const width = Dimensions.get("window").width;
-
-  console.log("byHour", byHour);
 
   const pickImage = async () => {
     const permissionResult =
@@ -175,6 +173,53 @@ export default function PostService() {
     );
   };
 
+  const CustomButton = ({ title, onPress, disabled }) => (
+    <TouchableOpacity
+      style={[styles.button, disabled && styles.buttonDisabled]}
+      onPress={onPress}
+      disabled={disabled}
+    >
+      <Text style={styles.buttonText}>{title}</Text>
+    </TouchableOpacity>
+  );
+
+  if (!user.businessOnBoardComplete) {
+    return (
+      <View style={{ flex: 1, backgroundColor: "white" }}>
+        <Image
+          style={{ height: 250, width: 250, alignSelf: "center" }}
+          source={require("../assets/postNeedOnBoard.png")}
+        />
+        <View
+          style={{
+            width: width * 0.97,
+            alignSelf: "center",
+          }}
+        >
+          <Text style={{ alignSelf: "center", fontSize: 19, marginBottom: 10 }}>
+            Before posting a service, please complete your business information.
+          </Text>
+
+          <Text
+            style={{
+              marginBottom: 20,
+              color: "grey",
+              alignSelf: "center",
+              fontSize: 15,
+            }}
+          >
+            Provide your business details to verify your account and start
+            posting services.
+          </Text>
+          <CustomButton
+            onPress={() => navigation.navigate("Payments")}
+            title="Get Started"
+          />
+        </View>
+      </View>
+    );
+  }
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -294,6 +339,20 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: "white",
+  },
+  button: {
+    backgroundColor: "#5cb85c",
+    padding: 15,
+    borderRadius: 5,
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  buttonDisabled: {
+    backgroundColor: "#ccc",
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
   },
   label: {
     fontSize: 16,

@@ -26,10 +26,6 @@ export default function Post({ route, navigation }) {
     setTaskDescription("");
   };
 
-  if (!user) {
-    return <Login />;
-  }
-
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View style={styles.container}>
