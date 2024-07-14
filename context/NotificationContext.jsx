@@ -23,6 +23,8 @@ const NotificationProvider = ({ children }) => {
   // Get the current user from UserContext
   const { user } = useUser();
 
+  console.log("user!", user);
+
   // State to hold the incoming notification
   const [notification, setNotification] = useState();
   // Refs to store notification listeners

@@ -123,6 +123,9 @@ export default function PersonalHome({ navigation }) {
             }}
             source={require("../assets/homeBanner.png")}
           />
+
+          <View>{/* ADD CATEGORIES HERE */}</View>
+
           <View
             style={{
               height: 0.8,
