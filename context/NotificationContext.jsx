@@ -23,8 +23,6 @@ const NotificationProvider = ({ children }) => {
   // Get the current user from UserContext
   const { user } = useUser();
 
-  console.log("user!", user);
-
   // State to hold the incoming notification
   const [notification, setNotification] = useState();
   // Refs to store notification listeners
@@ -59,7 +57,7 @@ const NotificationProvider = ({ children }) => {
     if (decision === "allow") {
       registerForPushNotificationsAsync().then((token) => {
         if (token) {
-          console.log("User opted in for notifications");
+          console.log("User opted in for notifications LINE 60");
           savePushToken(token);
           AsyncStorage.setItem("notificationPermission", "allow");
         } else {

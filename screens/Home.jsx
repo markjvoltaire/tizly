@@ -299,7 +299,7 @@ export default function Home({ navigation }) {
       .from("tasks")
       .select("*")
       .eq("completed", "F")
-      .neq("taskCreator", user.user_id)
+      // .neq("taskCreator", user.user_id)
       .order("id", { ascending: false });
 
     // Check if the user object exists and has both "city" and "state" properties.
