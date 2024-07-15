@@ -121,8 +121,6 @@ export const notifyUserAboutNewReaction = async (
 };
 
 export const setNotification = async (tokenCode: string) => {
-  console.log("tokenCode", tokenCode);
-
   // const { data } = await supabase
   //   .from("profiles")
   //   .select("*")
