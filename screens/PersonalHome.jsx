@@ -102,6 +102,17 @@ export default function PersonalHome({ navigation }) {
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      <Text
+        style={{
+          alignSelf: "center",
+          fontFamily: "Poppins-Black",
+          color: "green",
+          fontSize: 25,
+          marginBottom: 10,
+        }}
+      >
+        tizly
+      </Text>
       <TextInput
         style={styles.textInput}
         placeholder="What are you looking for?"
