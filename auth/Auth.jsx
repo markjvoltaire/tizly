@@ -128,7 +128,7 @@ export default function Auth() {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen
           name="HomeScreen"
-          component={Home}
+          component={PersonalHome}
           options={{ tabBarVisible: false }} // Hide tab bar for this screen
         />
 
@@ -334,7 +334,7 @@ export default function Auth() {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen
           name="HomeScreen"
-          component={PersonalHome}
+          component={Home}
           options={{ tabBarVisible: false }} // Hide tab bar for this screen
         />
 

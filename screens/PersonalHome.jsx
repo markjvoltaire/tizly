@@ -142,7 +142,7 @@ export default function PersonalHome({ navigation }) {
           <ScrollView
             showsHorizontalScrollIndicator={false}
             style={{
-              marginBottom: 30,
+              marginBottom: 200,
               alignSelf: "center",
             }}
           >
@@ -177,7 +177,7 @@ export default function PersonalHome({ navigation }) {
             ) : (
               <View style={{ alignSelf: "center", marginBottom: 200 }}>
                 {searchResults.map((item, index) => (
-                  <View index={index.id}>
+                  <View key={index.id} index={index.id}>
                     <SearchServiceCard
                       navigation={navigation}
                       item={item}

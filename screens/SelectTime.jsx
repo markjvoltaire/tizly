@@ -40,10 +40,6 @@ export default function SelectTime({ route, navigation }) {
         throw error;
       }
 
-      if (!data || data.length === 0) {
-        throw new Error("No booked times found");
-      }
-
       return data;
     } catch (error) {
       Alert.alert("Error", error.message);
