@@ -26,7 +26,31 @@ export default function SelectTime({ route, navigation }) {
   const [selectedTime, setSelectedTime] = useState(null);
   const [loading, setLoading] = useState(true);
   const [hoursOfDay, setHoursOfDay] = useState(null);
+  const [bookedTimes, setBookedTimes] = useState([]);
   const service = route.params.serviceBlob;
+
+  const getBookedTimes = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("orders")
+        .select("*")
+        .eq("seller_id", service.user_id);
+
+      if (error) {
+        throw error;
+      }
+
+      if (!data || data.length === 0) {
+        throw new Error("No booked times found");
+      }
+
+      return data;
+    } catch (error) {
+      Alert.alert("Error", error.message);
+      setLoading(false);
+      return null;
+    }
+  };
 
   const getProfileService = async () => {
     try {
@@ -78,16 +102,7 @@ export default function SelectTime({ route, navigation }) {
     const toTime = parseTime(profileData[toKey]);
 
     const filteredTimes = generateHoursOfDay().filter((time) => {
-      const [timeString, period] = time.split(" ");
-      const [hour, minute] = timeString.split(":").map(Number);
-
-      let hour24 = hour;
-      if (period === "PM" && hour !== 12) {
-        hour24 += 12;
-      } else if (period === "AM" && hour === 12) {
-        hour24 = 0;
-      }
-
+      const { hour: hour24, minute } = parseTime(time);
       const timeValue = hour24 * 60 + minute;
       const fromValue = fromTime.hour * 60 + fromTime.minute;
       const toValue = toTime.hour * 60 + toTime.minute;
@@ -98,9 +113,20 @@ export default function SelectTime({ route, navigation }) {
     return filteredTimes;
   };
 
+  const filterBookedTimes = (bookedTimes, selectedDate) => {
+    return bookedTimes
+      .filter(
+        (order) =>
+          new Date(order.date).toDateString() === selectedDate.toDateString()
+      )
+      .map((order) => order.time);
+  };
+
   useEffect(() => {
     const getUserInfo = async () => {
       const profileData = await getProfileService();
+      const bookedTimesData = await getBookedTimes();
+
       if (profileData) {
         const timestamp = route.params.selectedDate;
         const selectedDate = new Date(timestamp);
@@ -111,6 +137,12 @@ export default function SelectTime({ route, navigation }) {
           .toLowerCase();
 
         const availableTimes = filterAvailableTimes(profileData, selectedDay);
+        const bookedTimesForSelectedDate = filterBookedTimes(
+          bookedTimesData,
+          selectedDate
+        );
+
+        setBookedTimes(bookedTimesForSelectedDate);
         setHoursOfDay(availableTimes);
       } else {
         setHoursOfDay([]);
@@ -128,8 +160,8 @@ export default function SelectTime({ route, navigation }) {
     selectedDate.toDateString() === currentDateTime.toDateString();
 
   const handleTimeSelect = (time) => {
-    if (isTimeInThePast(time)) {
-      return; // Do nothing if the time is in the past
+    if (isTimeInThePast(time) || isTimeBooked(time)) {
+      return; // Do nothing if the time is in the past or already booked
     }
     setSelectedTime(time);
 
@@ -147,20 +179,15 @@ export default function SelectTime({ route, navigation }) {
       return false; // If not the same day, none of the times are in the past
     }
 
-    const [timeString, period] = time.split(" ");
-    const [hour, minute] = timeString.split(":").map(Number);
-
-    let hour24 = hour;
-    if (period === "PM" && hour !== 12) {
-      hour24 += 12;
-    } else if (period === "AM" && hour === 12) {
-      hour24 = 0;
-    }
-
+    const { hour: hour24, minute } = parseTime(time);
     const timeDate = new Date(selectedDate);
     timeDate.setHours(hour24, minute, 0, 0);
 
     return timeDate < currentDateTime;
+  };
+
+  const isTimeBooked = (time) => {
+    return bookedTimes.includes(time);
   };
 
   if (loading) {
@@ -189,10 +216,11 @@ export default function SelectTime({ route, navigation }) {
               style={[
                 styles.timeItem,
                 selectedTime === time && styles.selectedTimeItem,
-                isTimeInThePast(time) && styles.disabledTimeItem,
+                (isTimeInThePast(time) || isTimeBooked(time)) &&
+                  styles.disabledTimeItem,
               ]}
               onPress={() => handleTimeSelect(time)}
-              disabled={isTimeInThePast(time)}
+              disabled={isTimeInThePast(time) || isTimeBooked(time)}
             >
               <Text style={styles.timeText}>{time}</Text>
             </TouchableOpacity>

@@ -24,6 +24,7 @@ import LottieView from "lottie-react-native";
 import { supabase } from "../services/supabase";
 import MapView from "react-native-maps";
 import Login from "./Login";
+import * as Notifications from "expo-notifications";
 
 const UserProfile = ({ route, navigation }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -46,6 +47,40 @@ const UserProfile = ({ route, navigation }) => {
   const toggleSwitch = async () => {
     setIsEnabled((previousState) => !previousState);
     await updateAccountType();
+  };
+  const alertPress = async () => {
+    try {
+      const { status: notificationStatus } =
+        await Notifications.getPermissionsAsync();
+      if (notificationStatus !== "granted") {
+        Alert.alert(
+          "Permission Required",
+          "You need to enable notifications permission from settings."
+        );
+      } else {
+        Alert.alert(
+          "Notifications Enabled",
+          "You have notifications permissions enabled."
+        );
+        const pushToken = await Notifications.getExpoPushTokenAsync();
+
+        const resp = await supabase
+          .from("profiles")
+          .update({ expo_push_token: pushToken.data })
+          .eq("user_id", user.user_id);
+
+        return resp;
+      }
+    } catch (error) {
+      console.error(
+        "Error checking notification permissions or fetching push token:",
+        error
+      );
+      Alert.alert(
+        "Error",
+        "An error occurred while checking notification permissions or fetching the push token. Please try again."
+      );
+    }
   };
 
   if (!user) {
@@ -318,6 +353,14 @@ const UserProfile = ({ route, navigation }) => {
             <Text style={styles.optionText}>My Services</Text>
           </TouchableOpacity>
         ) : null}
+
+        <TouchableOpacity onPress={alertPress} style={styles.optionContainer}>
+          <Image
+            source={require("../assets/notificationInactiveLightMode.png")}
+            style={styles.icon}
+          />
+          <Text style={styles.optionText}>Notifications</Text>
+        </TouchableOpacity>
 
         <TouchableOpacity
           onPress={() => navigation.navigate("MyTasks")}

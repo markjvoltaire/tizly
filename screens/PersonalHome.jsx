@@ -137,7 +137,7 @@ export default function PersonalHome({ navigation }) {
           />
 
           <Text style={[styles.sectionTitle, styles.secondSectionTitle]}>
-            Services You May Like
+            Services For You
           </Text>
           <ScrollView
             showsHorizontalScrollIndicator={false}
@@ -175,7 +175,7 @@ export default function PersonalHome({ navigation }) {
                 </Text>
               </View>
             ) : (
-              <View style={{ alignSelf: "center" }}>
+              <View style={{ alignSelf: "center", marginBottom: 200 }}>
                 {searchResults.map((item, index) => (
                   <View index={index.id}>
                     <SearchServiceCard
