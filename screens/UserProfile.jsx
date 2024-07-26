@@ -319,16 +319,6 @@ const UserProfile = ({ route, navigation }) => {
             <Text style={styles.optionText}>Business Settings</Text>
           </TouchableOpacity>
         ) : null}
-        <TouchableOpacity
-          onPress={() => navigation.navigate("Orders")}
-          style={styles.optionContainer}
-        >
-          <Image
-            source={require("../assets/CalendarNotActive.png")}
-            style={styles.icon}
-          />
-          <Text style={styles.optionText}>My Orders</Text>
-        </TouchableOpacity>
 
         {user.type === "business" ? (
           <TouchableOpacity

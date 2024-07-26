@@ -627,49 +627,53 @@ export default function Auth() {
     );
   };
 
-  const CommunityStack = () => {
+  const OrderStack = () => {
     return (
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen
-          name="HomeScreen"
-          component={Home}
-          options={{ tabBarVisible: false }} // Hide tab bar for this screen
-        />
-
-        <Stack.Screen
-          name="TaskDetails"
-          component={TaskDetails}
+          name="Orders"
+          component={MyOrders}
           options={{
             tabBarVisible: false,
             headerShown: true,
-            headerTitle: "Task Details", // Customizing the header title
-            headerBackTitle: "Back", // Customizing the back button text
-            headerTintColor: "black", // Changing the color of the back button text
-          }} // Hide tab bar for this screen
-        />
-
-        <Stack.Screen
-          name="InboxDetails"
-          component={InboxDetails}
-          options={{
-            tabBarVisible: false,
-            headerShown: true,
-            headerTitle: "Message Thread", // Customizing the header title
+            headerTitle: "Orders", // Customizing the header title
             headerBackTitle: "Back", // Customizing the back button text
             headerTintColor: "black", // Changing the color of the back button text
           }}
         />
 
         <Stack.Screen
-          name="ProfileDetail"
-          component={ProfileDetail}
+          name="OrderDetails"
+          component={OrderDetails}
           options={{
-            tabBarVisible: false,
+            headerTitle: "Order details", // Customizing the header title
             headerShown: true,
-            headerTitle: "Profile Details", // Customizing the header title
+            tabBarVisible: false,
             headerBackTitle: "Back", // Customizing the back button text
             headerTintColor: "black", // Changing the color of the back button text
-            headerTransparent: true,
+          }}
+        />
+
+        <Stack.Screen
+          name="LeaveReview"
+          component={LeaveReview}
+          options={{
+            headerShown: true,
+            headerTitle: "Review",
+            tabBarVisible: false,
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+
+        <Stack.Screen
+          name="OrderConfirmation"
+          component={OrderConfirmation}
+          options={{
+            tabBarVisible: false,
+            headerTitle: "Order Details", // Customizing the header title
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
           }}
         />
       </Stack.Navigator>
@@ -865,48 +869,6 @@ export default function Auth() {
           tabBarIcon: ({ color, size, focused }) =>
             focused ? (
               <Image
-                source={require("../assets/SearchActive.png")}
-                style={{ width: size, height: size }}
-              />
-            ) : (
-              <Image
-                source={require("../assets/searchGlass.png")}
-                style={{ width: size, height: size }}
-              />
-            ),
-        }}
-        name="ExploreStack"
-        component={ExploreStack}
-      />
-
-      <Tab.Screen
-        options={{
-          tabBarShowLabel: false,
-          headerShown: false,
-          tabBarIcon: ({ color, size, focused }) =>
-            focused ? (
-              <Image
-                source={require("../assets/post.png")}
-                style={{ width: size, height: size }}
-              />
-            ) : (
-              <Image
-                source={require("../assets/postNotActive.png")}
-                style={{ width: size, height: size }}
-              />
-            ),
-        }}
-        name="PostStack"
-        component={PostStack}
-      />
-
-      <Tab.Screen
-        options={{
-          tabBarShowLabel: false,
-          headerShown: false,
-          tabBarIcon: ({ color, size, focused }) =>
-            focused ? (
-              <Image
                 source={require("../assets/MessageActive.png")}
                 style={{ width: size, height: size }}
               />
@@ -919,6 +881,50 @@ export default function Auth() {
         }}
         name="InboxStack"
         component={InboxStack}
+      />
+
+      {user.type === "business" ? (
+        <Tab.Screen
+          options={{
+            tabBarShowLabel: false,
+            headerShown: false,
+            tabBarIcon: ({ color, size, focused }) =>
+              focused ? (
+                <Image
+                  source={require("../assets/post.png")}
+                  style={{ width: size, height: size }}
+                />
+              ) : (
+                <Image
+                  source={require("../assets/postNotActive.png")}
+                  style={{ width: size, height: size }}
+                />
+              ),
+          }}
+          name="PostStack"
+          component={PostStack}
+        />
+      ) : null}
+
+      <Tab.Screen
+        options={{
+          tabBarShowLabel: false,
+          headerShown: false,
+          tabBarIcon: ({ color, size, focused }) =>
+            focused ? (
+              <Image
+                source={require("../assets/Calendar.png")}
+                style={{ width: size, height: size }}
+              />
+            ) : (
+              <Image
+                source={require("../assets/CalendarNotActive.png")}
+                style={{ width: size, height: size }}
+              />
+            ),
+        }}
+        name="BookingStack"
+        component={OrderStack}
       />
 
       <Tab.Screen
