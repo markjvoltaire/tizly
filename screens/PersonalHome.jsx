@@ -11,11 +11,7 @@ import {
   ActivityIndicator,
   Alert,
   Dimensions,
-  Pressable,
-  KeyboardAvoidingView,
-  TouchableWithoutFeedback,
-  Keyboard,
-  Modal,
+  RefreshControl,
 } from "react-native";
 import { supabase } from "../services/supabase";
 import { useUser } from "../context/UserContext";
@@ -30,24 +26,37 @@ export default function PersonalHome({ navigation }) {
   const [searchResults, setSearchResults] = useState([]);
   const [ratingModal, setRatingModal] = useState(false);
   const { user } = useUser();
+  const [refreshing, setRefreshing] = useState(false); // State for refreshing
 
   const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;
 
   async function getForYou() {
+    const userLatitude = parseFloat(user.latitude);
+    const userLongitude = parseFloat(user.longitude);
+
+    // Function to calculate distance between two lat/lng points
+    function getDistance(lat1, lon1, lat2, lon2) {
+      const R = 3958.8; // Radius of the Earth in miles
+      const dLat = (lat2 - lat1) * (Math.PI / 180);
+      const dLon = (lon2 - lon1) * (Math.PI / 180);
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * (Math.PI / 180)) *
+          Math.cos(lat2 * (Math.PI / 180)) *
+          Math.sin(dLon / 2) *
+          Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c; // Distance in miles
+    }
+
     try {
       let query = supabase
         .from("services")
         .select("*")
-        .eq("deactivated", false)
-        .neq("user_id", user.user_id);
+        .eq("deactivated", false);
 
-      // Check if the user object exists and has both "city" and "state" properties.
-      if (user && user.city && user.state) {
-        // If the user object is defined, add additional filters for "city" and "state".
-        query = query.eq("city", user.city).eq("state", user.state);
-      }
-
+      // Fetch all services first
       const { data, error } = await query;
 
       if (error) {
@@ -58,8 +67,19 @@ export default function PersonalHome({ navigation }) {
         throw new Error("No data returned");
       }
 
+      // Filter services within 30 miles of the user's location
+      const filteredData = data.filter((service) => {
+        const distance = getDistance(
+          userLatitude,
+          userLongitude,
+          parseFloat(service.latitude),
+          parseFloat(service.longitude)
+        );
+        return distance <= 50; // 50 miles radius
+      });
+
       // Shuffle and limit the data to 5 items
-      const shuffledData = data.sort(() => 0.5 - Math.random());
+      const shuffledData = filteredData.sort(() => 0.5 - Math.random());
       const limitedData = shuffledData.slice(0, 5);
 
       setForYouList(limitedData);
@@ -87,6 +107,18 @@ export default function PersonalHome({ navigation }) {
       Alert.alert("Error", "Failed to search services");
     }
   }
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    try {
+      // Refresh the data
+      await getForYou(); // Ensure this function updates the forYouList
+      setRefreshing(false);
+    } catch (error) {
+      console.error("Error refreshing data:", error.message);
+      setRefreshing(false);
+    }
+  };
 
   useEffect(() => {
     getForYou();
@@ -124,6 +156,9 @@ export default function PersonalHome({ navigation }) {
         <ScrollView
           showsVerticalScrollIndicator={false}
           style={styles.container}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
         >
           <Image
             resizeMode="contain"
@@ -148,7 +183,7 @@ export default function PersonalHome({ navigation }) {
           />
 
           <Text style={[styles.sectionTitle, styles.secondSectionTitle]}>
-            Services For You
+            Nearby in {user.city}, {user.state}
           </Text>
           <ScrollView
             showsHorizontalScrollIndicator={false}
@@ -157,14 +192,38 @@ export default function PersonalHome({ navigation }) {
               alignSelf: "center",
             }}
           >
-            {forYouList.map((item, index) => (
-              <ServiceCard
-                key={index} // Use a unique identifier here, like item.id if available
-                navigation={navigation}
-                item={item}
-                index={index}
-              />
-            ))}
+            {forYouList.length === 0 ? (
+              <View
+                style={{
+                  flex: 1,
+                  height: 150,
+
+                  width: screenWidth,
+                  justifyContent: "center",
+                }}
+              >
+                <Text
+                  style={{
+                    alignSelf: "center",
+                    fontSize: 18,
+                    color: "gray",
+                    top: 10,
+                  }}
+                >
+                  No Services just yet
+                </Text>
+              </View>
+            ) : (
+              forYouList.map((item, index) => (
+                <View key={item.id}>
+                  <ServiceCard
+                    navigation={navigation}
+                    item={item}
+                    index={index}
+                  />
+                </View>
+              ))
+            )}
           </ScrollView>
         </ScrollView>
       ) : (
@@ -212,7 +271,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    paddingHorizontal: 2,
+
     backgroundColor: "#fff",
   },
   textInput: {
@@ -221,7 +280,7 @@ const styles = StyleSheet.create({
     borderColor: "gray",
     borderWidth: 0.3,
     borderRadius: 12,
-    marginBottom: 20,
+    marginBottom: 15,
 
     paddingHorizontal: 10,
 

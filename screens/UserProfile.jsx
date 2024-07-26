@@ -307,6 +307,17 @@ const UserProfile = ({ route, navigation }) => {
           <Text style={styles.optionText}>Edit Profile</Text>
         </TouchableOpacity>
 
+        <TouchableOpacity
+          onPress={() => navigation.navigate("EditLocation")}
+          style={styles.optionContainer}
+        >
+          <Image
+            source={require("../assets/Location.png")}
+            style={styles.icon}
+          />
+          <Text style={styles.optionText}>My Location</Text>
+        </TouchableOpacity>
+
         {user.type === "business" ? (
           <TouchableOpacity
             onPress={() => navigation.navigate("Payments")}
@@ -351,24 +362,13 @@ const UserProfile = ({ route, navigation }) => {
           <Text style={styles.optionText}>Notifications</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
+        {/* <TouchableOpacity
           onPress={() => navigation.navigate("MyTasks")}
           style={styles.optionContainer}
         >
           <Image source={require("../assets/Swap.png")} style={styles.icon} />
           <Text style={styles.optionText}>My Tasks</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={() => navigation.navigate("EditLocation")}
-          style={styles.optionContainer}
-        >
-          <Image
-            source={require("../assets/Location.png")}
-            style={styles.icon}
-          />
-          <Text style={styles.optionText}>My Location</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         <TouchableOpacity
           onPress={() => createAlert()}

@@ -17,6 +17,7 @@ export default function SignUp({ route, navigation }) {
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [modal, setModal] = useState(false);
+  console.log("route FOR SIGN UP", route.params);
 
   const { user, setUser } = useUser();
 
@@ -49,6 +50,11 @@ export default function SignUp({ route, navigation }) {
             username: username,
             user_id: userId,
             email: email,
+            type: route.params.type,
+            city: route.params.city,
+            state: route.params.state,
+            latitude: route.params.latitude,
+            longitude: route.params.longitude,
           },
         ]);
 
@@ -162,7 +168,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#ffffff",
     paddingHorizontal: 20,
-    paddingTop: 80,
+    paddingTop: 40,
   },
   forgotPassword: {
     marginBottom: 20,

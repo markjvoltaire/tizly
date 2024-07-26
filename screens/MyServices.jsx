@@ -119,7 +119,7 @@ const MyServices = ({ navigation }) => {
       )}
       {!isLoading && serviceList.length === 0 && (
         <View style={styles.noServicesContainer}>
-          <Text style={styles.noServicesText}>You have no services!.</Text>
+          <Text style={styles.noServicesText}>You have no services.</Text>
         </View>
       )}
       {!isLoading &&

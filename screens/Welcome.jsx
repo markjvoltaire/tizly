@@ -41,7 +41,7 @@ export default function Welcome({ navigation }) {
 
   function goToSignUp() {
     setModal(false);
-    navigation.navigate("SignUp");
+    navigation.navigate("ProfileType");
   }
 
   useEffect(() => {

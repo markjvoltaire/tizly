@@ -5,6 +5,9 @@ import Welcome from "../screens/Welcome";
 import Login from "../screens/Login";
 import SignUp from "../screens/SignUp";
 import ResetPassword from "../screens/ResetPassword";
+import ProfileType from "../screens/ProfileType";
+import AddLocation from "../screens/AddLocation";
+import NoAuthAddLocation from "../screens/NoAuthAddLocation";
 
 export default function NoAuth() {
   const Stack = createNativeStackNavigator();
@@ -18,11 +21,34 @@ export default function NoAuth() {
       />
 
       <Stack.Screen
+        name="ProfileType"
+        component={ProfileType}
+        options={{
+          tabBarVisible: false,
+          headerShown: true,
+          headerTitle: "Account Type",
+          headerTintColor: "black",
+        }} // Hide tab bar for this screen
+      />
+
+      <Stack.Screen
+        name="NoAuthAddLocation"
+        component={NoAuthAddLocation}
+        options={{
+          tabBarVisible: false,
+          headerShown: true,
+          headerTitle: "Location",
+          headerTintColor: "black",
+        }} // Hide tab bar for this screen
+      />
+
+      <Stack.Screen
         name="Login"
         component={Login}
         options={{
           tabBarVisible: false,
-          headerShown: false,
+          headerShown: true,
+          headerTintColor: "black",
         }} // Hide tab bar for this screen
       />
 
@@ -30,7 +56,7 @@ export default function NoAuth() {
         name="SignUp"
         component={SignUp}
         options={{
-          headerShown: false,
+          headerShown: true,
           headerTintColor: "black",
         }}
       />

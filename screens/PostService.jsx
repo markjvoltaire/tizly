@@ -134,6 +134,8 @@ export default function PostService({ navigation }) {
           thumbnail: resp.secure_url,
           price: price,
           byHour: byHour,
+          latitude: user.latitude,
+          longitude: user.longitude,
         },
       ]);
 
