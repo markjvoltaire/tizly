@@ -167,6 +167,7 @@ export default function BillingScreen() {
       const json = await response.json();
 
       if (json.accountLink.url) {
+        console.log(json.accountLink.url);
         Linking.openURL(json.accountLink.url);
       }
 
@@ -232,7 +233,7 @@ export default function BillingScreen() {
                   disabled={accountCreatePending}
                 />
                 {accountCreatePending && (
-                  <ActivityIndicator size="large" color="#5cb85c" />
+                  <ActivityIndicator size="large" color="#4A3AFF" />
                 )}
               </>
             )}
@@ -269,7 +270,7 @@ export default function BillingScreen() {
                   disabled={accountLinkCreatePending}
                 />
                 {accountLinkCreatePending && (
-                  <ActivityIndicator size="large" color="#5cb85c" />
+                  <ActivityIndicator size="large" color="#4A3AFF" />
                 )}
               </>
             )}
@@ -338,7 +339,7 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   button: {
-    backgroundColor: "#5cb85c",
+    backgroundColor: "#4A3AFF",
     padding: 15,
     borderRadius: 5,
     alignItems: "center",

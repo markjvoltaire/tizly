@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 10,
     justifyContent: "center",
-    backgroundColor: "#46A05F",
+    backgroundColor: "#4A3AFF",
     alignSelf: "center",
   },
   messageButtonText: {

@@ -50,7 +50,6 @@ export default function OrderDetails({ route, navigation }) {
     day: "numeric",
   });
 
-
   async function reportTask() {
     try {
       const { data, error } = await supabase.from("orderReports").insert([
@@ -311,7 +310,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   button: {
-    backgroundColor: "#46A05F",
+    backgroundColor: "#4A3AFF",
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
@@ -351,7 +350,7 @@ const styles = StyleSheet.create({
     height: 200,
   },
   modalButton: {
-    backgroundColor: "#46A05F",
+    backgroundColor: "#4A3AFF",
     padding: 10,
     borderRadius: 10,
     alignItems: "center",

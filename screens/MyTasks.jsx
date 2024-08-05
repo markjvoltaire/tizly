@@ -286,6 +286,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     backgroundColor: "grey",
     borderWidth: 1,
-    borderColor: "green",
+    borderColor: "#4A3AFF",
   },
 });

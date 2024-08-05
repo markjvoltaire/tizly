@@ -940,7 +940,7 @@ export default function Auth() {
                   height: size,
                   borderRadius: 100,
                   borderWidth: 2.5,
-                  borderColor: "green",
+                  borderColor: "#4A3AFF",
                   backgroundColor: "grey",
                 }}
               />

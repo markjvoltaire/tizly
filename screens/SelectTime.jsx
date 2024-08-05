@@ -257,7 +257,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   selectedTimeItem: {
-    backgroundColor: "#46A05F",
+    backgroundColor: "#4A3AFF",
   },
   disabledTimeItem: {
     backgroundColor: "#ccc",

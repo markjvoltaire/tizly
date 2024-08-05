@@ -64,7 +64,7 @@ export default function ReviewTask({ route, navigation }) {
           height: 250,
           borderRadius: 5,
           borderWidth: 0.5,
-          borderColor: "green",
+          borderColor: "#4A3AFF",
         }}
         initialRegion={{
           latitude: latitude,
@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   postButton: {
-    backgroundColor: "green",
+    backgroundColor: "#4A3AFF",
     paddingVertical: 15,
     alignItems: "center",
     borderRadius: 10,

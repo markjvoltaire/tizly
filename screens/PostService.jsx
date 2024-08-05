@@ -322,7 +322,7 @@ export default function PostService({ navigation }) {
               <TouchableOpacity
                 onPress={handleSubmit}
                 style={{
-                  backgroundColor: "#46A05F",
+                  backgroundColor: "#4A3AFF",
                   width: width * 0.8,
                   height: height * 0.06,
                   padding: 12,
@@ -384,7 +384,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   button: {
-    backgroundColor: "#5cb85c",
+    backgroundColor: "#4A3AFF",
     padding: 15,
     borderRadius: 5,
     alignItems: "center",

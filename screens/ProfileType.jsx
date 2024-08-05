@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
     borderColor: "#ddd",
   },
   selected: {
-    borderColor: "#46A05F",
+    borderColor: "#4A3AFF",
   },
   optionText: {
     fontSize: 18,

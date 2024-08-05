@@ -20,13 +20,12 @@ import ServiceCard from "../component/ServiceCard";
 import SearchServiceCard from "../component/SearchServiceCard";
 
 export default function PersonalHome({ navigation }) {
-  const [ntcList, setNtcList] = useState([]);
   const [forYouList, setForYouList] = useState([]);
   const [query, setQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
-  const [ratingModal, setRatingModal] = useState(false);
   const { user } = useUser();
   const [refreshing, setRefreshing] = useState(false); // State for refreshing
+  const [loading, setLoading] = useState(true);
 
   const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;
@@ -138,7 +137,7 @@ export default function PersonalHome({ navigation }) {
         style={{
           alignSelf: "center",
           fontFamily: "Poppins-Black",
-          color: "green",
+          color: "#4A3AFF",
           fontSize: 25,
           marginBottom: 10,
         }}
@@ -167,7 +166,7 @@ export default function PersonalHome({ navigation }) {
               alignSelf: "center",
               marginBottom: 15,
             }}
-            source={require("../assets/homeBanner.png")}
+            source={require("../assets/bookingImage.png")}
           />
 
           <View>{/* ADD CATEGORIES HERE */}</View>

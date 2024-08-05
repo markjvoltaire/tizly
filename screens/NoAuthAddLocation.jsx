@@ -324,7 +324,7 @@ const cities = [
     latitude: 36.0395,
   },
   {
-    city: "Greensboro",
+    city: "#4A3AFFsboro",
     state: "North Carolina",
     longitude: -79.791,
     latitude: 36.0726,
@@ -1222,7 +1222,7 @@ const styles = StyleSheet.create({
     fontWeight: "300",
   },
   button: {
-    backgroundColor: "green",
+    backgroundColor: "#4A3AFF",
     paddingVertical: 15,
     borderRadius: 5,
     alignItems: "center",

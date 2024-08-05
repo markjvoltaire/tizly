@@ -260,7 +260,7 @@ export default function UserCars({ navigation, city, state }) {
             ]}
             source={
               uploadComplete
-                ? require("../assets/lottie/greenCheck.json")
+                ? require("../assets/lottie/#4A3AFFCheck.json")
                 : require("../assets/lottie/airplaneLoading.json")
             }
             autoPlay

@@ -113,7 +113,7 @@ const MyServices = ({ navigation }) => {
     >
       {isLoading && (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="green" />
+          <ActivityIndicator size="large" color="#4A3AFF" />
           <Text>Loading services...</Text>
         </View>
       )}

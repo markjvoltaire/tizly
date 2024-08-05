@@ -291,7 +291,7 @@ export default function TaskDetails({ route, navigation }) {
             <TouchableOpacity
               onPress={() => handleComplete(task)}
               style={{
-                backgroundColor: "green",
+                backgroundColor: "#4A3AFF",
                 height: Dimensions.get("window").height * 0.07,
                 width: Dimensions.get("window").width * 0.6,
                 borderRadius: 10,
@@ -355,7 +355,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginBottom: 10,
     borderWidth: 0.5,
-    borderColor: "green",
+    borderColor: "#4A3AFF",
   },
   title: {
     fontSize: 22,
@@ -372,7 +372,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     backgroundColor: "grey",
     borderWidth: 1,
-    borderColor: "green",
+    borderColor: "#4A3AFF",
   },
   optionContainer: {
     flexDirection: "row",
@@ -394,7 +394,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   button: {
-    backgroundColor: "green",
+    backgroundColor: "#4A3AFF",
     height: Dimensions.get("window").height * 0.07,
     width: Dimensions.get("window").width * 0.9,
     borderRadius: 10,

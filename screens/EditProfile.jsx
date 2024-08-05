@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     backgroundColor: "grey",
     borderWidth: 1,
-    borderColor: "green",
+    borderColor: "#4A3AFF",
   },
   separator: {
     height: 1,
@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
     color: "#313131",
   },
   button: {
-    backgroundColor: "green",
+    backgroundColor: "#4A3AFF",
     paddingVertical: 15,
     borderRadius: 5,
     alignItems: "center",

@@ -89,7 +89,7 @@ export default function SignUp({ route, navigation }) {
         style={{
           alignSelf: "center",
           fontFamily: "Poppins-Black",
-          color: "green",
+          color: "#4A3AFF",
           fontSize: 45,
           marginBottom: 10,
         }}
@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   forgotPasswordText: {
-    color: "green",
+    color: "#4A3AFF",
     fontSize: 16,
   },
   formContainer: {

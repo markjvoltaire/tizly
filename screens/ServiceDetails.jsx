@@ -95,7 +95,7 @@ export default function ServiceDetails({ route, navigation }) {
               borderRadius: 20,
               backgroundColor: "grey",
               borderWidth: 1,
-              borderColor: "green",
+              borderColor: "#4A3AFF",
             }}
             source={{ uri: businessProfile.profileimage }}
           />
@@ -176,7 +176,7 @@ export default function ServiceDetails({ route, navigation }) {
           onPress={goToAddTime}
           disabled={loading}
           style={{
-            backgroundColor: "#46A05F",
+            backgroundColor: "#4A3AFF",
             height: screenHeight * 0.06,
             width: screenWidth * 0.9,
             borderRadius: 10,
@@ -194,7 +194,7 @@ export default function ServiceDetails({ route, navigation }) {
         </TouchableOpacity>
       </View>
       <Modal visible={processing} animationType="fade">
-        <SafeAreaView style={{ backgroundColor: "#46A05F", flex: 1 }}>
+        <SafeAreaView style={{ backgroundColor: "#4A3AFF", flex: 1 }}>
           <LottieView
             style={{
               height: 500,

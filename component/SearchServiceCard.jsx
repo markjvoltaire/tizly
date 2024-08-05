@@ -22,7 +22,7 @@ const SearchServiceCard = ({ navigation, item, index }) => {
   useEffect(() => {
     Animated.timing(fadeAnim, {
       toValue: 1,
-      duration: 1000, // Adjust as needed
+      duration: 2000, // Adjust as needed
       useNativeDriver: true,
     }).start();
   }, []);

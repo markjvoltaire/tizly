@@ -209,7 +209,7 @@ export default function InboxDetails({ route, navigation }) {
           <Pressable
             onPress={sendMessage}
             style={{
-              backgroundColor: "green",
+              backgroundColor: "#4A3AFF",
               width: screenWidth * 0.25,
               height: screenHeight * 0.04,
               justifyContent: "center",
@@ -341,7 +341,7 @@ const styles = StyleSheet.create({
     alignSelf: "flex-end",
   },
   businessMessage: {
-    backgroundColor: "green",
+    backgroundColor: "#4A3AFF",
     alignSelf: "flex-start",
   },
   userText: {

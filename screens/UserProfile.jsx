@@ -266,7 +266,7 @@ const UserProfile = ({ route, navigation }) => {
                 marginBottom: 15,
                 backgroundColor: "grey",
                 borderWidth: 1,
-                borderColor: "green",
+                borderColor: "#4A3AFF",
               }}
             />
             <Text style={styles.profileName}>{user.username}</Text>
@@ -286,7 +286,7 @@ const UserProfile = ({ route, navigation }) => {
         <View style={styles.toggleContainer}>
           <Text style={styles.toggleLabel}>Personal</Text>
           <Switch
-            trackColor={{ false: "#767577", true: "green" }}
+            trackColor={{ false: "#767577", true: "#4A3AFF" }}
             thumbColor={isEnabled ? "white" : "#f4f3f4"}
             ios_backgroundColor="#3e3e3e"
             onValueChange={toggleSwitch}
@@ -490,7 +490,7 @@ const styles = StyleSheet.create({
     marginBottom: 50,
   },
   button: {
-    backgroundColor: "#5cb85c",
+    backgroundColor: "#4A3AFF",
     paddingVertical: 15,
     borderRadius: 5,
     alignItems: "center",
@@ -506,7 +506,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginBottom: 10,
     borderWidth: 0.5,
-    borderColor: "green",
+    borderColor: "#4A3AFF",
   },
   optionContainer: {
     flexDirection: "row",

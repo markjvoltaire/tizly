@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     color: "grey",
   },
   button: {
-    backgroundColor: "green",
+    backgroundColor: "#4A3AFF",
     paddingVertical: 15,
     borderRadius: 5,
     alignItems: "center",

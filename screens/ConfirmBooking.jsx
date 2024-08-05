@@ -124,15 +124,15 @@ export default function ConfirmBooking({ route, navigation }) {
     getSellerBlob();
   }, []);
 
-  if (loading) {
-    return (
-      <View
-        style={{ justifyContent: "center", flex: 1, backgroundColor: "white" }}
-      >
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <View
+  //       style={{ justifyContent: "center", flex: 1, backgroundColor: "white" }}
+  //     >
+  //       <ActivityIndicator size="large" />
+  //     </View>
+  //   );
+  // }
 
   return (
     <View style={styles.container}>
@@ -178,7 +178,7 @@ export default function ConfirmBooking({ route, navigation }) {
       )}
 
       <TouchableOpacity style={styles.bookNowButton} onPress={handlePayPress}>
-        <Text style={styles.buttonText}>Complete Purchase</Text>
+        <Text style={styles.buttonText}>Complete Booking</Text>
       </TouchableOpacity>
 
       <Modal visible={processing} animationType="fade">
@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   bookNowButton: {
-    backgroundColor: "#46A05F",
+    backgroundColor: "#4A3AFF",
     borderRadius: 10,
     height: 50,
     width: "100%",
@@ -282,7 +282,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   modalContainer: {
-    backgroundColor: "#46A05F",
+    backgroundColor: "#4A3AFF",
     flex: 1,
     justifyContent: "center",
     alignItems: "center",

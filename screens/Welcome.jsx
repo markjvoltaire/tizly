@@ -66,7 +66,7 @@ export default function Welcome({ navigation }) {
   });
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#46A05F" }}>
+    <View style={{ flex: 1, backgroundColor: "#4A3AFF" }}>
       {loading ? (
         <View style={{ flex: 1, justifyContent: "center" }}>
           <ActivityIndicator size="large" color="white" />
@@ -98,7 +98,7 @@ export default function Welcome({ navigation }) {
                 opacity: fadeAnim,
               }}
             >
-              Business Made Simple.
+              Booking Made Simple.
             </Animated.Text>
           </View>
           <Modal animationType="slide" transparent={true} visible={modal}>

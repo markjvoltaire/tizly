@@ -232,7 +232,7 @@ const ServiceItem = ({ service, navigation }) => {
             <Text style={styles.modalTitle}>Manage Task</Text>
             <TouchableOpacity
               style={{
-                backgroundColor: "green",
+                backgroundColor: "#4A3AFF",
                 height: Dimensions.get("window").height * 0.07,
                 width: Dimensions.get("window").width * 0.6,
                 borderRadius: 10,
@@ -377,7 +377,7 @@ export default function Home({ navigation }) {
             style={{
               alignSelf: "center",
               fontFamily: "Poppins-Black",
-              color: "green",
+              color: "#4A3AFF",
               fontSize: 25,
               marginBottom: 10,
             }}
@@ -425,7 +425,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     backgroundColor: "grey",
     borderWidth: 1,
-    borderColor: "green",
+    borderColor: "#4A3AFF",
   },
   optionText: {},
   searchBar: {

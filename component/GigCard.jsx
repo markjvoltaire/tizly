@@ -122,11 +122,7 @@ const GigCard = ({ navigation, item }) => {
                 >
                   From: $200
                 </Text>
-                <LottieView
-                  autoPlay
-                  style={{ height: 40, width: 40 }}
-                  source={require("../assets/lottie/greenDot.json")}
-                />
+
                 <Text>Online Now</Text>
               </View>
             </View>

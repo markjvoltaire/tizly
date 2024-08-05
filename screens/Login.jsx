@@ -59,10 +59,6 @@ export default function Login({ navigation }) {
     }
   }
 
-  const handleLoginModal = () => {
-    setModalVisible(true);
-  };
-
   const logUserIn = () => {
     loginWithEmail();
   };
@@ -75,7 +71,7 @@ export default function Login({ navigation }) {
         style={{
           alignSelf: "center",
           fontFamily: "Poppins-Black",
-          color: "green",
+          color: "#4A3AFF",
           fontSize: 45,
           marginBottom: 10,
         }}
@@ -118,7 +114,7 @@ export default function Login({ navigation }) {
       <TouchableOpacity
         style={styles.forgotPassword}
         onPress={() => {
-          navigation.navigate("SignUp");
+          navigation.navigate("ProfileType");
         }}
       >
         <Text style={styles.forgotPasswordText}>Create an account</Text>
@@ -130,7 +126,7 @@ export default function Login({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#46A05F",
+    backgroundColor: "#4A3AFF",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -152,7 +148,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
   },
   loginButtonText: {
-    color: "green",
+    color: "#4A3AFF",
     fontSize: 18,
     fontWeight: "600",
   },
@@ -167,7 +163,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 20,
-    color: "green",
+    color: "#4A3AFF",
   },
   input: {
     height: 50,
@@ -182,7 +178,7 @@ const styles = StyleSheet.create({
     color: "black",
   },
   submitButton: {
-    backgroundColor: "black",
+    backgroundColor: "#4A3AFF",
     paddingVertical: 15,
     paddingHorizontal: 50,
     borderRadius: 30,
@@ -201,13 +197,13 @@ const styles = StyleSheet.create({
   signUpText: {
     marginRight: 5,
     fontSize: 16,
-    color: "green",
+    color: "#4A3AFF",
   },
   forgotPassword: {
     marginBottom: 20,
   },
   forgotPasswordText: {
-    color: "green",
+    color: "#4A3AFF",
     fontSize: 16,
   },
 });
