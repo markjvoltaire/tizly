@@ -128,8 +128,31 @@ export default function Auth() {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen
           name="HomeScreen"
-          component={PersonalHome}
-          options={{ tabBarVisible: false }} // Hide tab bar for this screen
+          component={
+            user.type === "business" && user.businessOnBoardComplete === false
+              ? Payments
+              : PersonalHome
+          }
+          options={{
+            headerTitle: "Home", // Customizing the header title
+            tabBarVisible: false,
+            headerShown:
+              user.type === "business" && user.businessOnBoardComplete === false
+                ? true
+                : false,
+          }} // Hide tab bar for this screen
+        />
+
+        <Stack.Screen
+          name="Payments"
+          component={Payments}
+          options={{
+            tabBarVisible: false,
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+            headerShown: true,
+            headerTitle: "Payments", // Customizing the header title
+          }}
         />
 
         <Stack.Screen
@@ -329,211 +352,211 @@ export default function Auth() {
     );
   };
 
-  const ExploreStack = () => {
-    return (
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen
-          name="HomeScreen"
-          component={Home}
-          options={{ tabBarVisible: false }} // Hide tab bar for this screen
-        />
+  // const ExploreStack = () => {
+  //   return (
+  //     <Stack.Navigator screenOptions={{ headerShown: false }}>
+  //       <Stack.Screen
+  //         name="HomeScreen"
+  //         component={Home}
+  //         options={{ tabBarVisible: false }} // Hide tab bar for this screen
+  //       />
 
-        <Stack.Screen
-          name="Messages"
-          component={Inbox}
-          options={{
-            tabBarVisible: false,
-            headerShown: true,
-            headerTitle: "Messages", // Customizing the header title
-            headerBackTitle: "Back", // Customizing the back button text
-            headerTintColor: "black", // Changing the color of the back button text
-          }}
-        />
+  //       <Stack.Screen
+  //         name="Messages"
+  //         component={Inbox}
+  //         options={{
+  //           tabBarVisible: false,
+  //           headerShown: true,
+  //           headerTitle: "Messages", // Customizing the header title
+  //           headerBackTitle: "Back", // Customizing the back button text
+  //           headerTintColor: "black", // Changing the color of the back button text
+  //         }}
+  //       />
 
-        <Stack.Screen
-          name="EditLocation"
-          component={EditLocation}
-          options={{
-            tabBarVisible: false,
-            headerShown: true,
-            headerTitle: "Edit Location", // Customizing the header title
-            headerBackTitle: "Back", // Customizing the back button text
-            headerTintColor: "black", // Changing the color of the back button text
-          }} // Hide tab bar for this screen
-        />
+  //       <Stack.Screen
+  //         name="EditLocation"
+  //         component={EditLocation}
+  //         options={{
+  //           tabBarVisible: false,
+  //           headerShown: true,
+  //           headerTitle: "Edit Location", // Customizing the header title
+  //           headerBackTitle: "Back", // Customizing the back button text
+  //           headerTintColor: "black", // Changing the color of the back button text
+  //         }} // Hide tab bar for this screen
+  //       />
 
-        <Stack.Screen
-          name="AddDate"
-          component={AddDate}
-          options={{
-            tabBarVisible: false,
-            headerShown: true,
-            headerTitle: "Select Date", // Customizing the header title
-            headerBackTitle: "Back", // Customizing the back button text
-            headerTintColor: "black", // Changing the color of the back button text
-          }} // Hide tab bar for this screen
-        />
+  //       <Stack.Screen
+  //         name="AddDate"
+  //         component={AddDate}
+  //         options={{
+  //           tabBarVisible: false,
+  //           headerShown: true,
+  //           headerTitle: "Select Date", // Customizing the header title
+  //           headerBackTitle: "Back", // Customizing the back button text
+  //           headerTintColor: "black", // Changing the color of the back button text
+  //         }} // Hide tab bar for this screen
+  //       />
 
-        <Stack.Screen
-          name="ConfirmBooking"
-          component={ConfirmBooking}
-          options={{
-            tabBarVisible: false,
-            headerShown: true,
-            headerTitle: "Confirm Booking", // Customizing the header title
-            headerBackTitle: "Back", // Customizing the back button text
-            headerTintColor: "black", // Changing the color of the back button text
-          }} // Hide tab bar for this screen
-        />
+  //       <Stack.Screen
+  //         name="ConfirmBooking"
+  //         component={ConfirmBooking}
+  //         options={{
+  //           tabBarVisible: false,
+  //           headerShown: true,
+  //           headerTitle: "Confirm Booking", // Customizing the header title
+  //           headerBackTitle: "Back", // Customizing the back button text
+  //           headerTintColor: "black", // Changing the color of the back button text
+  //         }} // Hide tab bar for this screen
+  //       />
 
-        <Stack.Screen
-          name="SelectTime"
-          component={SelectTime}
-          options={{
-            tabBarVisible: false,
-            headerShown: true,
-            headerTitle: "Select Time", // Customizing the header title
-            headerBackTitle: "Back", // Customizing the back button text
-            headerTintColor: "black", // Changing the color of the back button text
-          }} // Hide tab bar for this screen
-        />
+  //       <Stack.Screen
+  //         name="SelectTime"
+  //         component={SelectTime}
+  //         options={{
+  //           tabBarVisible: false,
+  //           headerShown: true,
+  //           headerTitle: "Select Time", // Customizing the header title
+  //           headerBackTitle: "Back", // Customizing the back button text
+  //           headerTintColor: "black", // Changing the color of the back button text
+  //         }} // Hide tab bar for this screen
+  //       />
 
-        <Stack.Screen
-          name="TaskDetails"
-          component={TaskDetails}
-          options={{
-            tabBarVisible: false,
-            headerShown: true,
-            headerTitle: "Task Details", // Customizing the header title
-            headerBackTitle: "Back", // Customizing the back button text
-            headerTintColor: "black", // Changing the color of the back button text
-          }} // Hide tab bar for this screen
-        />
+  //       <Stack.Screen
+  //         name="TaskDetails"
+  //         component={TaskDetails}
+  //         options={{
+  //           tabBarVisible: false,
+  //           headerShown: true,
+  //           headerTitle: "Task Details", // Customizing the header title
+  //           headerBackTitle: "Back", // Customizing the back button text
+  //           headerTintColor: "black", // Changing the color of the back button text
+  //         }} // Hide tab bar for this screen
+  //       />
 
-        <Stack.Screen
-          name="Settings"
-          component={Settings}
-          options={{
-            tabBarVisible: false,
-            headerShown: true,
-            headerTitle: "Settings", // Customizing the header title
-            headerBackTitle: "Back", // Customizing the back button text
-            headerTintColor: "black", // Changing the color of the back button text
-          }}
-        />
+  //       <Stack.Screen
+  //         name="Settings"
+  //         component={Settings}
+  //         options={{
+  //           tabBarVisible: false,
+  //           headerShown: true,
+  //           headerTitle: "Settings", // Customizing the header title
+  //           headerBackTitle: "Back", // Customizing the back button text
+  //           headerTintColor: "black", // Changing the color of the back button text
+  //         }}
+  //       />
 
-        <Stack.Screen
-          name="Orders"
-          component={MyOrders}
-          options={{
-            tabBarVisible: false,
-            headerShown: true,
-            headerTitle: "Orders", // Customizing the header title
-            headerBackTitle: "Back", // Customizing the back button text
-            headerTintColor: "black", // Changing the color of the back button text
-          }}
-        />
+  //       <Stack.Screen
+  //         name="Orders"
+  //         component={MyOrders}
+  //         options={{
+  //           tabBarVisible: false,
+  //           headerShown: true,
+  //           headerTitle: "Orders", // Customizing the header title
+  //           headerBackTitle: "Back", // Customizing the back button text
+  //           headerTintColor: "black", // Changing the color of the back button text
+  //         }}
+  //       />
 
-        <Stack.Screen
-          name="OrderConfirmation"
-          component={OrderConfirmation}
-          options={{
-            tabBarVisible: false,
-            headerShown: false,
-            headerTitle: "Order Confirmation", // Customizing the header title
-            headerBackTitle: "Back", // Customizing the back button text
-            headerTintColor: "black", // Changing the color of the back button text
-          }}
-        />
+  //       <Stack.Screen
+  //         name="OrderConfirmation"
+  //         component={OrderConfirmation}
+  //         options={{
+  //           tabBarVisible: false,
+  //           headerShown: false,
+  //           headerTitle: "Order Confirmation", // Customizing the header title
+  //           headerBackTitle: "Back", // Customizing the back button text
+  //           headerTintColor: "black", // Changing the color of the back button text
+  //         }}
+  //       />
 
-        <Stack.Screen
-          name="ServiceDetails"
-          component={ServiceDetails}
-          options={{
-            tabBarVisible: false,
-            headerShown: true,
-            headerTitle: "", // Customizing the header title
-            headerBackTitle: "Back", // Customizing the back button text
-            headerTintColor: "white", // Changing the color of the back button text
-            headerTransparent: true,
-          }}
-        />
+  //       <Stack.Screen
+  //         name="ServiceDetails"
+  //         component={ServiceDetails}
+  //         options={{
+  //           tabBarVisible: false,
+  //           headerShown: true,
+  //           headerTitle: "", // Customizing the header title
+  //           headerBackTitle: "Back", // Customizing the back button text
+  //           headerTintColor: "white", // Changing the color of the back button text
+  //           headerTransparent: true,
+  //         }}
+  //       />
 
-        <Stack.Screen
-          name="TaskSearch"
-          component={TaskSearch}
-          options={{
-            tabBarVisible: false,
-            headerShown: true,
-            headerTitle: "Services", // Customizing the header title
-            headerBackTitle: "Back", // Customizing the back button text
-            headerTintColor: "black", // Changing the color of the back button text
-          }}
-        />
+  //       <Stack.Screen
+  //         name="TaskSearch"
+  //         component={TaskSearch}
+  //         options={{
+  //           tabBarVisible: false,
+  //           headerShown: true,
+  //           headerTitle: "Services", // Customizing the header title
+  //           headerBackTitle: "Back", // Customizing the back button text
+  //           headerTintColor: "black", // Changing the color of the back button text
+  //         }}
+  //       />
 
-        <Stack.Screen
-          name="ProfileDetail"
-          component={ProfileDetail}
-          options={{
-            tabBarVisible: false,
-            headerShown: true,
-            headerTitle: "Profile Details", // Customizing the header title
-            headerBackTitle: "Back", // Customizing the back button text
-            headerTintColor: "black", // Changing the color of the back button text
-            headerTransparent: true,
-          }}
-        />
-        <Stack.Screen
-          name="UserProfile"
-          component={UserProfile}
-          options={{
-            tabBarVisible: false,
+  //       <Stack.Screen
+  //         name="ProfileDetail"
+  //         component={ProfileDetail}
+  //         options={{
+  //           tabBarVisible: false,
+  //           headerShown: true,
+  //           headerTitle: "Profile Details", // Customizing the header title
+  //           headerBackTitle: "Back", // Customizing the back button text
+  //           headerTintColor: "black", // Changing the color of the back button text
+  //           headerTransparent: true,
+  //         }}
+  //       />
+  //       <Stack.Screen
+  //         name="UserProfile"
+  //         component={UserProfile}
+  //         options={{
+  //           tabBarVisible: false,
 
-            headerTitle: "", // Customizing the header title
-            headerBackTitle: "Back", // Customizing the back button text
-            headerTintColor: "black", // Changing the color of the back button text
-            headerTransparent: true,
-          }} // Hide tab bar for this screen
-        />
+  //           headerTitle: "", // Customizing the header title
+  //           headerBackTitle: "Back", // Customizing the back button text
+  //           headerTintColor: "black", // Changing the color of the back button text
+  //           headerTransparent: true,
+  //         }} // Hide tab bar for this screen
+  //       />
 
-        <Stack.Screen
-          name="InboxDetails"
-          component={InboxDetails}
-          options={{
-            tabBarVisible: false,
-            headerShown: true,
-            headerTitle: "Message Thread", // Customizing the header title
-            headerBackTitle: "Back", // Customizing the back button text
-            headerTintColor: "black", // Changing the color of the back button text
-          }}
-        />
+  //       <Stack.Screen
+  //         name="InboxDetails"
+  //         component={InboxDetails}
+  //         options={{
+  //           tabBarVisible: false,
+  //           headerShown: true,
+  //           headerTitle: "Message Thread", // Customizing the header title
+  //           headerBackTitle: "Back", // Customizing the back button text
+  //           headerTintColor: "black", // Changing the color of the back button text
+  //         }}
+  //       />
 
-        <Stack.Screen
-          name="SignUp"
-          component={SignUp}
-          options={{
-            tabBarVisible: false,
-            headerShown: true,
-            headerTitle: "Sign Up", // Customizing the header title
-            headerBackTitle: "Back", // Customizing the back button text
-            headerTintColor: "black", // Changing the color of the back button text
-          }}
-        />
+  //       <Stack.Screen
+  //         name="SignUp"
+  //         component={SignUp}
+  //         options={{
+  //           tabBarVisible: false,
+  //           headerShown: true,
+  //           headerTitle: "Sign Up", // Customizing the header title
+  //           headerBackTitle: "Back", // Customizing the back button text
+  //           headerTintColor: "black", // Changing the color of the back button text
+  //         }}
+  //       />
 
-        <Stack.Screen
-          name="ResetPassword"
-          component={ResetPassword}
-          options={{
-            tabBarVisible: false,
-            headerShown: true,
-            headerTitle: "Password Reset", // Customizing the header title
-            headerBackTitle: "Back", // Customizing the back button text
-            headerTintColor: "black", // Changing the color of the back button text
-          }}
-        />
-      </Stack.Navigator>
-    );
-  };
+  //       <Stack.Screen
+  //         name="ResetPassword"
+  //         component={ResetPassword}
+  //         options={{
+  //           tabBarVisible: false,
+  //           headerShown: true,
+  //           headerTitle: "Password Reset", // Customizing the header title
+  //           headerBackTitle: "Back", // Customizing the back button text
+  //           headerTintColor: "black", // Changing the color of the back button text
+  //         }}
+  //       />
+  //     </Stack.Navigator>
+  //   );
+  // };
 
   const PostStack = () => {
     return (
@@ -891,12 +914,12 @@ export default function Auth() {
             tabBarIcon: ({ color, size, focused }) =>
               focused ? (
                 <Image
-                  source={require("../assets/post.png")}
+                  source={require("../assets/PlusActive.png")}
                   style={{ width: size, height: size }}
                 />
               ) : (
                 <Image
-                  source={require("../assets/postNotActive.png")}
+                  source={require("../assets/Plus.png")}
                   style={{ width: size, height: size }}
                 />
               ),

@@ -12,6 +12,7 @@ import {
   Alert,
   Dimensions,
   RefreshControl,
+  Modal,
 } from "react-native";
 import { supabase } from "../services/supabase";
 import { useUser } from "../context/UserContext";
@@ -26,9 +27,17 @@ export default function PersonalHome({ navigation }) {
   const { user } = useUser();
   const [refreshing, setRefreshing] = useState(false); // State for refreshing
   const [loading, setLoading] = useState(true);
+  const [onBoardModal, setOnBoardModal] = useState(false);
 
   const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;
+
+  useEffect(() => {
+    if (user.type === "business" && user.businessOnBoardComplete === false) {
+      console.log("SHOW MODAL");
+      setOnBoardModal(true);
+    }
+  }, [user]);
 
   async function getForYou() {
     const userLatitude = parseFloat(user.latitude);

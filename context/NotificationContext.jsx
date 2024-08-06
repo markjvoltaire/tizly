@@ -72,59 +72,6 @@ const NotificationProvider = ({ children }) => {
   };
 
   // useEffect hook to run code when the component mounts and unmounts
-  useEffect(() => {
-    // Check if the user has already made a decision about notifications
-    AsyncStorage.getItem("notificationPermission").then((permission) => {
-      if (permission === null) {
-        // Prompt the user to allow notifications if no decision has been made
-        Alert.alert(
-          "Notifications",
-          "Do you want to allow notifications?",
-          [
-            {
-              text: "Don't Allow",
-              onPress: () => handleNotificationPermission("deny"),
-              style: "cancel",
-            },
-            {
-              text: "Allow",
-              onPress: () => handleNotificationPermission("allow"),
-            },
-          ],
-          { cancelable: false }
-        );
-      } else if (permission === "allow") {
-        // User has previously allowed notifications
-        registerForPushNotificationsAsync().then((token) =>
-          savePushToken(token)
-        );
-      }
-    });
-
-    // Add listener for incoming notifications
-    notificationListener.current =
-      Notifications.addNotificationReceivedListener((notification) => {
-        setNotification(notification); // Set the received notification in state
-      });
-
-    // Add listener for notification responses
-    responseListener.current =
-      Notifications.addNotificationResponseReceivedListener((response) => {
-        console.log(response); // Log the response
-      });
-
-    // Cleanup function to remove listeners when the component unmounts
-    return () => {
-      if (notificationListener.current) {
-        Notifications.removeNotificationSubscription(
-          notificationListener.current
-        );
-      }
-      if (responseListener.current) {
-        Notifications.removeNotificationSubscription(responseListener.current);
-      }
-    };
-  }, []);
 
   // Render children components
   return <>{children}</>;

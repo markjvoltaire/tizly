@@ -217,7 +217,7 @@ export default function BillingScreen() {
             {!connectedAccountId && (
               <>
                 <Text style={styles.title}>
-                  Enter your email to get started
+                  Enter your business email to continue.
                 </Text>
                 <TextInput
                   autoCapitalize="none"
@@ -228,7 +228,7 @@ export default function BillingScreen() {
                   onChangeText={setEmail}
                 />
                 <CustomButton
-                  title="Get Started"
+                  title="Continue"
                   onPress={createAccount}
                   disabled={accountCreatePending}
                 />
@@ -252,7 +252,8 @@ export default function BillingScreen() {
                 ) : (
                   <>
                     <Text style={styles.title}>
-                      Add information to start accepting money
+                      Almost there! Just a few steps left to begin posting your
+                      services and start accepting payments!
                     </Text>
                     <Text style={styles.description}>
                       Tizly partners with Stripe to help you receive payments
