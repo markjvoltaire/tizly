@@ -35,7 +35,7 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": false,
+      "supportsTablet": true,
       "bundleIdentifier": "com.markjvoltaire.TizlyNative",
       "buildNumber": "187",
       "infoPlist": {
