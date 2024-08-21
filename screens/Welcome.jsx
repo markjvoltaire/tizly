@@ -69,36 +69,40 @@ export default function Welcome({ navigation }) {
     <View style={{ flex: 1, backgroundColor: "#4A3AFF" }}>
       {loading ? (
         <View style={{ flex: 1, justifyContent: "center" }}>
-          <ActivityIndicator size="large" color="white" />
+          <LottieView
+            autoPlay
+            style={{ height: 300, width: 300, alignSelf: "center" }}
+            source={require("../assets/lottie/3Dots.json")}
+          />
         </View>
       ) : (
         <SafeAreaView>
           <View>
-            <Animated.Text
+            <Animated.Image
               style={[
-                styles.headerText,
                 {
+                  aspectRatio: 1,
+                  height: 160,
+                  alignSelf: "center",
+                  top: height * 0.1,
                   opacity: fadeAnim,
-                  top: height * 0.15,
-                  fontFamily: "Poppins-Black",
                 },
               ]}
-            >
-              tizly
-            </Animated.Text>
+              source={require("../assets/icon.png")}
+            />
 
             {/* {Tagline} */}
             <Animated.Text
               style={{
-                fontFamily: "Poppins-Bold",
+                fontWeight: "800",
                 color: "white",
-                top: height * 0.16,
-                fontSize: 18,
+                top: height * 0.1,
+                fontSize: 25,
                 alignSelf: "center",
                 opacity: fadeAnim,
               }}
             >
-              Booking Made Simple.
+              Booking Made Simple
             </Animated.Text>
           </View>
           <Modal animationType="slide" transparent={true} visible={modal}>

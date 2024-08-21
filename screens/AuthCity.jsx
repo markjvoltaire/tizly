@@ -1135,15 +1135,16 @@ const cities = [
   },
 ];
 
-export default function NoAuthAddLocation({ route, navigation }) {
+export default function AuthCity({ route, navigation }) {
   const [city, setCity] = useState("");
   const [filteredCities, setFilteredCities] = useState([]);
   const [selectedCity, setSelectedCity] = useState(null);
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const dropdownHeight = useRef(new Animated.Value(0)).current;
 
-  const firstName = route.params.firstName;
-  const lastName = route.params.lastName;
+  const address = route.params.address;
+  const details = route.params.details;
+  const zipCode = route.params.zipCode;
 
   const handleCityChange = (text) => {
     setCity(text);
@@ -1177,23 +1178,16 @@ export default function NoAuthAddLocation({ route, navigation }) {
 
   const handleNext = () => {
     if (selectedCity) {
-      route.params.type === "business"
-        ? navigation.navigate("BusinessIntro", {
-            city: selectedCity.city,
-            state: selectedCity.state,
-            longitude: selectedCity.longitude,
-            latitude: selectedCity.latitude,
-            type: route.params.type,
-            firstName,
-            lastName,
-          })
-        : navigation.navigate("SignUp", {
-            city: selectedCity.city,
-            state: selectedCity.state,
-            longitude: selectedCity.longitude,
-            latitude: selectedCity.latitude,
-            type: route.params.type,
-          });
+      navigation.navigate("AuthBusinessIntro", {
+        city: selectedCity.city,
+        state: selectedCity.state,
+        longitude: selectedCity.longitude,
+        latitude: selectedCity.latitude,
+        type: route.params.type,
+        address,
+        details,
+        zipCode,
+      });
     } else {
       Alert.alert("Error", "Please select a city.");
     }

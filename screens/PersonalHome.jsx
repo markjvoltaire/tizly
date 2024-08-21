@@ -142,17 +142,6 @@ export default function PersonalHome({ navigation }) {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <Text
-        style={{
-          alignSelf: "center",
-          fontFamily: "Poppins-Black",
-          color: "#4A3AFF",
-          fontSize: 25,
-          marginBottom: 10,
-        }}
-      >
-        tizly
-      </Text>
       <TextInput
         style={styles.textInput}
         placeholder="What are you looking for?"
@@ -279,7 +268,6 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-
     backgroundColor: "#fff",
   },
   textInput: {
@@ -289,16 +277,17 @@ const styles = StyleSheet.create({
     borderWidth: 0.3,
     borderRadius: 12,
     marginBottom: 15,
-
+    backgroundColor: "#F4F4F4",
     paddingHorizontal: 10,
 
     alignSelf: "center",
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontFamily: "gilroy",
+    color: "#444444",
     marginBottom: 15,
-    marginLeft: 10,
+    marginLeft: 19,
   },
   secondSectionTitle: {
     marginTop: 4,

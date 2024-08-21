@@ -14,6 +14,7 @@ import {
   Modal,
   Dimensions,
   Switch,
+  SafeAreaView,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { supabase } from "../services/supabase";
@@ -31,7 +32,11 @@ export default function PostService({ navigation }) {
   const { user, setUser } = useUser();
   const height = Dimensions.get("window").height;
   const width = Dimensions.get("window").width;
-  const [onBoard, setOnBoard] = useState(user.businessOnBoardComplete);
+  const [onBoard, setOnBoard] = useState(user.stripeAccountId);
+
+  console.log("user", user.stripeAccountId);
+
+  console.log("onBoard", onBoard);
 
   async function getUser() {
     try {
@@ -57,7 +62,7 @@ export default function PostService({ navigation }) {
         try {
           const resp = await getUser();
           if (isMounted) {
-            resp.businessOnBoardComplete ? null : setOnBoard(null);
+            resp.stripeAccountId ? null : setOnBoard(null);
           }
         } catch (error) {
           console.error("Failed to fetch user:", error);
@@ -228,7 +233,7 @@ export default function PostService({ navigation }) {
 
   if (!onBoard) {
     return (
-      <View style={{ flex: 1, backgroundColor: "white" }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
         <Image
           style={{ height: 250, width: 250, alignSelf: "center" }}
           source={require("../assets/postNeedOnBoard.png")}
@@ -240,7 +245,8 @@ export default function PostService({ navigation }) {
           }}
         >
           <Text style={{ alignSelf: "center", fontSize: 19, marginBottom: 10 }}>
-            Before posting a service, please complete your business information.
+            Before you post a service, we’d love to get to know your business
+            better.
           </Text>
 
           <Text
@@ -255,11 +261,11 @@ export default function PostService({ navigation }) {
             posting services.
           </Text>
           <CustomButton
-            onPress={() => navigation.navigate("Payments")}
+            onPress={() => navigation.navigate("AuthName")}
             title="Get Started"
           />
         </View>
-      </View>
+      </SafeAreaView>
     );
   }
 

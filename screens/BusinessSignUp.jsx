@@ -15,16 +15,39 @@ import { useUser } from "../context/UserContext";
 import LottieView from "lottie-react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function SignUp({ route, navigation }) {
-  console.log("route", route);
+export default function BusinessSignUp({ route, navigation }) {
   const { user, setUser } = useUser();
   const [email, setEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [modal, setModal] = useState(false);
   const [userCred, setUserCred] = useState();
 
-  const signUpWithEmail = async () => {
+  const accountNumber = route.params.accountNumber;
+  const routingNumber = route.params.routingNumber;
+  const ssn = route.params.ssn;
+  const dob = route.params.route.params.route.params.dob;
+  const mcc = route.params.route.params.route.params.mcc.code;
+  const mccDescription = route.params.route.params.route.params.mcc.description;
+  const address = route.params.route.params.route.params.userInfo.address;
+  const city = route.params.route.params.route.params.userInfo.city;
+  const state = route.params.route.params.route.params.userInfo.state;
+  const zipCode = route.params.route.params.route.params.userInfo.zipCode;
+  const firstName =
+    route.params.route.params.route.params.userInfo.details.firstName;
+  const lastName =
+    route.params.route.params.route.params.userInfo.details.lastName;
+  const type = route.params.route.params.route.params.userInfo.details.type;
+  const longitude = route.params.route.params.route.params.userInfo.longitude;
+  const latitude = route.params.route.params.route.params.userInfo.latitude;
+
+  const month = route.params.route.params.route.params.month;
+  const day = route.params.route.params.route.params.day;
+  const year = route.params.route.params.route.params.year;
+
+  const signUpWithEmail = async (json) => {
     setModal(true);
     // Input validation
     if (password.length < 8) {
@@ -55,17 +78,17 @@ export default function SignUp({ route, navigation }) {
             username: username,
             user_id: userId,
             email: email,
-            type: route.params.type,
-            city: route.params.city,
-            state: route.params.state,
-            latitude: route.params.latitude,
-            longitude: route.params.longitude,
+            type: type,
+            city: city,
+            state: state,
+            latitude: latitude,
+            longitude: longitude,
+            stripeAccountId: json.account,
           },
         ]);
 
         setUser(resp.body[0]);
-        // await createAccount(resp.body[0]);
-
+        setModal(false);
         return resp;
       } else {
         console.log("LINE 67");
@@ -85,64 +108,63 @@ export default function SignUp({ route, navigation }) {
     }
   };
 
-  // const createAccount = async (resp) => {
-  //   setModal(true);
+  const createAccount = async (resp) => {
+    setModal(true);
 
-  //   try {
-  //     const response = await fetch("http://localhost:8080/account", {
-  //       method: "POST",
-  //       headers: {
-  //         Accept: "application/json",
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({
-  //         email: email,
-  //         userId: resp.user_id,
-  //         username: resp.username,
-  //         email: resp.email,
-  //       }),
-  //     });
+    try {
+      const response = await fetch("http://localhost:8080/account", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email,
+          username: username,
+          mcc: mcc,
+          ssn: ssn,
+          address: address,
+          city: city,
+          state: state,
+          firstName: firstName,
+          lastName: lastName,
+          zipCode: zipCode,
+          accountNumber: accountNumber,
+          routingNumber: routingNumber,
+          phoneNumber: phoneNumber,
+          month: month,
+          day: day,
+          year: year,
+        }),
+      });
 
-  //     if (!response.ok) {
-  //       console.log("response", response);
-  //       throw new Error(`HTTP error! Status: ${response.status}`);
-  //     }
+      if (!response.ok) {
+        console.log("response", response);
+        setModal(false);
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      } else {
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const json = await response.json();
 
-  //     const contentType = response.headers.get("content-type");
-  //     if (contentType && contentType.includes("application/json")) {
-  //       const json = await response.json();
-
-  //       if (json.account) {
-  //         try {
-  //           const res = await supabase
-  //             .from("profiles")
-  //             .select("*")
-  //             .eq("user_id", resp.user_id)
-  //             .single()
-  //             .limit(1);
-  //           setUser(res.body);
-  //           return res.body ?? null;
-  //         } catch (error) {
-  //           console.error("Failed to fetch user:", error);
-  //           return null;
-  //         }
-  //       }
-
-  //       if (json.error) {
-  //         Alert.alert(json.error);
-  //       }
-  //     } else {
-  //       const text = await response.text();
-  //       console.warn("Received non-JSON response:", text);
-  //       setError("Unexpected response format.");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error creating account:", error);
-  //   }
-  // };
+          await signUpWithEmail(json);
+          if (json.error) {
+            Alert.alert(json.error);
+            setModal(false);
+          }
+        } else {
+          const text = await response.text();
+          console.warn("Received non-JSON response:", text);
+          setError("Unexpected response format.");
+        }
+      }
+    } catch (error) {
+      console.error("Error creating account:", error);
+    }
+  };
 
   const handleSignUp = async () => {
-    await signUpWithEmail();
+    await createAccount();
   };
 
   return (
@@ -175,11 +197,19 @@ export default function SignUp({ route, navigation }) {
           <TextInput
             style={styles.input}
             placeholderTextColor="#A0A0A0"
-            placeholder="Name"
+            placeholder="Business Name"
             value={username}
             onChangeText={(text) => setUserName(text)}
           />
 
+          <TextInput
+            style={styles.input}
+            placeholderTextColor="#A0A0A0"
+            placeholder="Phone Number"
+            keyboardType="number-pad"
+            value={phoneNumber}
+            onChangeText={(text) => setPhoneNumber(text)}
+          />
           <TextInput
             style={styles.input}
             placeholderTextColor="#A0A0A0"

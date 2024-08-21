@@ -49,6 +49,13 @@ import MyOrders from "../screens/MyOrders";
 import MyTasks from "../screens/MyTasks";
 import MyHours from "../screens/MyHours";
 import Payments from "../screens/Payments";
+import AuthName from "../screens/AuthName";
+import AuthAddress from "../screens/AuthAddress";
+import AuthCity from "../screens/AuthCity";
+import AuthBusinessIntro from "../screens/AuthBusinessIntro";
+import AuthDob from "../screens/AuthDob";
+import AuthPaymentIntro from "../screens/AuthPaymentIntro";
+import AuthSsn from "../screens/AuthSsn";
 
 export default function Auth() {
   const Stack = createNativeStackNavigator();
@@ -128,18 +135,10 @@ export default function Auth() {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen
           name="HomeScreen"
-          component={
-            user.type === "business" && user.businessOnBoardComplete === false
-              ? Payments
-              : PersonalHome
-          }
+          component={PersonalHome}
           options={{
             headerTitle: "Home", // Customizing the header title
             tabBarVisible: false,
-            headerShown:
-              user.type === "business" && user.businessOnBoardComplete === false
-                ? true
-                : false,
           }} // Hide tab bar for this screen
         />
 
@@ -565,6 +564,7 @@ export default function Auth() {
           name="Post"
           component={user.type === "business" ? PostService : Post}
           options={{
+            headerShown: user.stripeAccountId === null ? false : true,
             headerTitle: "Post",
             tabBarVisible: false,
             headerBackTitle: "Back", // Customizing the back button text
@@ -573,14 +573,85 @@ export default function Auth() {
         />
 
         <Stack.Screen
-          name="Payments"
-          component={Payments}
+          name="AuthName"
+          component={AuthName}
+          options={{
+            tabBarVisible: false,
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+            headerShown: false,
+            headerTitle: "Name", // Customizing the header title
+          }}
+        />
+
+        <Stack.Screen
+          name="AuthDob"
+          component={AuthDob}
+          options={{
+            tabBarVisible: false,
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+            headerShown: false,
+            headerTitle: "Name", // Customizing the header title
+          }}
+        />
+
+        <Stack.Screen
+          name="AuthPaymentIntro"
+          component={AuthPaymentIntro}
           options={{
             tabBarVisible: false,
             headerBackTitle: "Back", // Customizing the back button text
             headerTintColor: "black", // Changing the color of the back button text
             headerShown: true,
-            headerTitle: "Payments", // Customizing the header title
+            headerTitle: "Verification", // Customizing the header title
+          }}
+        />
+
+        <Stack.Screen
+          name="AuthSsn"
+          component={AuthSsn}
+          options={{
+            tabBarVisible: false,
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+            headerShown: false,
+            headerTitle: "Verification", // Customizing the header title
+          }}
+        />
+
+        <Stack.Screen
+          name="AuthBusinessIntro"
+          component={AuthBusinessIntro}
+          options={{
+            tabBarVisible: false,
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+            headerShown: false,
+            headerTitle: "Name", // Customizing the header title
+          }}
+        />
+        <Stack.Screen
+          name="AuthCity"
+          component={AuthCity}
+          options={{
+            tabBarVisible: false,
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+            headerShown: false,
+            headerTitle: "Name", // Customizing the header title
+          }}
+        />
+
+        <Stack.Screen
+          name="AuthAddress"
+          component={AuthAddress}
+          options={{
+            tabBarVisible: false,
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+            headerShown: false,
+            headerTitle: "Name", // Customizing the header title
           }}
         />
 
