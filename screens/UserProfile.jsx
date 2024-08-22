@@ -318,7 +318,7 @@ const UserProfile = ({ route, navigation }) => {
           <Text style={styles.optionText}>My Location</Text>
         </TouchableOpacity>
 
-        {user.type === "business" ? (
+        {/* {user.type === "business" ? (
           <TouchableOpacity
             onPress={() => navigation.navigate("Payments")}
             style={styles.optionContainer}
@@ -329,7 +329,7 @@ const UserProfile = ({ route, navigation }) => {
             />
             <Text style={styles.optionText}>Business Settings</Text>
           </TouchableOpacity>
-        ) : null}
+        ) : null} */}
 
         {user.type === "business" ? (
           <TouchableOpacity

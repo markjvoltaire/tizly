@@ -6,6 +6,10 @@
     "detach": {
       "scheme": "tizly"
     },
+    "notification": {
+      "icon": "./assets/icon.png",
+      "color": "#fff"
+    },
     "plugins": [
       [
         "expo-notifications",
@@ -21,7 +25,7 @@
         }
       ]
     ],
-    "version": "67",
+    "version": "68",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -37,7 +41,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.markjvoltaire.TizlyNative",
-      "buildNumber": "187",
+      "buildNumber": "188",
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "Allow access to photos to upload photos from your library."
       }

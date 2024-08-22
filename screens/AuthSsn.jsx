@@ -77,7 +77,7 @@ export default function AuthSsn({ navigation, route }) {
     setModal(true);
 
     try {
-      const response = await fetch("http://localhost:8080/account", {
+      const response = await fetch("https://tizlyexpress.onrender.com/account", {
         method: "POST",
         headers: {
           Accept: "application/json",

@@ -13,12 +13,24 @@ import {
   Dimensions,
   RefreshControl,
   Modal,
+  Platform,
 } from "react-native";
 import { supabase } from "../services/supabase";
 import { useUser } from "../context/UserContext";
 import StarRating from "../component/StarRating";
 import ServiceCard from "../component/ServiceCard";
 import SearchServiceCard from "../component/SearchServiceCard";
+import * as Device from "expo-device";
+import * as Notifications from "expo-notifications";
+import Constants from "expo-constants";
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
 
 export default function PersonalHome({ navigation }) {
   const [forYouList, setForYouList] = useState([]);
@@ -26,18 +38,98 @@ export default function PersonalHome({ navigation }) {
   const [searchResults, setSearchResults] = useState([]);
   const { user } = useUser();
   const [refreshing, setRefreshing] = useState(false); // State for refreshing
-  const [loading, setLoading] = useState(true);
-  const [onBoardModal, setOnBoardModal] = useState(false);
+  const [expoPushToken, setExpoPushToken] = useState("");
 
   const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;
 
   useEffect(() => {
-    if (user.type === "business" && user.businessOnBoardComplete === false) {
-      console.log("SHOW MODAL");
-      setOnBoardModal(true);
+    console.log("REGISTERING FOR PUSH NOTIFICATIONS");
+    registerForPushNotificationsAsync().then(
+      (token) => token && setExpoPushToken(token)
+    );
+  }, []);
+
+  async function schedulePushNotification() {
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "You've got mail! 📬",
+        body: "Here is the notification body",
+        data: { data: "goes here", test: { test1: "more data" } },
+      },
+      trigger: { seconds: 2 },
+    });
+  }
+
+  async function registerForPushNotificationsAsync() {
+    let token;
+
+    if (Platform.OS === "android") {
+      await Notifications.setNotificationChannelAsync("default", {
+        name: "default",
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: "#FF231F7C",
+      });
     }
-  }, [user]);
+
+    if (Device.isDevice) {
+      const { status: existingStatus } =
+        await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+      if (existingStatus !== "granted") {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+      // if (finalStatus !== "granted") {
+      //   alert("Failed to get push token for push notification!");
+      //   return;
+      // }
+      // Learn more about projectId:
+      // https://docs.expo.dev/push-notifications/push-notifications-setup/#configure-projectid
+      // EAS projectId is used here.
+      try {
+        const projectId =
+          Constants?.expoConfig?.extra?.eas?.projectId ??
+          Constants?.easConfig?.projectId;
+        if (!projectId) {
+          throw new Error("Project ID not found");
+        }
+        token = (
+          await Notifications.getExpoPushTokenAsync({
+            projectId,
+          })
+        ).data;
+
+        await updateExpoToken(token);
+      } catch (e) {
+        token = `${e}`;
+      }
+    } else {
+      alert("Must use physical device for Push Notifications");
+    }
+
+    return token;
+  }
+
+  const updateExpoToken = async (token) => {
+    console.log("token", token);
+
+    const userId = supabase.auth.currentUser.id;
+
+    const res = await supabase
+      .from("profiles")
+      .update({ expo_push_token: token })
+      .eq("user_id", userId);
+
+    if (res.error) {
+      console.log("ERROR", res.error);
+      Alert.alert("Something Went Wrong");
+    }
+
+    console.log("res", res);
+    return res;
+  };
 
   async function getForYou() {
     const userLatitude = parseFloat(user.latitude);
@@ -142,6 +234,17 @@ export default function PersonalHome({ navigation }) {
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      <Text
+        style={{
+          alignSelf: "center",
+          fontFamily: "Poppins-Black",
+          color: "#4A3AFF",
+          fontSize: 25,
+          marginBottom: 10,
+        }}
+      >
+        tizly
+      </Text>
       <TextInput
         style={styles.textInput}
         placeholder="What are you looking for?"
@@ -180,7 +283,7 @@ export default function PersonalHome({ navigation }) {
           />
 
           <Text style={[styles.sectionTitle, styles.secondSectionTitle]}>
-            Nearby in {user.city}, {user.state}
+            Nearby {user.city}, {user.state}
           </Text>
           <ScrollView
             showsHorizontalScrollIndicator={false}
@@ -277,7 +380,8 @@ const styles = StyleSheet.create({
     borderWidth: 0.3,
     borderRadius: 12,
     marginBottom: 15,
-    backgroundColor: "#F4F4F4",
+
+    backgroundColor: "#F3F3F9",
     paddingHorizontal: 10,
 
     alignSelf: "center",

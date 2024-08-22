@@ -34,10 +34,6 @@ export default function PostService({ navigation }) {
   const width = Dimensions.get("window").width;
   const [onBoard, setOnBoard] = useState(user.stripeAccountId);
 
-  console.log("user", user.stripeAccountId);
-
-  console.log("onBoard", onBoard);
-
   async function getUser() {
     try {
       const resp = await supabase

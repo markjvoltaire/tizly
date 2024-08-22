@@ -42,6 +42,7 @@ export default function BusinessIntro({ route, navigation }) {
   };
 
   const handleSelect = (item) => {
+    console.log("item", item);
     setSelectedMCC(item);
     setDropdownVisible(false);
     Animated.timing(dropdownHeight, {

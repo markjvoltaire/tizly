@@ -85,8 +85,8 @@ const styles = StyleSheet.create({
   skeletonContainer: {
     paddingHorizontal: 15,
     paddingVertical: 10,
-    marginBottom: 30,
-    backgroundColor: "black",
+    marginBottom: 50,
+    backgroundColor: "grey",
     borderRadius: 10,
     shadowColor: "#000",
     shadowOffset: {
@@ -98,8 +98,8 @@ const styles = StyleSheet.create({
     elevation: 5,
     justifyContent: "center",
     alignItems: "center",
-    width: screenWidth * 0.96,
-    height: screenHeight * 0.25,
+    height: screenHeight * 0.42,
+    aspectRatio: 1,
   },
   cardContainer: {
     elevation: 5,

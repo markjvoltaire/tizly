@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator, Platform, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import { StripeProvider } from "@stripe/stripe-react-native";
@@ -7,11 +7,23 @@ import { StripeProvider } from "@stripe/stripe-react-native";
 import { supabase } from "./services/supabase";
 import { UserProvider } from "./context/UserContext";
 import Auth from "./auth/Auth";
-import NotificationProvider from "./context/NotificationContext";
+import { NotificationProvider } from "./context/NotificationContext";
 import NoAuth from "./auth/NoAuth";
+import * as Device from "expo-device";
+import * as Notifications from "expo-notifications";
+import Constants from "expo-constants";
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
 
 export default function App() {
   const [auth, setAuth] = useState(null);
+
   const [fontsLoaded] = useFonts({
     gilroy: require("./assets/fonts/gilroy.ttf"),
     interSemiBold: require("./assets/fonts/Inter-SemiBold.ttf"),

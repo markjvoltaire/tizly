@@ -112,31 +112,34 @@ export default function BusinessSignUp({ route, navigation }) {
     setModal(true);
 
     try {
-      const response = await fetch("http://localhost:8080/account", {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: email,
-          username: username,
-          mcc: mcc,
-          ssn: ssn,
-          address: address,
-          city: city,
-          state: state,
-          firstName: firstName,
-          lastName: lastName,
-          zipCode: zipCode,
-          accountNumber: accountNumber,
-          routingNumber: routingNumber,
-          phoneNumber: phoneNumber,
-          month: month,
-          day: day,
-          year: year,
-        }),
-      });
+      const response = await fetch(
+        "https://tizlyexpress.onrender.com/account",
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: email,
+            username: username,
+            mcc: mcc,
+            ssn: ssn,
+            address: address,
+            city: city,
+            state: state,
+            firstName: firstName,
+            lastName: lastName,
+            zipCode: zipCode,
+            accountNumber: accountNumber,
+            routingNumber: routingNumber,
+            phoneNumber: phoneNumber,
+            month: month,
+            day: day,
+            year: year,
+          }),
+        }
+      );
 
       if (!response.ok) {
         console.log("response", response);
@@ -153,12 +156,14 @@ export default function BusinessSignUp({ route, navigation }) {
             setModal(false);
           }
         } else {
+          setModal(false);
           const text = await response.text();
           console.warn("Received non-JSON response:", text);
           setError("Unexpected response format.");
         }
       }
     } catch (error) {
+      setModal(false);
       console.error("Error creating account:", error);
     }
   };

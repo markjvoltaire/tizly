@@ -106,8 +106,8 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   cardImage: {
-    width: screenWidth * 0.96,
-    height: screenHeight * 0.25,
+    height: screenHeight * 0.42,
+    aspectRatio: 1,
     marginBottom: 5,
     borderRadius: 10,
     resizeMode: "cover",

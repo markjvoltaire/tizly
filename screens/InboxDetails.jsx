@@ -57,6 +57,29 @@ export default function InboxDetails({ route, navigation }) {
     }
   };
 
+  const sendNotification = async (body, title) => {
+    console.log("Sending push notification...");
+
+    // notification message
+    const message = {
+      to: profileDetails.expo_push_token,
+      sound: "default",
+      title: title,
+      body: body,
+    };
+
+    await fetch("https://exp.host/--/api/v2/push/send", {
+      method: "POST",
+      headers: {
+        host: "exp.host",
+        accept: "application/json",
+        "accept-encoding": "gzip, deflate",
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(message),
+    });
+  };
+
   const sendMessage = async () => {
     try {
       const userId = supabase.auth.currentUser.id;
@@ -90,7 +113,7 @@ export default function InboxDetails({ route, navigation }) {
         setMessageText("");
 
         try {
-          await sendPushNotification(body, title, tokenCode);
+          await sendNotification(body, title, tokenCode);
         } catch (notificationError) {
           console.error("Error sending push notification:", notificationError);
         }
