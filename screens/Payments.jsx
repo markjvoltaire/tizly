@@ -97,7 +97,7 @@ export default function BillingScreen() {
 
     try {
       const response = await fetch(
-        "https://tizlyexpress.onrender.com/account",
+        "https://tizlyexpress.onrender.com/yooaccount",
         {
           method: "POST",
           headers: {

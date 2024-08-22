@@ -58,28 +58,38 @@ export default function InboxDetails({ route, navigation }) {
   };
 
   const sendNotification = async (body, title) => {
-    console.log("Sending push notification...");
+    try {
+      // Notification message
+      const message = {
+        to: profileDetails.expo_push_token,
+        sound: "default",
+        title: title,
+        body: body,
+      };
 
-    // notification message
-    const message = {
-      to: profileDetails.expo_push_token,
-      sound: "default",
-      title: title,
-      body: body,
-    };
+      // Send the notification
+      const response = await fetch("https://exp.host/--/api/v2/push/send", {
+        method: "POST",
+        headers: {
+          host: "exp.host",
+          accept: "application/json",
+          "accept-encoding": "gzip, deflate",
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(message),
+      });
 
-    await fetch("https://exp.host/--/api/v2/push/send", {
-      method: "POST",
-      headers: {
-        host: "exp.host",
-        accept: "application/json",
-        "accept-encoding": "gzip, deflate",
-        "content-type": "application/json",
-      },
-      body: JSON.stringify(message),
-    });
+      // Check if the response is successful
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      console.log("Notification sent successfully:", data);
+    } catch (error) {
+      console.error("Failed to send notification:", error);
+    }
   };
-
   const sendMessage = async () => {
     try {
       const userId = supabase.auth.currentUser.id;

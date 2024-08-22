@@ -100,6 +100,7 @@ export default function PersonalHome({ navigation }) {
             projectId,
           })
         ).data;
+        console.log("token", token);
 
         await updateExpoToken(token);
       } catch (e) {
@@ -127,7 +128,6 @@ export default function PersonalHome({ navigation }) {
       Alert.alert("Something Went Wrong");
     }
 
-    console.log("res", res);
     return res;
   };
 
