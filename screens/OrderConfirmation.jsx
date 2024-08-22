@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
+import { supabase } from "../services/supabase";
 
 export default function OrderConfirmation({ route, navigation }) {
   console.log("route", route);
@@ -21,6 +22,24 @@ export default function OrderConfirmation({ route, navigation }) {
     time,
     seller_id,
   } = order;
+
+  async function getUser() {
+    const resp = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("user_id", seller_id)
+      .single()
+      .limit(1);
+
+    return resp.body;
+  }
+
+  useEffect(() => {
+    const getUserInfo = async () => {
+      const resp = await getUser(service);
+    };
+    getUserInfo();
+  }, []);
 
   const formattedCreatedAt = new Date(created_at).toLocaleDateString("en-US", {
     weekday: "long",

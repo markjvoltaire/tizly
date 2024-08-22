@@ -31,6 +31,29 @@ export default function ConfirmBooking({ route, navigation }) {
   // Convert selectedDate to a readable format
   const formattedDate = new Date(selectedDate).toLocaleDateString();
 
+  const sendNotification = async (body, title, tokenCode) => {
+    console.log("Sending push notification...");
+
+    // notification message
+    const message = {
+      to: tokenCode,
+      sound: "default",
+      title: title,
+      body: body,
+    };
+
+    await fetch("https://exp.host/--/api/v2/push/send", {
+      method: "POST",
+      headers: {
+        host: "exp.host",
+        accept: "application/json",
+        "accept-encoding": "gzip, deflate",
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(message),
+    });
+  };
+
   async function uploadOrder() {
     const resp = await getUser(service);
     const tokenCode = resp.body.expo_push_token;
@@ -49,7 +72,7 @@ export default function ConfirmBooking({ route, navigation }) {
       const resp = await supabase.from("orders").insert([newOrder]);
 
       console.log("upload order response", resp);
-      await sendPushNotification(body, title, tokenCode);
+      await sendNotification(body, title, tokenCode);
       return resp;
     } catch (error) {
       console.error("Error submitting comment:", error);
