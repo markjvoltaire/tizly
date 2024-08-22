@@ -94,7 +94,7 @@ export default function InboxDetails({ route, navigation }) {
     try {
       const userId = supabase.auth.currentUser.id;
       const body = `New message from ${user.username}`;
-      const title = "New Message";
+      const title = "Tizly";
       const tokenCode = profileDetails.expo_push_token;
 
       if (messageText.trim() !== "") {

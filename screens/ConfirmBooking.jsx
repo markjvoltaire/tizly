@@ -58,7 +58,7 @@ export default function ConfirmBooking({ route, navigation }) {
     const resp = await getUser(service);
     const tokenCode = resp.body.expo_push_token;
     const body = `🎉 Great news! You've been booked.`;
-    const title = "New Booking";
+    const title = "Tizly";
     try {
       const newOrder = {
         seller_id: route.params.service.user_id,
