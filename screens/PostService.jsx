@@ -20,6 +20,7 @@ import * as ImagePicker from "expo-image-picker";
 import { supabase } from "../services/supabase";
 import { useUser } from "../context/UserContext";
 import { useFocusEffect } from "@react-navigation/native";
+import LottieView from "lottie-react-native";
 
 export default function PostService({ navigation }) {
   const [title, setTitle] = useState("");
@@ -109,13 +110,23 @@ export default function PostService({ navigation }) {
     const data = new FormData();
     data.append("file", imageData);
     data.append("upload_preset", "TizlyUpload");
-    data.append("cloud_name", "doz01gvsj");
 
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", "https://api.cloudinary.com/v1_1/doz01gvsj/upload", true);
+    xhr.open(
+      "POST",
+      "https://api.cloudinary.com/v1_1/debru0cpu/image/upload",
+      true
+    );
 
-    xhr.onload = () => handleUploadResponse(xhr, serviceData);
-    xhr.onerror = handleUploadError;
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        handleUploadResponse(xhr, serviceData);
+      } else {
+        handleUploadError(xhr);
+      }
+    };
+
+    xhr.onerror = () => handleUploadError(xhr);
 
     xhr.send(data);
   };
@@ -155,16 +166,19 @@ export default function PostService({ navigation }) {
     } else {
       console.log("Upload to Cloudinary failed.");
       handleUploadFailure();
+      setModalVisible(false);
     }
   };
 
   const handleUploadError = () => {
     console.log("An error occurred during the upload to Cloudinary.");
     handleUploadFailure();
+    setModalVisible(false);
   };
 
   const handleUploadFailure = () => {
     Alert.alert("An error occurred during the upload");
+    setModalVisible(false);
   };
 
   const handleClear = () => {
@@ -209,8 +223,12 @@ export default function PostService({ navigation }) {
         onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text>Uploading...</Text>
+          <View style={{ flex: 1, justifyContent: "center" }}>
+            <LottieView
+              autoPlay
+              style={{ height: 300, width: 300, alignSelf: "center" }}
+              source={require("../assets/lottie/3Dots.json")}
+            />
           </View>
         </View>
       </Modal>
@@ -447,7 +465,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: "#4A3AFF",
   },
   modalContent: {
     backgroundColor: "white",

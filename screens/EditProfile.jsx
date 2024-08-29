@@ -116,7 +116,11 @@ export default function EditProfile({ navigation }) {
     data.append("cloud_name", "doz01gvsj");
 
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", "https://api.cloudinary.com/v1_1/doz01gvsj/upload", true);
+    xhr.open(
+      "POST",
+      "https://api.cloudinary.com/v1_1/debru0cpu/image/upload",
+      true
+    );
 
     xhr.onload = () => handleUploadResponse(xhr);
     xhr.onerror = handleUploadError;
