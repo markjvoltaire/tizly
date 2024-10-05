@@ -3,6 +3,7 @@ import { ActivityIndicator, Platform, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import { StripeProvider } from "@stripe/stripe-react-native";
+import { createSharedElementStackNavigator } from "react-native-shared-element";
 
 import { supabase } from "./services/supabase";
 import { UserProvider } from "./context/UserContext";
@@ -62,7 +63,11 @@ export default function App() {
   }
 
   return (
-    <StripeProvider publishableKey="pk_live_51PVMhrJ0o91xj4miX08JQC1jkXFJUbIZLYai2U2YMvz4LgQjuwOZeuPWypfjun5oHy3FEnJuSgWcplAzauSGzwmy00EiRpqFYE">
+    <StripeProvider
+      merchantDisplayName="Tizly"
+      merchantIdentifier="merchant.com.tizly.TizlyNative" // The Merchant ID you created
+      publishableKey="pk_live_51PVMhrJ0o91xj4miX08JQC1jkXFJUbIZLYai2U2YMvz4LgQjuwOZeuPWypfjun5oHy3FEnJuSgWcplAzauSGzwmy00EiRpqFYE"
+    >
       <UserProvider>
         <NavigationContainer>
           {auth === null ? (

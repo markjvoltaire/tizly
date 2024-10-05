@@ -10,197 +10,93 @@ import {
   Dimensions,
   Image,
   Modal,
-  Button,
   ScrollView,
-  Pressable,
 } from "react-native";
 import { useStripe } from "@stripe/stripe-react-native";
 import React, { useState, useEffect, useRef } from "react";
 import { useUser } from "../context/UserContext";
-
 import LottieView from "lottie-react-native";
 import { supabase } from "../services/supabase";
+import { SharedElement } from "react-native-shared-element";
+
+const screenWidth = Dimensions.get("window").width;
+const screenHeight = Dimensions.get("window").height;
 
 export default function ServiceDetails({ route, navigation }) {
   const [loading, setLoading] = useState(false);
   const [processing, setProcessing] = useState(false);
-  const [orderList, setOrderList] = useState([]);
-  const { profile, serviceTitle, serviceDescription, servicePrice } =
-    route.params;
-
-  const screenWidth = Dimensions.get("window").width;
-  const screenHeight = Dimensions.get("window").height;
-
+  const [businessProfile, setBusinessProfile] = useState({});
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
       toValue: 1,
-      duration: 1000, // Adjust duration as needed
+      duration: 1000,
       useNativeDriver: true,
     }).start();
+    fetchBusinessProfile(route.params.item.user_id);
   }, []);
+
+  const fetchBusinessProfile = async (businessId) => {
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("user_id", businessId)
+        .single();
+      if (error) throw error;
+      setBusinessProfile(data);
+    } catch (error) {
+      console.error("Error fetching user data: ", error);
+      Alert.alert("Error", "Failed to fetch user data");
+    }
+  };
 
   const goToAddTime = () => {
     navigation.navigate("AddDate", { serviceInfo: route.params.item });
   };
 
-  const BusinessInfo = () => {
-    const [loading, setLoading] = useState(true);
-    const [businessProfile, setBusinessProfile] = useState({});
-    const businessId = route.params.item.user_id;
-
-    const getUser = async (businessId) => {
-      try {
-        const { data, error } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("user_id", businessId)
-          .single();
-
-        setBusinessProfile(data);
-        setLoading(false);
-        if (error) throw error;
-        return data;
-      } catch (error) {
-        console.error("Error fetching user data: ", error);
-        Alert.alert("Error", "Failed to fetch user data");
-      }
-    };
-
-    useEffect(() => {
-      getUser(businessId);
-    }, []);
-
-    if (loading) {
-      return (
-        <View>
-          <ActivityIndicator size="small" />
-        </View>
-      );
-    }
-
-    return (
-      <Pressable
-        onPress={() =>
-          navigation.navigate("ProfileDetail", { item: businessProfile })
-        }
-      >
-        <View style={{ flexDirection: "row" }}>
-          <Image
-            style={{
-              width: 24,
-              height: 24,
-              marginRight: 10,
-              borderRadius: 20,
-              backgroundColor: "grey",
-              borderWidth: 1,
-              borderColor: "#4A3AFF",
-            }}
-            source={{ uri: businessProfile.profileimage }}
-          />
-          <Text style={{ top: 4, fontWeight: "700", fontSize: 17 }}>
-            {businessProfile.username}
-          </Text>
-        </View>
-      </Pressable>
-    );
-  };
-
   return (
     <View style={styles.container}>
-      <ScrollView>
-        <Animated.Image
-          source={{ uri: route.params.item.thumbnail }}
-          style={[
-            {
-              width: screenWidth,
-              height: screenHeight * 0.55,
-              resizeMode: "cover",
-              backgroundColor: "black",
-            },
-            { opacity: fadeAnim },
-          ]}
-        />
-        <View
-          style={{
-            width: screenWidth,
-            height: screenHeight * 0.55,
-            backgroundColor: "black",
-            position: "absolute",
-            opacity: 0.5,
-          }}
-        ></View>
-
-        <View style={{ margin: 20, bottom: screenHeight * 0.1 }}>
-          <Text
-            style={{
-              color: "white",
-              fontWeight: "800",
-              fontSize: 25,
-            }}
-          >
-            {route.params.item.title}
-          </Text>
-
-          <Text style={{ color: "white", fontWeight: "600", fontSize: 18 }}>
-            from ${route.params.item.price}
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        style={{ paddingBottom: 100 }}
+      >
+        <SharedElement id={route.params.item.thumbnail}>
+          <Animated.Image
+            source={{ uri: route.params.item.thumbnail }}
+            style={styles.image}
+          />
+        </SharedElement>
+        <View style={styles.detailsContainer}>
+          <Text style={styles.serviceTitle}>{route.params.item.title}</Text>
+          <Text style={styles.priceText}>from ${route.params.item.price}</Text>
+          <BusinessInfo businessProfile={businessProfile} />
+          <Text style={styles.descriptionText}>
+            {route.params.item.description}
           </Text>
         </View>
-
-        <View style={{ bottom: screenHeight * 0.1 }}>
-          <View
-            style={{
-              margin: 10,
-              bottom: 6,
-            }}
-          >
-            <BusinessInfo route={route} />
-          </View>
-
-          <View
-            style={{
-              margin: 10,
-              bottom: 13,
-            }}
-          >
-            <Text style={{ color: "#2C3624" }}>
-              {route.params.item.description}
-            </Text>
-          </View>
-        </View>
+        <View style={{ marginBottom: 100 }}></View>
       </ScrollView>
 
       <View style={styles.bottomBar}>
         <TouchableOpacity
           onPress={goToAddTime}
           disabled={loading}
-          style={{
-            backgroundColor: "#4A3AFF",
-            height: screenHeight * 0.06,
-            width: screenWidth * 0.9,
-            borderRadius: 10,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
+          style={styles.bookButton}
         >
           {loading ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={{ color: "#fff", fontWeight: "bold" }}>
-              Select Date
-            </Text>
+            <Text style={styles.bookButtonText}>Select Date</Text>
           )}
         </TouchableOpacity>
       </View>
+
       <Modal visible={processing} animationType="fade">
-        <SafeAreaView style={{ backgroundColor: "#4A3AFF", flex: 1 }}>
+        <SafeAreaView style={styles.modalContainer}>
           <LottieView
-            style={{
-              height: 500,
-              width: 500,
-              alignSelf: "center",
-            }}
+            style={styles.lottie}
             source={require("../assets/lottie/3Dots.json")}
             autoPlay
           />
@@ -210,93 +106,85 @@ export default function ServiceDetails({ route, navigation }) {
   );
 }
 
+const BusinessInfo = ({ businessProfile }) => {
+  return (
+    <View style={styles.businessInfoContainer}>
+      <Image
+        style={styles.profileImage}
+        source={{ uri: businessProfile.profileimage }}
+      />
+      <View>
+        <Text style={styles.profileName}>{businessProfile.username}</Text>
+        <Text style={styles.ratingText}>5.0 ★ (83)</Text>
+      </View>
+    </View>
+  );
+};
+
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     backgroundColor: "white",
-
-    flex: 1, // Ensure the container takes the full height of the screen
   },
-
-  sectionContainer: {
-    paddingHorizontal: 20,
+  image: {
+    width: screenWidth,
+    height: screenHeight * 0.55,
+    resizeMode: "cover",
+  },
+  detailsContainer: {
+    padding: 10,
+  },
+  serviceTitle: {
+    fontSize: 25,
+    fontWeight: "800",
+    color: "#000",
+  },
+  priceText: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#4A3AFF",
+    marginVertical: 5,
+  },
+  descriptionText: {
+    fontSize: 16,
+    color: "#2C3624",
     marginTop: 10,
   },
-  sectionHeader: {
-    fontSize: 20,
-    fontWeight: "600",
-    marginBottom: 10,
-  },
-  reviewItem: {
-    marginBottom: 15,
-  },
-  reviewText: {
-    fontSize: 16,
-  },
-  reviewRating: {
-    fontSize: 14,
-    color: "grey",
-  },
-  bioText: {
-    fontSize: 14,
-    fontWeight: "400",
-  },
-  photoGridContainer: {
-    paddingTop: 20,
-  },
-  photoItem: {
-    flex: 1,
-    aspectRatio: 1,
-    margin: 2,
-  },
-  photoImage: {
-    flex: 1,
-    borderRadius: 8,
-    backgroundColor: "grey",
-  },
-  lineBreak: {
-    borderBottomWidth: 0.4,
-    borderBottomColor: "lightgrey",
-    marginHorizontal: 20,
-    marginVertical: 10,
-  },
-  starRatingContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  starRating: {
-    flexDirection: "row",
-  },
   bottomBar: {
+    backgroundColor: "#fff",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderTopWidth: 1,
+    borderTopColor: "#ccc",
     position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: "#fff",
-    borderTopWidth: 1,
-    borderTopColor: "#ccc",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  priceText: {
-    fontSize: 18,
   },
   bookButton: {
-    backgroundColor: "#007AFF",
-    paddingVertical: 10,
-    paddingHorizontal: 10,
-    borderRadius: 12,
+    backgroundColor: "#4A3AFF",
+    height: 50,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
   },
   bookButtonText: {
     color: "#fff",
     fontWeight: "bold",
   },
-  reviewHeader: {
+  modalContainer: {
+    flex: 1,
+    backgroundColor: "#4A3AFF",
+  },
+  lottie: {
+    height: 500,
+    width: 500,
+    alignSelf: "center",
+  },
+  businessInfoContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 5,
+    marginTop: 7,
   },
   profileImage: {
     width: 30,
@@ -308,5 +196,8 @@ const styles = StyleSheet.create({
   profileName: {
     fontWeight: "600",
     fontSize: 16,
+  },
+  ratingText: {
+    color: "grey",
   },
 });

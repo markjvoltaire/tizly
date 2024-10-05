@@ -56,6 +56,7 @@ import AuthBusinessIntro from "../screens/AuthBusinessIntro";
 import AuthDob from "../screens/AuthDob";
 import AuthPaymentIntro from "../screens/AuthPaymentIntro";
 import AuthSsn from "../screens/AuthSsn";
+import { createSharedElementStackNavigator } from "react-native-shared-element";
 
 export default function Auth() {
   const Stack = createNativeStackNavigator();
@@ -272,6 +273,10 @@ export default function Auth() {
             headerBackTitle: "Back", // Customizing the back button text
             headerTintColor: "white", // Changing the color of the back button text
             headerTransparent: true,
+          }}
+          sharedElements={(route) => {
+            const { item } = route.params;
+            return [item.thumbnail]; // return shared element ID
           }}
         />
 

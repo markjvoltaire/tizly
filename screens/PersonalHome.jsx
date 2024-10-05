@@ -14,6 +14,9 @@ import {
   RefreshControl,
   Modal,
   Platform,
+  TouchableOpacity,
+  FlatList,
+  Pressable,
 } from "react-native";
 import { supabase } from "../services/supabase";
 import { useUser } from "../context/UserContext";
@@ -32,15 +35,77 @@ Notifications.setNotificationHandler({
   }),
 });
 
-export default function PersonalHome({ navigation }) {
+const recommendedData = [
+  {
+    id: "1",
+    name: "David James San Francisco",
+    rating: "4.9",
+    reviews: "236",
+    address: "600 Fillmore Street, San Francisco",
+    category: "Hair Salon",
+    image: "https://example.com/salon1.jpg", // replace with actual image URLs
+  },
+  {
+    id: "2",
+    name: "Creation Beauty Studio",
+    rating: "5.0",
+    reviews: "83",
+    address: "7683 Thornton Avenue",
+    category: "Beauty Salon",
+    image: "https://example.com/salon2.jpg",
+  },
+  {
+    id: "3",
+    name: "Creation Beauty Studio",
+    rating: "5.0",
+    reviews: "83",
+    address: "7683 Thornton Avenue",
+    category: "Beauty Salon",
+    image: "https://example.com/salon2.jpg",
+  },
+];
+
+const newToFreshaData = [
+  {
+    id: "1",
+    name: "J. Roland Salon Sausalito",
+    rating: "5.0",
+    reviews: "82",
+    address: "20 Caledonia Street, Sausalito",
+    category: "Hair Salon",
+    image: "https://example.com/salon3.jpg",
+  },
+  {
+    id: "2",
+    name: "Jen Head Spa",
+    rating: "4.9",
+    reviews: "85",
+    address: "Fremont, CA",
+    category: "Beauty Spa",
+    image: "https://example.com/spa1.jpg",
+  },
+  {
+    id: "3",
+    name: "Jen Head Spa",
+    rating: "4.9",
+    reviews: "85",
+    address: "Fremont, CA",
+    category: "Beauty Spa",
+    image: "https://example.com/spa1.jpg",
+  },
+];
+
+const HomeScreen = ({ navigation }) => {
+  const { user } = useUser();
+
   const [forYouList, setForYouList] = useState([]);
   const [query, setQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
-  const { user } = useUser();
+
   const [refreshing, setRefreshing] = useState(false); // State for refreshing
   const [expoPushToken, setExpoPushToken] = useState("");
+  console.log("user", user);
 
-  const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;
 
   useEffect(() => {
@@ -107,7 +172,7 @@ export default function PersonalHome({ navigation }) {
         token = `${e}`;
       }
     } else {
-      alert("Must use physical device for Push Notifications");
+      null;
     }
 
     return token;
@@ -232,188 +297,205 @@ export default function PersonalHome({ navigation }) {
     }
   }, [query]);
 
-  return (
-    <SafeAreaView style={styles.safeArea}>
-      <Text
-        style={{
-          alignSelf: "center",
-          fontFamily: "Poppins-Black",
-          color: "#4A3AFF",
-          fontSize: 25,
-          marginBottom: 10,
-        }}
-      >
-        tizly
-      </Text>
-      <TextInput
-        style={styles.textInput}
-        placeholder="What are you looking for?"
-        placeholderTextColor="#888"
-        value={query}
-        onChangeText={(text) => setQuery(text)}
-      />
-      {query.length === 0 ? (
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          style={styles.container}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-        >
-          <Image
-            resizeMode="contain"
-            style={{
-              height: screenHeight * 0.16,
-              alignSelf: "center",
-              marginBottom: 15,
-            }}
-            source={require("../assets/bookingImage.png")}
-          />
+  const screenWidth = Dimensions.get("window").width;
 
-          <View>{/* ADD CATEGORIES HERE */}</View>
+  const handleCardPress = (item) => {
+    console.log(item);
+  };
 
-          <View
-            style={{
-              height: 0.8,
-              backgroundColor: "#e0e0e0",
-              marginBottom: 10,
-              width: screenWidth * 0.95,
-              alignSelf: "center",
-            }}
-          />
-
-          <Text style={[styles.sectionTitle, styles.secondSectionTitle]}>
-            Nearby {user.city}, {user.state}
+  const renderCard = ({ item }) => (
+    <Pressable onPress={() => navigation.navigate("ServiceDetails", { item })}>
+      <View style={styles.card}>
+        <Image
+          source={{ uri: item.thumbnail }} // Use the image URL dynamically
+          style={{
+            width: screenWidth * 0.7,
+            height: screenWidth * 0.6,
+            borderTopRightRadius: 10,
+            borderTopLeftRadius: 10,
+            resizeMode: "cover",
+          }}
+        />
+        <View style={{ padding: 5 }}>
+          <Text style={styles.cardTitle}>{item.title}</Text>
+          <Text style={styles.cardRating}>
+            {item.rating} ⭐ {item.reviews}
           </Text>
-          <ScrollView
-            showsHorizontalScrollIndicator={false}
-            style={{
-              marginBottom: 200,
-              alignSelf: "center",
-            }}
-          >
-            {forYouList.length === 0 ? (
-              <View
-                style={{
-                  flex: 1,
-                  height: 150,
+          <Text style={styles.cardAddress}>
+            {item.city}, {item.state}
+          </Text>
+          <Text style={styles.cardCategory}>Starting at ${item.price}</Text>
+        </View>
+      </View>
+    </Pressable>
+  );
 
-                  width: screenWidth,
-                  justifyContent: "center",
-                }}
-              >
-                <Text
-                  style={{
-                    alignSelf: "center",
-                    fontSize: 18,
-                    color: "gray",
-                    top: 10,
-                  }}
-                >
-                  No Services just yet
-                </Text>
-              </View>
-            ) : (
-              forYouList.map((item, index) => (
-                <View key={item.id}>
-                  <ServiceCard
-                    navigation={navigation}
-                    item={item}
-                    index={index}
-                  />
-                </View>
-              ))
-            )}
-          </ScrollView>
-        </ScrollView>
-      ) : (
-        <>
-          <Text style={[styles.sectionTitle, {}]}>Search Results</Text>
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            style={styles.container}
-          >
-            {searchResults.length === 0 ? (
-              <View>
-                <Text
-                  style={[
-                    styles.sectionTitle,
-                    { marginTop: 20, alignSelf: "center" },
-                  ]}
-                >
-                  No Results Found
-                </Text>
-              </View>
-            ) : (
-              <View style={{ alignSelf: "center", marginBottom: 200 }}>
-                {searchResults.map((item, index) => (
-                  <View key={index.id} index={index.id}>
-                    <SearchServiceCard
-                      navigation={navigation}
-                      item={item}
-                      index={index}
-                    />
-                  </View>
-                ))}
-              </View>
-            )}
-          </ScrollView>
-        </>
-      )}
+  const renderCategory = ({ item }) => (
+    <TouchableOpacity
+      style={{
+        backgroundColor: "blue",
+        borderRadius: 8,
+        margin: 4,
+        width: "40%", // Adjust based on your design
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <Text style={styles.categoryText}>{item.title}</Text>
+    </TouchableOpacity>
+  );
+
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
+      <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
+        <View style={{ padding: 2 }}>
+          <View style={styles.header}>
+            <Text style={styles.greeting}>Hey {user.username}</Text>
+          </View>
+
+          <TextInput
+            style={{
+              borderWidth: 1,
+              borderColor: "#dcdcdc",
+              borderRadius: 10,
+              padding: 15,
+              fontSize: 16,
+              backgroundColor: "#fff",
+              marginBottom: 2,
+            }}
+            placeholder="What are you looking for?"
+            autoCapitalize="none"
+          />
+
+          {/* Categories Section */}
+
+          {/* Savings Message */}
+          <View style={styles.messageContainer}>
+            <Text style={styles.messageText}>
+              invite a friend to earn 15% of your next booking
+            </Text>
+            <TouchableOpacity style={styles.exploreButton}>
+              <Text style={styles.exploreText}>Explore One Key benefits</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Recommended Section */}
+          <Text style={styles.sectionTitle}>Recommended</Text>
+          <View style={{ marginBottom: 10 }}>
+            <FlatList
+              horizontal
+              data={forYouList}
+              renderItem={renderCard}
+              keyExtractor={(item) => item.id}
+              showsHorizontalScrollIndicator={false}
+            />
+          </View>
+
+          <Text style={styles.sectionTitle}>New to Book Mate</Text>
+          <FlatList
+            horizontal
+            data={forYouList}
+            renderItem={renderCard}
+            keyExtractor={(item) => item.id}
+            showsHorizontalScrollIndicator={false}
+          />
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
   container: {
     flex: 1,
     backgroundColor: "#fff",
+    paddingHorizontal: 16,
   },
-  textInput: {
-    height: 40,
-    width: "90%",
-    borderColor: "gray",
-    borderWidth: 0.3,
-    borderRadius: 12,
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 20,
     marginBottom: 15,
-
-    backgroundColor: "#F3F3F9",
-    paddingHorizontal: 10,
-
+  },
+  greeting: {
+    fontSize: 26,
+    fontWeight: "bold",
+  },
+  categoriesContainer: {
+    flexDirection: "row",
+    marginBottom: 20,
+  },
+  categoryButton: {
+    backgroundColor: "#f8f8f8",
+    borderRadius: 8,
+    padding: 16,
+    margin: 4,
+    width: "60%", // Adjust based on your design
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  categoryText: {
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  messageContainer: {
+    backgroundColor: "#e6f0ff",
+    borderRadius: 8,
+    padding: 16,
+    width: "100%",
+    marginTop: 20,
+  },
+  messageText: {
+    fontSize: 16,
+    marginBottom: 18,
     alignSelf: "center",
+  },
+  exploreButton: {
+    backgroundColor: "#007bff",
+    borderRadius: 8,
+    padding: 10,
+    alignItems: "center",
+  },
+  exploreText: {
+    color: "white",
+    fontWeight: "600",
   },
   sectionTitle: {
     fontSize: 18,
-    fontFamily: "gilroy",
-    color: "#444444",
-    marginBottom: 15,
-    marginLeft: 19,
+    fontWeight: "bold",
+    marginTop: 20,
+    marginBottom: 10,
   },
-  secondSectionTitle: {
-    marginTop: 4,
+  card: {
+    borderRadius: 10,
+    overflow: "hidden",
+    borderWidth: 0.2,
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    marginRight: 30,
   },
-  horizontalScroll: {
-    marginBottom: 20,
-    marginLeft: 1,
-  },
-  scrollItem: {
-    width: 200,
-    height: 150,
-    marginBottom: 5,
-    backgroundColor: "#ccc",
-    marginRight: 2,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 5,
-  },
-  scrollItemText: {
-    color: "#2C3624",
-    fontFamily: "interSemiBold",
+  cardTitle: {
     fontSize: 16,
-    marginBottom: 5,
+    fontWeight: "bold",
+    marginTop: 10,
+  },
+  cardRating: {
+    fontSize: 14,
+    marginTop: 5,
+  },
+  cardAddress: {
+    fontSize: 12,
+    color: "#777",
+  },
+  cardCategory: {
+    fontSize: 12,
+    color: "#999",
+    marginTop: 5,
   },
 });
+
+export default HomeScreen;
