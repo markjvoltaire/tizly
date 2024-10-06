@@ -237,11 +237,18 @@ const ProfileScreen = ({ route, navigation }) => {
         <View style={styles.modalBackground}>
           <Pressable style={styles.modalContainer} onPress={closeModal}>
             {selectedImageUri && (
-              <Image
-                source={{ uri: selectedImageUri }}
-                style={styles.modalImage}
-                resizeMode="contain"
-              />
+              <>
+                <View
+                  style={{ justifyContent: "center", position: "absolute" }}
+                >
+                  <ActivityIndicator size="large" />
+                </View>
+                <Image
+                  source={{ uri: selectedImageUri }}
+                  style={styles.modalImage}
+                  resizeMode="contain"
+                />
+              </>
             )}
           </Pressable>
         </View>
@@ -355,6 +362,7 @@ const styles = StyleSheet.create({
     width: Dimensions.get("window").width / 3 - 2, // Divide screen width into three columns
     height: Dimensions.get("window").width / 3 - 2, // Make height equal to width for a square
     borderRadius: 5,
+    backgroundColor: "grey",
   },
   loadingContainer: {
     flex: 1,

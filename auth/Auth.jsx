@@ -297,12 +297,15 @@ export default function Auth() {
           name="ProfileDetail"
           component={ProfileDetail}
           options={{
-            tabBarVisible: false,
-
-            headerTitle: "", // Customizing the header title
-            headerBackTitle: "Back", // Customizing the back button text
-            headerTintColor: "black", // Changing the color of the back button text
+            headerShown: true,
+            headerBackTitle: "Back",
+            headerTitle: "",
             headerTransparent: true,
+            headerTitleStyle: {},
+            headerTintColor: "#000",
+            headerBackTitleStyle: {
+              color: "#000",
+            },
           }}
         />
         <Stack.Screen
