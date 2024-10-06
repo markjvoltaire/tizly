@@ -9,13 +9,13 @@ import {
   Alert,
   Modal,
   SafeAreaView,
-  ActivityIndicator,
+  TextInput,
+  ScrollView,
 } from "react-native";
 import { useStripe } from "@stripe/stripe-react-native";
 import { useUser } from "../context/UserContext";
 import LottieView from "lottie-react-native";
 import { supabase } from "../services/supabase";
-import { sendPushNotification } from "../services/notification";
 import { getUser } from "../services/user";
 
 export default function ConfirmBooking({ route, navigation }) {
@@ -28,6 +28,19 @@ export default function ConfirmBooking({ route, navigation }) {
   const { user } = useUser();
   const [sellerBlob, setSellerBlob] = useState();
 
+  // Function to calculate only the Stripe fee
+  const calculateStripeFee = (price, hours) => {
+    const serviceTotal = price * hours;
+    const stripeFee = serviceTotal * 0.029 + 0.3; // 2.9% fee + $0.30 fixed fee
+    return stripeFee;
+  };
+
+  // Function to calculate the total price including Stripe fee
+  const calculateTotalPrice = (price, hours) => {
+    const serviceTotal = price * hours;
+    const stripeFee = calculateStripeFee(price, hours);
+    return serviceTotal + stripeFee;
+  };
   // Convert selectedDate to a readable format
   const formattedDate = new Date(selectedDate).toLocaleDateString();
 
@@ -146,62 +159,60 @@ export default function ConfirmBooking({ route, navigation }) {
     };
     getSellerBlob();
   }, []);
-
-  // if (loading) {
-  //   return (
-  //     <View
-  //       style={{ justifyContent: "center", flex: 1, backgroundColor: "white" }}
-  //     >
-  //       <ActivityIndicator size="large" />
-  //     </View>
-  //   );
-  // }
-
   return (
-    <View style={styles.container}>
-      <View style={styles.detailsContainer}>
-        <View style={styles.serviceDetails}>
-          <Image style={styles.thumbnail} source={{ uri: service.thumbnail }} />
-          <View style={styles.textDetails}>
-            <Text style={styles.title}>{service.title}</Text>
-            <Text style={styles.detailText}>Date: {formattedDate}</Text>
-            <Text style={styles.detailText}>Time: {selectedTime}</Text>
-            <Text style={styles.detailText}>
-              Price: ${service.price} {service.byHour ? "per hour" : null}
-            </Text>
-          </View>
+    <ScrollView contentContainerStyle={styles.container}>
+      <View style={styles.serviceDetailsContainer}>
+        <Image style={styles.thumbnail} source={{ uri: service.thumbnail }} />
+        <View style={styles.serviceTextContainer}>
+          <Text style={styles.serviceTitle}>{service.title}</Text>
+
+          <Text style={styles.serviceAddress}>
+            7683 Thornton Avenue, Newark, Cali...
+          </Text>
         </View>
-        <Text style={styles.description}>{service.description}</Text>
       </View>
 
-      {service.byHour && (
-        <View style={styles.hoursSelector}>
-          <Text style={styles.hoursText}>Select Hours:</Text>
-          <View style={styles.hoursControl}>
-            <TouchableOpacity
-              style={styles.hoursButton}
-              onPress={() => setHours(hours - 1 >= 1 ? hours - 1 : 1)}
-            >
-              <Text>-</Text>
-            </TouchableOpacity>
-            <Text style={styles.hours}>{hours}</Text>
-            <TouchableOpacity
-              style={styles.hoursButton}
-              onPress={() => setHours(hours + 1)}
-            >
-              <Text>+</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      )}
-      {service.byHour && (
-        <Text style={styles.totalPrice}>
-          Total Price: ${service.price * hours}
-        </Text>
-      )}
+      <View style={styles.infoContainer}>
+        <Text style={styles.infoText}>{formattedDate}</Text>
+        <Text style={styles.infoText}>{selectedTime}</Text>
+      </View>
 
-      <TouchableOpacity style={styles.bookNowButton} onPress={handlePayPress}>
-        <Text style={styles.buttonText}>Complete Booking</Text>
+      <View style={styles.priceContainer}>
+        <View style={styles.priceRow}>
+          <Text style={styles.priceLabel}>{service.title}</Text>
+          <Text style={styles.priceValue}>${service.price}</Text>
+        </View>
+        <View style={styles.priceRow}>
+          <Text style={styles.priceLabel}>Processing Fee</Text>
+          <Text style={styles.priceValue}>
+            ${calculateStripeFee(service.price, hours).toFixed(2)}
+          </Text>
+        </View>
+
+        <View style={styles.priceRow}>
+          <Text style={styles.priceLabel}>Total</Text>
+          <Text style={styles.totalValue}>
+            ${calculateTotalPrice(service.price, hours).toFixed(2)}
+          </Text>
+        </View>
+      </View>
+
+      <View style={styles.discountContainer}>
+        <Text style={styles.sectionTitle}>Discount code</Text>
+        <View style={styles.discountInputRow}>
+          <TextInput
+            style={styles.discountInput}
+            placeholder="Enter discount code"
+            placeholderTextColor="#999"
+          />
+          <TouchableOpacity style={styles.applyButton}>
+            <Text style={styles.applyButtonText}>Apply</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <TouchableOpacity style={styles.confirmButton} onPress={handlePayPress}>
+        <Text style={styles.confirmButtonText}>Confirm</Text>
       </TouchableOpacity>
 
       <Modal visible={processing} animationType="fade">
@@ -213,99 +224,140 @@ export default function ConfirmBooking({ route, navigation }) {
           />
         </SafeAreaView>
       </Modal>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     backgroundColor: "#fff",
-    alignItems: "center",
-    padding: 20,
+    padding: 16,
   },
-  detailsContainer: {
-    width: "100%",
-    marginBottom: 20,
-    padding: 10,
-    backgroundColor: "#f0f0f0",
-    borderRadius: 10,
-  },
-  serviceDetails: {
+  headerContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 10,
+    justifyContent: "space-between",
+    marginBottom: 20,
+  },
+  backButton: {
+    fontSize: 18,
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+  },
+  serviceDetailsContainer: {
+    flexDirection: "row",
+    marginBottom: 20,
   },
   thumbnail: {
-    width: 100,
-    height: 100,
+    width: 80,
+    height: 80,
     borderRadius: 10,
     marginRight: 10,
   },
-  textDetails: {
+  serviceTextContainer: {
     flex: 1,
+    justifyContent: "center",
   },
-  title: {
+  serviceTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    marginBottom: 5,
-  },
-  description: {
-    fontSize: 16,
     marginBottom: 10,
+  },
+  serviceRating: {
+    fontSize: 16,
+    marginVertical: 4,
+  },
+  serviceAddress: {
+    fontSize: 14,
     color: "#666",
   },
-  detailText: {
+  infoContainer: {
+    marginBottom: 20,
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  infoText: {
     fontSize: 16,
-    marginBottom: 3,
     color: "#333",
   },
-  bookNowButton: {
-    backgroundColor: "#4A3AFF",
-    borderRadius: 10,
-    height: 50,
-    width: "100%",
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 10,
+  priceContainer: {
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: "#ddd",
+    paddingVertical: 10,
+    marginBottom: 20,
   },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 18,
-  },
-  hoursSelector: {
+  priceRow: {
     flexDirection: "row",
-    alignItems: "center",
-    marginTop: 10,
-    marginBottom: 15,
-  },
-  hoursText: {
-    fontWeight: "500",
-    fontSize: 17,
-    marginRight: 10,
-  },
-  hoursControl: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  hoursButton: {
-    backgroundColor: "#ddd",
-    padding: 8,
-    borderRadius: 5,
-  },
-  hours: {
-    fontWeight: "500",
-    fontSize: 20,
-    marginHorizontal: 10,
-  },
-  totalPrice: {
-    fontWeight: "700",
-    fontSize: 17,
+    justifyContent: "space-between",
     marginBottom: 10,
   },
+  priceLabel: {
+    fontSize: 16,
+  },
+  priceValue: {
+    fontSize: 16,
+  },
+  totalValue: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "green",
+  },
+  discountContainer: {
+    marginBottom: 20,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  discountInputRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  discountInput: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 5,
+    padding: 10,
+    fontSize: 16,
+  },
+  applyButton: {
+    backgroundColor: "#fff",
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    marginLeft: 10,
+    borderRadius: 5,
+  },
+  applyButtonText: {
+    fontWeight: "bold",
+  },
+  paymentContainer: {
+    marginBottom: 20,
+  },
+  paymentInfo: {
+    fontSize: 16,
+    color: "#333",
+  },
+  confirmButton: {
+    backgroundColor: "#000",
+    paddingVertical: 15,
+    alignItems: "center",
+    borderRadius: 5,
+  },
+  confirmButtonText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
   modalContainer: {
-    backgroundColor: "#4A3AFF",
+    backgroundColor: "#000",
     flex: 1,
     justifyContent: "center",
     alignItems: "center",

@@ -346,6 +346,19 @@ const UserProfile = ({ route, navigation }) => {
 
         {user.type === "business" ? (
           <TouchableOpacity
+            onPress={() => navigation.navigate("Upload")}
+            style={styles.optionContainer}
+          >
+            <Image
+              source={require("../assets/Upload.png")}
+              style={styles.icon}
+            />
+            <Text style={styles.optionText}>Upload To Portfolio</Text>
+          </TouchableOpacity>
+        ) : null}
+
+        {user.type === "business" ? (
+          <TouchableOpacity
             onPress={() => navigation.navigate("MyServices")}
             style={styles.optionContainer}
           >

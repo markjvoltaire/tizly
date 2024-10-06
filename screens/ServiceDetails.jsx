@@ -11,6 +11,7 @@ import {
   Image,
   Modal,
   ScrollView,
+  Pressable,
 } from "react-native";
 import { useStripe } from "@stripe/stripe-react-native";
 import React, { useState, useEffect, useRef } from "react";
@@ -67,11 +68,29 @@ export default function ServiceDetails({ route, navigation }) {
             source={{ uri: route.params.item.thumbnail }}
             style={styles.image}
           />
+          <View
+            style={{
+              backgroundColor: "black",
+              width: screenWidth,
+              height: screenHeight * 0.55,
+              resizeMode: "cover",
+              position: "absolute",
+              opacity: 0.5,
+            }}
+          ></View>
         </SharedElement>
         <View style={styles.detailsContainer}>
           <Text style={styles.serviceTitle}>{route.params.item.title}</Text>
           <Text style={styles.priceText}>from ${route.params.item.price}</Text>
-          <BusinessInfo businessProfile={businessProfile} />
+          <Pressable
+            onPress={() =>
+              navigation.navigate("ProfileDetail", {
+                item: businessProfile,
+              })
+            }
+          >
+            <BusinessInfo businessProfile={businessProfile} />
+          </Pressable>
           <Text style={styles.descriptionText}>
             {route.params.item.description}
           </Text>
@@ -135,14 +154,14 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   serviceTitle: {
-    fontSize: 25,
+    fontSize: 22,
     fontWeight: "800",
     color: "#000",
   },
   priceText: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#4A3AFF",
+    color: "black",
     marginVertical: 5,
   },
   descriptionText: {
@@ -162,7 +181,7 @@ const styles = StyleSheet.create({
     right: 0,
   },
   bookButton: {
-    backgroundColor: "#4A3AFF",
+    backgroundColor: "#007bff",
     height: 50,
     borderRadius: 10,
     alignItems: "center",

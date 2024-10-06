@@ -104,12 +104,10 @@ const HomeScreen = ({ navigation }) => {
 
   const [refreshing, setRefreshing] = useState(false); // State for refreshing
   const [expoPushToken, setExpoPushToken] = useState("");
-  console.log("user", user);
 
   const screenHeight = Dimensions.get("window").height;
 
   useEffect(() => {
-    console.log("REGISTERING FOR PUSH NOTIFICATIONS");
     registerForPushNotificationsAsync().then(
       (token) => token && setExpoPushToken(token)
     );
@@ -310,7 +308,7 @@ const HomeScreen = ({ navigation }) => {
           source={{ uri: item.thumbnail }} // Use the image URL dynamically
           style={{
             width: screenWidth * 0.7,
-            height: screenWidth * 0.6,
+            height: screenWidth * 0.64,
             borderTopRightRadius: 10,
             borderTopLeftRadius: 10,
             resizeMode: "cover",
@@ -318,9 +316,7 @@ const HomeScreen = ({ navigation }) => {
         />
         <View style={{ padding: 5 }}>
           <Text style={styles.cardTitle}>{item.title}</Text>
-          <Text style={styles.cardRating}>
-            {item.rating} ⭐ {item.reviews}
-          </Text>
+
           <Text style={styles.cardAddress}>
             {item.city}, {item.state}
           </Text>
@@ -348,7 +344,7 @@ const HomeScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
-        <View style={{ padding: 2 }}>
+        <View style={{ padding: 1 }}>
           <View style={styles.header}>
             <Text style={styles.greeting}>Hey {user.username}</Text>
           </View>
@@ -481,7 +477,8 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 16,
     fontWeight: "bold",
-    marginTop: 10,
+    marginTop: 1,
+    marginBottom: 2,
   },
   cardRating: {
     fontSize: 14,

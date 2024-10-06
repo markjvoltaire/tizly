@@ -57,6 +57,7 @@ import AuthDob from "../screens/AuthDob";
 import AuthPaymentIntro from "../screens/AuthPaymentIntro";
 import AuthSsn from "../screens/AuthSsn";
 import { createSharedElementStackNavigator } from "react-native-shared-element";
+import Upload from "../screens/Upload";
 
 export default function Auth() {
   const Stack = createNativeStackNavigator();
@@ -297,8 +298,8 @@ export default function Auth() {
           component={ProfileDetail}
           options={{
             tabBarVisible: false,
-            headerShown: true,
-            headerTitle: "Profile Details", // Customizing the header title
+
+            headerTitle: "", // Customizing the header title
             headerBackTitle: "Back", // Customizing the back button text
             headerTintColor: "black", // Changing the color of the back button text
             headerTransparent: true,
@@ -789,6 +790,22 @@ export default function Auth() {
             tabBarVisible: false,
             headerBackTitle: "Back", // Customizing the back button text
             headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+
+        <Stack.Screen
+          name="Upload"
+          component={Upload}
+          options={{
+            headerShown: true,
+            headerBackTitle: "Back",
+            headerTitle: "Upload",
+            headerTransparent: true,
+            headerTitleStyle: {},
+            headerTintColor: "#000",
+            headerBackTitleStyle: {
+              color: "#000",
+            },
           }}
         />
 
