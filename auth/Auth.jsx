@@ -58,6 +58,7 @@ import AuthPaymentIntro from "../screens/AuthPaymentIntro";
 import AuthSsn from "../screens/AuthSsn";
 import { createSharedElementStackNavigator } from "react-native-shared-element";
 import Upload from "../screens/Upload";
+import Category from "../screens/Category";
 
 export default function Auth() {
   const Stack = createNativeStackNavigator();
@@ -154,6 +155,19 @@ export default function Auth() {
             headerShown: true,
             headerTitle: "Payments", // Customizing the header title
           }}
+        />
+
+        <Stack.Screen
+          name="Category"
+          component={Category}
+          options={({ route }) => ({
+            tabBarVisible: false,
+            headerShown: true,
+            headerTitle: route.params?.item?.description || "Results",
+            headerBackTitle: "Back",
+            headerTintColor: "black",
+            headerTransparent: true,
+          })}
         />
 
         <Stack.Screen

@@ -60,9 +60,8 @@ export default function UploadProfilePhoto() {
         },
       ]);
 
-      console.log("error", error);
-
-      console.log("data", data);
+      resetImage();
+      Alert.alert("Image Added To Your Profile");
       return data;
     } else {
       console.log("Upload to Cloudinary failed.");
@@ -75,7 +74,7 @@ export default function UploadProfilePhoto() {
     Alert.alert("Upload Error", "An error occurred while uploading the image.");
   };
 
-  const handleXHR = async (serviceData) => {
+  const handleXHR = async () => {
     const data = new FormData();
     data.append("file", selectedImage);
     data.append("upload_preset", "TizlyUpload");

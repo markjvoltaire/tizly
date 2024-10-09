@@ -35,66 +35,6 @@ Notifications.setNotificationHandler({
   }),
 });
 
-const recommendedData = [
-  {
-    id: "1",
-    name: "David James San Francisco",
-    rating: "4.9",
-    reviews: "236",
-    address: "600 Fillmore Street, San Francisco",
-    category: "Hair Salon",
-    image: "https://example.com/salon1.jpg", // replace with actual image URLs
-  },
-  {
-    id: "2",
-    name: "Creation Beauty Studio",
-    rating: "5.0",
-    reviews: "83",
-    address: "7683 Thornton Avenue",
-    category: "Beauty Salon",
-    image: "https://example.com/salon2.jpg",
-  },
-  {
-    id: "3",
-    name: "Creation Beauty Studio",
-    rating: "5.0",
-    reviews: "83",
-    address: "7683 Thornton Avenue",
-    category: "Beauty Salon",
-    image: "https://example.com/salon2.jpg",
-  },
-];
-
-const newToFreshaData = [
-  {
-    id: "1",
-    name: "J. Roland Salon Sausalito",
-    rating: "5.0",
-    reviews: "82",
-    address: "20 Caledonia Street, Sausalito",
-    category: "Hair Salon",
-    image: "https://example.com/salon3.jpg",
-  },
-  {
-    id: "2",
-    name: "Jen Head Spa",
-    rating: "4.9",
-    reviews: "85",
-    address: "Fremont, CA",
-    category: "Beauty Spa",
-    image: "https://example.com/spa1.jpg",
-  },
-  {
-    id: "3",
-    name: "Jen Head Spa",
-    rating: "4.9",
-    reviews: "85",
-    address: "Fremont, CA",
-    category: "Beauty Spa",
-    image: "https://example.com/spa1.jpg",
-  },
-];
-
 const HomeScreen = ({ navigation }) => {
   const { user } = useUser();
 
@@ -106,6 +46,24 @@ const HomeScreen = ({ navigation }) => {
   const [expoPushToken, setExpoPushToken] = useState("");
 
   const screenHeight = Dimensions.get("window").height;
+
+  const services = [
+    { id: 1, description: "Lawn care" },
+    { id: 2, description: "Car wash" },
+    { id: 3, description: "House cleaning" },
+    { id: 4, description: "Dog grooming" },
+    { id: 5, description: "Photographer" },
+    { id: 6, description: "Plumbing" },
+    { id: 7, description: "Electrician" },
+    { id: 8, description: "Personal trainer" },
+    { id: 9, description: "Massage therapy" },
+    { id: 10, description: "Handyman" },
+    { id: 11, description: "Event planning" },
+    { id: 12, description: "Makeup artist" },
+    { id: 13, description: "Hair stylist" },
+    { id: 14, description: "Tutoring" },
+    { id: 15, description: "IT support" },
+  ];
 
   useEffect(() => {
     registerForPushNotificationsAsync().then(
@@ -163,7 +121,6 @@ const HomeScreen = ({ navigation }) => {
             projectId,
           })
         ).data;
-        console.log("token", token);
 
         await updateExpoToken(token);
       } catch (e) {
@@ -176,23 +133,21 @@ const HomeScreen = ({ navigation }) => {
     return token;
   }
 
-  const updateExpoToken = async (token) => {
-    console.log("token", token);
+  // const updateExpoToken = async (token) => {
+  //   const userId = supabase.auth.currentUser.id;
 
-    const userId = supabase.auth.currentUser.id;
+  //   const res = await supabase
+  //     .from("profiles")
+  //     .update({ expo_push_token: token })
+  //     .eq("user_id", userId);
 
-    const res = await supabase
-      .from("profiles")
-      .update({ expo_push_token: token })
-      .eq("user_id", userId);
+  //   if (res.error) {
+  //     console.log("ERROR", res.error);
+  //     Alert.alert("Something Went Wrong");
+  //   }
 
-    if (res.error) {
-      console.log("ERROR", res.error);
-      Alert.alert("Something Went Wrong");
-    }
-
-    return res;
-  };
+  //   return res;
+  // };
 
   async function getForYou() {
     const userLatitude = parseFloat(user.latitude);
@@ -252,24 +207,14 @@ const HomeScreen = ({ navigation }) => {
     }
   }
 
-  async function searchServices() {
-    try {
-      const { data, error } = await supabase
-        .from("services")
-        .select("*")
-        .ilike("description", `%${query}%`)
-        .eq("deactivated", false);
-
-      if (error) {
-        throw error;
-      }
-
-      setSearchResults(data); // Assuming setSearchResults is correctly defined elsewhere
-    } catch (error) {
-      console.error("Error searching services:", error.message);
-      Alert.alert("Error", "Failed to search services");
-    }
-  }
+  const searchServices = () => {
+    const filteredServices = services.filter(
+      (service) =>
+        !service.deactivated &&
+        service.description.toLowerCase().includes(query.toLowerCase())
+    );
+    setSearchResults(filteredServices);
+  };
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -297,10 +242,6 @@ const HomeScreen = ({ navigation }) => {
 
   const screenWidth = Dimensions.get("window").width;
 
-  const handleCardPress = (item) => {
-    console.log(item);
-  };
-
   const renderCard = ({ item }) => (
     <Pressable onPress={() => navigation.navigate("ServiceDetails", { item })}>
       <View style={styles.card}>
@@ -312,6 +253,7 @@ const HomeScreen = ({ navigation }) => {
             borderTopRightRadius: 10,
             borderTopLeftRadius: 10,
             resizeMode: "cover",
+            backgroundColor: "grey",
           }}
         />
         <View style={{ padding: 5 }}>
@@ -326,86 +268,128 @@ const HomeScreen = ({ navigation }) => {
     </Pressable>
   );
 
-  const renderCategory = ({ item }) => (
-    <TouchableOpacity
-      style={{
-        backgroundColor: "blue",
-        borderRadius: 8,
-        margin: 4,
-        width: "40%", // Adjust based on your design
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <Text style={styles.categoryText}>{item.title}</Text>
-    </TouchableOpacity>
-  );
-
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
-      <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
-        <View style={{ padding: 1 }}>
-          <View style={styles.header}>
-            <Text style={styles.greeting}>Hey {user.username}</Text>
-          </View>
-
-          <TextInput
-            style={{
-              borderWidth: 1,
-              borderColor: "#dcdcdc",
-              borderRadius: 10,
-              padding: 15,
-              fontSize: 16,
-              backgroundColor: "#fff",
-              marginBottom: 2,
-            }}
-            placeholder="What are you looking for?"
-            autoCapitalize="none"
-          />
-
-          {/* Categories Section */}
-
-          {/* Savings Message */}
-          <View style={styles.messageContainer}>
-            <Text style={styles.messageText}>
-              invite a friend to earn 15% of your next booking
-            </Text>
-            <TouchableOpacity style={styles.exploreButton}>
-              <Text style={styles.exploreText}>Explore One Key benefits</Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* Recommended Section */}
-          <Text style={styles.sectionTitle}>Recommended</Text>
-          <View style={{ marginBottom: 10 }}>
-            <FlatList
-              horizontal
-              data={forYouList}
-              renderItem={renderCard}
-              keyExtractor={(item) => item.id}
-              showsHorizontalScrollIndicator={false}
-            />
-          </View>
-
-          <Text style={styles.sectionTitle}>New to Book Mate</Text>
-          <FlatList
-            horizontal
-            data={forYouList}
-            renderItem={renderCard}
-            keyExtractor={(item) => item.id}
-            showsHorizontalScrollIndicator={false}
-          />
+      <View style={{ padding: 10 }}>
+        <View style={styles.header}>
+          <Text style={styles.greeting}>Hey {user.username}</Text>
         </View>
-      </ScrollView>
+        <TextInput
+          style={{
+            borderWidth: 1,
+            borderColor: "#dcdcdc",
+            borderRadius: 10,
+            padding: 15,
+            fontSize: 16,
+            backgroundColor: "#fff",
+          }}
+          autoCorrect={false}
+          placeholder="What are you looking for?"
+          autoCapitalize="none"
+          value={query}
+          onChangeText={(text) => setQuery(text)}
+        />
+      </View>
+      <View style={{ flex: 1 }}>
+        {query === "" ? (
+          <>
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              style={styles.container}
+            >
+              <View style={{ padding: 2, marginBottom: 50 }}>
+                {/* Categories Section */}
+
+                {/* Recommended Section */}
+                <Text style={styles.sectionTitle}>Recommended</Text>
+                <View style={{ marginBottom: 10 }}>
+                  <FlatList
+                    horizontal
+                    data={forYouList}
+                    renderItem={renderCard}
+                    keyExtractor={(item) => item.id}
+                    showsHorizontalScrollIndicator={false}
+                  />
+                </View>
+
+                <Text style={styles.sectionTitle}>New to Book Mate</Text>
+                <FlatList
+                  horizontal
+                  data={forYouList}
+                  renderItem={renderCard}
+                  keyExtractor={(item) => item.id}
+                  showsHorizontalScrollIndicator={false}
+                />
+              </View>
+            </ScrollView>
+          </>
+        ) : (
+          <>
+            <Text style={styles.sectionTitle}>Search Results</Text>
+            {services.length === 0 ? (
+              <ScrollView
+                showsVerticalScrollIndicator={false}
+                style={styles.container}
+              >
+                <View>
+                  <Text
+                    style={[
+                      styles.sectionTitle,
+                      { marginTop: 20, alignSelf: "center" },
+                    ]}
+                  >
+                    No Results Found
+                  </Text>
+                </View>
+              </ScrollView>
+            ) : searchResults.length === 0 ? (
+              <ScrollView style={{ padding: 10 }}>
+                <Text style={{ alignSelf: "center", fontWeight: "700" }}>
+                  No Results
+                </Text>
+              </ScrollView>
+            ) : (
+              <View style={{ height: screenHeight * 0.32 }}>
+                <FlatList
+                  data={searchResults}
+                  renderItem={({ item }) => (
+                    <View
+                      style={{
+                        padding: 10,
+                        width: screenWidth * 0.6,
+                        marginBottom: 10,
+                      }}
+                      key={item.id}
+                    >
+                      <Pressable
+                        onPress={() =>
+                          navigation.navigate("Category", {
+                            item,
+                          })
+                        }
+                      >
+                        <Text style={{ fontWeight: "300" }}>
+                          {item.description}
+                        </Text>
+                      </Pressable>
+                    </View>
+                  )}
+                  keyExtractor={(item) => item.id.toString()}
+                />
+              </View>
+            )}
+          </>
+        )}
+      </View>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: "#fff",
-    paddingHorizontal: 3,
+
+    padding: 2,
   },
   header: {
     flexDirection: "row",
@@ -440,7 +424,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 16,
     width: "100%",
-    marginTop: 20,
   },
   messageText: {
     fontSize: 16,
@@ -460,8 +443,9 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    marginTop: 20,
+
     marginBottom: 10,
+    padding: 10,
   },
   card: {
     borderRadius: 10,
@@ -477,8 +461,6 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 16,
     fontWeight: "bold",
-    marginTop: 1,
-    marginBottom: 2,
   },
   cardRating: {
     fontSize: 14,

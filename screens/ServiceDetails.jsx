@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
     right: 0,
   },
   bookButton: {
-    backgroundColor: "#007bff",
+    backgroundColor: "black",
     height: 50,
     borderRadius: 10,
     alignItems: "center",

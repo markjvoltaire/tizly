@@ -60,7 +60,10 @@ const SearchServiceCard = ({ navigation, item, index }) => {
   }
 
   return (
-    <Pressable onPress={() => navigation.navigate("ServiceDetails", { item })}>
+    <Pressable
+      key={index.id}
+      onPress={() => navigation.navigate("ServiceDetails", { item })}
+    >
       <View style={styles.cardContainer}>
         <Animated.Image
           source={{ uri: item.thumbnail }}

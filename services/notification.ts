@@ -51,7 +51,6 @@ export async function sendPushNotification(
   body: string,
   tokenCode: string
 ) {
-  console.log("tokenCode", tokenCode);
   const message = {
     to: tokenCode,
     sound: "default",
