@@ -16,7 +16,6 @@ export default function OrderCard({ item, user, navigation }) {
   const [profile, setProfile] = useState({});
   const [loading, setLoading] = useState(true);
 
-  console.log("item", item);
 
   async function getUser(post) {
     const resp = await supabase

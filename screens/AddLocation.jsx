@@ -1161,7 +1161,6 @@ export default function AddLocation({ route, navigation }) {
     setCity(`${selectedCity.city}, ${selectedCity.state}`);
     setFilteredCities([]);
     setSelectedCity(selectedCity);
-    console.log("selectedCity", selectedCity);
   };
 
   const handleNext = () => {

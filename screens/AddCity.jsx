@@ -1174,7 +1174,6 @@ export default function AddCity({ route, navigation }) {
     setFilteredCities([]);
     setSelectedCity(selectedCity);
     setIsDropdownVisible(false);
-    console.log("selectedCity", selectedCity);
   };
 
   const handleNext = () => {

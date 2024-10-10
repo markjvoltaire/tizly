@@ -44,7 +44,6 @@ export default function AuthBusinessIntro({ route, navigation }) {
   
 
   const handleSelect = (item) => {
-    console.log("item", item);
     setSelectedMCC(item);
     setDropdownVisible(false);
     Animated.timing(dropdownHeight, {

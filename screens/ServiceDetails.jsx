@@ -28,6 +28,8 @@ export default function ServiceDetails({ route, navigation }) {
   const [processing, setProcessing] = useState(false);
   const [businessProfile, setBusinessProfile] = useState({});
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const [bookingCount, setBookingCount] = useState(0);
+  const [ratingAverage, setRatingAverage] = useState(0);
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -37,6 +39,49 @@ export default function ServiceDetails({ route, navigation }) {
     }).start();
     fetchBusinessProfile(route.params.item.user_id);
   }, []);
+
+  async function getBookingCount() {
+    const res = await supabase
+      .from("orders")
+      .select("*")
+      .eq("orderStatus", "complete")
+      .eq("seller_id", route.params.item.user_id);
+
+    setBookingCount(res.body.length);
+
+    return res.body;
+  }
+
+  async function getRatings() {
+    try {
+      const { data, error } = await supabase
+        .from("orders")
+        .select("rating")
+        .eq("orderStatus", "complete")
+        .eq("seller_id", route.params.item.user_id);
+
+      if (error) {
+        console.error("Error fetching ratings:", error.message);
+        return null; // or handle the error as needed
+      }
+
+      if (!data || data.length === 0) {
+        console.log("No ratings found.");
+        return null; // or handle the case where no ratings are found
+      }
+
+      // Calculate the average rating
+      const totalRatings = data.reduce((sum, record) => sum + record.rating, 0);
+      const averageRating = totalRatings / data.length;
+
+      setRatingAverage(averageRating);
+
+      return { averageRating };
+    } catch (err) {
+      console.error("Unexpected error:", err.message);
+      return null; // or handle the error as needed
+    }
+  }
 
   const fetchBusinessProfile = async (businessId) => {
     try {
@@ -56,6 +101,17 @@ export default function ServiceDetails({ route, navigation }) {
   const goToAddTime = () => {
     navigation.navigate("AddDate", { serviceInfo: route.params.item });
   };
+
+  useEffect(() => {
+    const getInfo = async () => {
+      const res = await getBookingCount();
+      const resp = await getRatings();
+
+      console.log("resp", resp);
+      setBookingCount(res.length);
+    };
+    getInfo();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -89,7 +145,11 @@ export default function ServiceDetails({ route, navigation }) {
               })
             }
           >
-            <BusinessInfo businessProfile={businessProfile} />
+            <BusinessInfo
+              bookingCount={bookingCount}
+              businessProfile={businessProfile}
+              ratingAverage={ratingAverage}
+            />
           </Pressable>
           <Text style={styles.descriptionText}>
             {route.params.item.description}
@@ -125,7 +185,7 @@ export default function ServiceDetails({ route, navigation }) {
   );
 }
 
-const BusinessInfo = ({ businessProfile }) => {
+const BusinessInfo = ({ businessProfile, bookingCount, ratingAverage }) => {
   return (
     <View style={styles.businessInfoContainer}>
       <Image
@@ -134,7 +194,9 @@ const BusinessInfo = ({ businessProfile }) => {
       />
       <View>
         <Text style={styles.profileName}>{businessProfile.username}</Text>
-        <Text style={styles.ratingText}>5.0 ★ (83)</Text>
+        <Text style={styles.ratingText}>
+          {ratingAverage} ★ ({bookingCount})
+        </Text>
       </View>
     </View>
   );

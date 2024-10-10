@@ -45,7 +45,6 @@ export default function ConfirmBooking({ route, navigation }) {
   const formattedDate = new Date(selectedDate).toLocaleDateString();
 
   const sendNotification = async (body, title, tokenCode) => {
-    console.log("Sending push notification...");
 
     // notification message
     const message = {
@@ -84,7 +83,6 @@ export default function ConfirmBooking({ route, navigation }) {
       };
       const resp = await supabase.from("orders").insert([newOrder]);
 
-      console.log("upload order response", resp);
       await sendNotification(body, title, tokenCode);
       return resp;
     } catch (error) {

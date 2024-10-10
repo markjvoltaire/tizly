@@ -16,7 +16,6 @@ export default function NoAuthAddLocation({ route, navigation }) {
   const [zipCode, setZipCode] = useState("");
   const [zipCodeError, setZipCodeError] = useState("");
 
-  console.log("route", route);
 
   const details = route.params;
 

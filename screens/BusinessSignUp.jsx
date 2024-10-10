@@ -47,21 +47,17 @@ export default function BusinessSignUp({ route, navigation }) {
   const day = route.params.route.params.route.params.day;
   const year = route.params.route.params.route.params.year;
 
-  console.log("mcc", mccDescription);
-
   const signUpWithEmail = async (json) => {
     setModal(true);
     // Input validation
     if (password.length < 8) {
       Alert.alert("Password should be 8 or more characters");
-      console.log("LINE 28");
       setModal(false);
       return;
     }
 
     if (!email) {
       Alert.alert("Please fill in all field inputs");
-      console.log("LINE 35");
       setModal(false);
 
       return;
@@ -94,7 +90,6 @@ export default function BusinessSignUp({ route, navigation }) {
         setModal(false);
         return resp;
       } else {
-        console.log("LINE 67");
         setModal(false);
         Alert.alert(error.message);
         console.error("Error during sign-up:", error);
@@ -145,7 +140,6 @@ export default function BusinessSignUp({ route, navigation }) {
       );
 
       if (!response.ok) {
-        console.log("response", response);
         setModal(false);
         throw new Error(`HTTP error! Status: ${response.status}`);
       } else {
