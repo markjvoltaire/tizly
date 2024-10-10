@@ -10,10 +10,12 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { supabase } from "../services/supabase";
+import { useUser } from "../context/UserContext";
 
 export default function Category({ route, navigation }) {
   const [listOfPros, setListOfPros] = useState([]); // Initialize as an empty array
   const [loading, setLoading] = useState(true); // Loading state
+  const { user } = useUser();
   const {
     item: { description, id },
   } = route.params;
@@ -27,13 +29,41 @@ export default function Category({ route, navigation }) {
     return resp.body;
   }
 
+  // Function to calculate distance between two lat/lng points
+  function getDistance(lat1, lon1, lat2, lon2) {
+    const R = 3958.8; // Radius of the Earth in miles
+    const dLat = (lat2 - lat1) * (Math.PI / 180);
+    const dLon = (lon2 - lon1) * (Math.PI / 180);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * (Math.PI / 180)) *
+        Math.cos(lat2 * (Math.PI / 180)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c; // Distance in miles
+  }
+
   useEffect(() => {
     const getPros = async () => {
       setLoading(true); // Start loading
-      const res = await getProfessionals();
-      setListOfPros(res); // Set the response to the state
+      const professionals = await getProfessionals();
+
+      // Filter professionals within a 50-mile radius
+      const filteredPros = professionals.filter((pro) => {
+        const distance = getDistance(
+          user.latitude,
+          user.longitude,
+          pro.latitude,
+          pro.longitude
+        );
+        return distance <= 50; // Only return professionals within 50 miles
+      });
+
+      setListOfPros(filteredPros); // Set the filtered response to the state
       setLoading(false); // End loading
     };
+
     getPros();
   }, []);
 
@@ -95,10 +125,7 @@ export default function Category({ route, navigation }) {
                   <Text style={styles.cardTitle}>
                     {item.username || "No Username Provided"}
                   </Text>
-                  <Text style={styles.cardModerator}>
-                    {item.niche}
-                    {/* Replace with your item.price if available */}
-                  </Text>
+                  <Text style={styles.cardModerator}>{item.niche}</Text>
                 </View>
                 <View style={styles.cardFooter}>
                   <Text style={styles.cardStats}>

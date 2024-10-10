@@ -18,17 +18,38 @@ export default function BusinessIntro({ route, navigation }) {
 
   const zipCode = route.params.zipCode;
 
+  const services = [
+    { id: 1, description: "Lawn care" },
+    { id: 2, description: "Car wash" },
+    { id: 3, description: "House cleaning" },
+    { id: 4, description: "Dog grooming" },
+    { id: 5, description: "Photographer" },
+    { id: 6, description: "Plumbing" },
+    { id: 7, description: "Electrician" },
+    { id: 8, description: "Fitness" },
+    { id: 9, description: "Massage therapy" },
+    { id: 10, description: "Handyman" },
+    { id: 11, description: "Event planning" },
+    { id: 12, description: "Makeup artist" },
+    { id: 13, description: "Hair stylist" },
+    { id: 14, description: "Tutoring" },
+    { id: 15, description: "Videography" },
+    { id: 16, description: "Barber" },
+  ];
+
   const mccs = [
-    { id: 1, code: "7230", description: "Beauty" },
-    { id: 2, code: "7241", description: "Barber Shops" },
+    { id: 1, code: "7230", description: "Makeup artist" },
+    { id: 2, code: "7241", description: "Barber" },
     { id: 3, code: "5813", description: "Bartending" },
-    { id: 4, code: "7542", description: "Auto Detailing" },
-    { id: 5, code: "7349", description: "Cleaning Services" },
-    { id: 6, code: "7349", description: "Maintenance Services" },
-    { id: 7, code: "7297", description: "Massage Services" },
+    { id: 4, code: "7542", description: "Car Wash" },
+    { id: 5, code: "7349", description: "House Cleaning" },
+    { id: 6, code: "7349", description: "Handyman" },
+    { id: 7, code: "7297", description: "Massage" },
     { id: 8, code: "7299", description: "Miscellaneous" },
     { id: 9, code: "7991", description: "Fitness" },
-    { id: 10, code: "7333", description: "Photography & Videography" },
+    { id: 10, code: "7333", description: "Photography" },
+    { id: 11, code: "7333", description: "Videography" },
+    { id: 12, code: "7230", description: "Hair stylist" },
   ];
 
   const toggleDropdown = () => {

@@ -26,6 +26,7 @@ import SearchServiceCard from "../component/SearchServiceCard";
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 import Constants from "expo-constants";
+import { MaterialIcons } from "@expo/vector-icons"; // Import an icon library (you can use any)
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -48,21 +49,18 @@ const HomeScreen = ({ navigation }) => {
   const screenHeight = Dimensions.get("window").height;
 
   const services = [
-    { id: 1, description: "Lawn care" },
-    { id: 2, description: "Car wash" },
-    { id: 3, description: "House cleaning" },
-    { id: 4, description: "Dog grooming" },
-    { id: 5, description: "Photographer" },
-    { id: 6, description: "Plumbing" },
-    { id: 7, description: "Electrician" },
-    { id: 8, description: "Personal trainer" },
-    { id: 9, description: "Massage therapy" },
-    { id: 10, description: "Handyman" },
-    { id: 11, description: "Event planning" },
-    { id: 12, description: "Makeup artist" },
-    { id: 13, description: "Hair stylist" },
-    { id: 14, description: "Tutoring" },
-    { id: 15, description: "IT support" },
+    { id: 1, code: "7230", description: "Makeup artist" },
+    { id: 2, code: "7241", description: "Barber" },
+    { id: 3, code: "5813", description: "Bartending" },
+    { id: 4, code: "7542", description: "Car Wash" },
+    { id: 5, code: "7349", description: "House Cleaning" },
+    { id: 6, code: "7349", description: "Handyman" },
+    { id: 7, code: "7297", description: "Massage" },
+    { id: 8, code: "7299", description: "Miscellaneous" },
+    { id: 9, code: "7991", description: "Fitness" },
+    { id: 10, code: "7333", description: "Photography" },
+    { id: 11, code: "7333", description: "Videography" },
+    { id: 12, code: "7230", description: "Hair stylist" },
   ];
 
   useEffect(() => {
@@ -133,21 +131,21 @@ const HomeScreen = ({ navigation }) => {
     return token;
   }
 
-  // const updateExpoToken = async (token) => {
-  //   const userId = supabase.auth.currentUser.id;
+  const updateExpoToken = async (token) => {
+    const userId = supabase.auth.currentUser.id;
 
-  //   const res = await supabase
-  //     .from("profiles")
-  //     .update({ expo_push_token: token })
-  //     .eq("user_id", userId);
+    const res = await supabase
+      .from("profiles")
+      .update({ expo_push_token: token })
+      .eq("user_id", userId);
 
-  //   if (res.error) {
-  //     console.log("ERROR", res.error);
-  //     Alert.alert("Something Went Wrong");
-  //   }
+    if (res.error) {
+      console.log("ERROR", res.error);
+      Alert.alert("Something Went Wrong");
+    }
 
-  //   return res;
-  // };
+    return res;
+  };
 
   async function getForYou() {
     const userLatitude = parseFloat(user.latitude);
@@ -389,7 +387,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "#fff",
 
-    padding: 2,
+    padding: 5,
   },
   header: {
     flexDirection: "row",

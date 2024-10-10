@@ -17,6 +17,8 @@ import { useUser } from "../context/UserContext";
 const ProfileScreen = ({ route, navigation }) => {
   const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;
+  const [bookingCount, setBookingCount] = useState(0);
+  const [ratingAverage, setRatingAverage] = useState(0);
 
   const { user } = useUser();
   const [listOfServices, setListOfServices] = useState([]);
@@ -46,6 +48,49 @@ const ProfileScreen = ({ route, navigation }) => {
     return resp;
   }
 
+  async function getBookingCount() {
+    const res = await supabase
+      .from("orders")
+      .select("*")
+      .eq("orderStatus", "complete")
+      .eq("seller_id", profile.user_id);
+
+    setBookingCount(res.body.length);
+
+    return res.body;
+  }
+
+  async function getRatings() {
+    try {
+      const { data, error } = await supabase
+        .from("orders")
+        .select("rating")
+        .eq("orderStatus", "complete")
+        .eq("seller_id", profile.user_id);
+
+      if (error) {
+        console.error("Error fetching ratings:", error.message);
+        return null; // or handle the error as needed
+      }
+
+      if (!data || data.length === 0) {
+        console.log("No ratings found.");
+        return null; // or handle the case where no ratings are found
+      }
+
+      // Calculate the average rating
+      const totalRatings = data.reduce((sum, record) => sum + record.rating, 0);
+      const averageRating = totalRatings / data.length;
+
+      setRatingAverage(averageRating);
+
+      return { averageRating };
+    } catch (err) {
+      console.error("Unexpected error:", err.message);
+      return null; // or handle the error as needed
+    }
+  }
+
   useEffect(() => {
     const getUserInfo = async () => {
       if (!user) return;
@@ -56,6 +101,14 @@ const ProfileScreen = ({ route, navigation }) => {
       } else {
         setListOfServices(resp.data);
       }
+      const res = await getBookingCount();
+      const average = await getRatings();
+
+      console.log("res", res);
+      console.log("average", average);
+
+      setRatingAverage(average);
+      setBookingCount(res);
 
       const mediaResp = await getProfileMedia();
       if (mediaResp.error) {
@@ -99,11 +152,13 @@ const ProfileScreen = ({ route, navigation }) => {
 
         <View style={styles.profileStats}>
           <View style={styles.statItem}>
-            <Text style={styles.statValue}>1</Text>
+            <Text style={styles.statValue}>
+              {ratingAverage?.averageRating ?? 0}
+            </Text>
             <Text style={styles.statLabel}>ratings</Text>
           </View>
           <View style={styles.statItem}>
-            <Text style={styles.statValue}>1</Text>
+            <Text style={styles.statValue}>{bookingCount.length}</Text>
             <Text style={styles.statLabel}>bookings</Text>
           </View>
           <View style={styles.statItem}>

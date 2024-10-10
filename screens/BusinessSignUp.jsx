@@ -47,6 +47,8 @@ export default function BusinessSignUp({ route, navigation }) {
   const day = route.params.route.params.route.params.day;
   const year = route.params.route.params.route.params.year;
 
+  console.log("mcc", mccDescription);
+
   const signUpWithEmail = async (json) => {
     setModal(true);
     // Input validation
@@ -84,6 +86,7 @@ export default function BusinessSignUp({ route, navigation }) {
             latitude: latitude,
             longitude: longitude,
             stripeAccountId: json.account,
+            niche: mccDescription,
           },
         ]);
 
