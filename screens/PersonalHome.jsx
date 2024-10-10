@@ -40,6 +40,8 @@ const HomeScreen = ({ navigation }) => {
   const { user } = useUser();
 
   const [forYouList, setForYouList] = useState([]);
+  const [newServices, setNewServices] = useState([]);
+
   const [query, setQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
 
@@ -205,6 +207,65 @@ const HomeScreen = ({ navigation }) => {
     }
   }
 
+  async function getNew() {
+    const userLatitude = parseFloat(user.latitude);
+    const userLongitude = parseFloat(user.longitude);
+
+    // Function to calculate distance between two lat/lng points
+    function getDistance(lat1, lon1, lat2, lon2) {
+      const R = 3958.8; // Radius of the Earth in miles
+      const dLat = (lat2 - lat1) * (Math.PI / 180);
+      const dLon = (lon2 - lon1) * (Math.PI / 180);
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * (Math.PI / 180)) *
+          Math.cos(lat2 * (Math.PI / 180)) *
+          Math.sin(dLon / 2) *
+          Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c; // Distance in miles
+    }
+
+    try {
+      let query = supabase
+        .from("services")
+        .select("*")
+        .eq("deactivated", false)
+        .order("id", { ascending: false });
+
+      // Fetch all services first
+      const { data, error } = await query;
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      if (!data) {
+        throw new Error("No data returned");
+      }
+
+      // Filter services within 30 miles of the user's location
+      const filteredData = data.filter((service) => {
+        const distance = getDistance(
+          userLatitude,
+          userLongitude,
+          parseFloat(service.latitude),
+          parseFloat(service.longitude)
+        );
+        return distance <= 50; // 50 miles radius
+      });
+
+      // Shuffle and limit the data to 5 items
+      const shuffledData = filteredData.sort(() => 0.5 - Math.random());
+      const limitedData = shuffledData.slice(0, 5);
+
+      setNewServices(limitedData);
+    } catch (error) {
+      console.error("Error fetching For You data:", error.message);
+      Alert.alert("Error", "Failed to fetch For You data");
+    }
+  }
+
   const searchServices = () => {
     const filteredServices = services.filter(
       (service) =>
@@ -228,6 +289,7 @@ const HomeScreen = ({ navigation }) => {
 
   useEffect(() => {
     getForYou();
+    getNew();
   }, []);
 
   useEffect(() => {
@@ -310,10 +372,10 @@ const HomeScreen = ({ navigation }) => {
                   />
                 </View>
 
-                <Text style={styles.sectionTitle}>New to Book Mate</Text>
+                <Text style={styles.sectionTitle}>Recently Added</Text>
                 <FlatList
                   horizontal
-                  data={forYouList}
+                  data={newServices}
                   renderItem={renderCard}
                   keyExtractor={(item) => item.id}
                   showsHorizontalScrollIndicator={false}
