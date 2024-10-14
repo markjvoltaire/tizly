@@ -17,19 +17,20 @@ export default function Category({ route, navigation }) {
   const [loading, setLoading] = useState(true); // Loading state
   const { user } = useUser();
   const {
-    item: { description, id },
+    item: { description, id, name },
   } = route.params;
+
+  console.log("name", name);
 
   async function getProfessionals() {
     const resp = await supabase
-      .from("profiles")
+      .from("services")
       .select("*")
-      .eq("niche", description);
+      .eq("category", name);
 
     return resp.body;
   }
 
-  // Function to calculate distance between two lat/lng points
   function getDistance(lat1, lon1, lat2, lon2) {
     const R = 3958.8; // Radius of the Earth in miles
     const dLat = (lat2 - lat1) * (Math.PI / 180);
@@ -49,7 +50,6 @@ export default function Category({ route, navigation }) {
       setLoading(true); // Start loading
       const professionals = await getProfessionals();
 
-      // Filter professionals within a 50-mile radius
       const filteredPros = professionals.filter((pro) => {
         const distance = getDistance(
           user.latitude,
@@ -90,52 +90,31 @@ export default function Category({ route, navigation }) {
     );
   }
 
+  const renderItem = ({ item }) => (
+    <Pressable
+      onPress={() => navigation.navigate("ServiceDetails", { item: item })}
+      style={styles.cardContainer}
+    >
+      <Image source={{ uri: item.thumbnail }} style={styles.cardThumbnail} />
+      <View style={styles.cardContent}>
+        <View style={styles.cardTitleContainer}>
+          <Text style={styles.cardTitle}>{item.title}</Text>
+        </View>
+        <Text style={styles.cardModerator}>{item.description}</Text>
+        <View style={styles.cardFooter}>
+          <Text style={styles.cardStats}>Price: ${item.price}</Text>
+        </View>
+      </View>
+    </Pressable>
+  );
+
   return (
     <SafeAreaView style={{ backgroundColor: "white", flex: 1 }}>
       <FlatList
-        showsVerticalScrollIndicator={false}
         data={listOfPros}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.cardContainer}>
-            {/* Thumbnail */}
-            <Pressable
-              onPress={() =>
-                navigation.navigate("ProfileDetail", {
-                  item: item,
-                })
-              }
-            >
-              <Image
-                source={{ uri: item.profileimage }}
-                style={styles.cardThumbnail}
-              />
-            </Pressable>
-
-            {/* Card Content */}
-            <View style={styles.cardContent}>
-              <Pressable
-                onPress={() =>
-                  navigation.navigate("ProfileDetail", {
-                    item: item,
-                  })
-                }
-              >
-                <View style={styles.cardTitleContainer}>
-                  <Text style={styles.cardTitle}>
-                    {item.username || "No Username Provided"}
-                  </Text>
-                  <Text style={styles.cardModerator}>{item.niche}</Text>
-                </View>
-                <View style={styles.cardFooter}>
-                  <Text style={styles.cardStats}>
-                    {item.city}, {item.state}
-                  </Text>
-                </View>
-              </Pressable>
-            </View>
-          </View>
-        )}
+        renderItem={renderItem}
+        contentContainerStyle={{ paddingBottom: 20 }}
       />
     </SafeAreaView>
   );

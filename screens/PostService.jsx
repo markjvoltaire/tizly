@@ -35,44 +35,25 @@ export default function PostService({ navigation }) {
   const width = Dimensions.get("window").width;
   const [onBoard, setOnBoard] = useState(user.stripeAccountId);
 
-  async function getUser() {
-    try {
-      const resp = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("user_id", user.user_id)
-        .single()
-        .limit(1);
+  // Dropdown state management
+  const [category, setCategory] = useState("Select a Category");
+  const [categoryModalVisible, setCategoryModalVisible] = useState(false);
 
-      return resp.body ?? null;
-    } catch (error) {
-      console.error("Failed to fetch user:", error);
-      return null;
-    }
-  }
+  const categories = [
+    "Car Detailing",
+    "Home Cleaning",
+    "Lawn Mowing",
+    "Photography",
+    "Personal Training",
+    "Pet Grooming",
+    "Videography",
+    "Massage",
+  ];
 
-  useFocusEffect(
-    React.useCallback(() => {
-      let isMounted = true;
-
-      const fetchData = async () => {
-        try {
-          const resp = await getUser();
-          if (isMounted) {
-            resp.stripeAccountId ? null : setOnBoard(null);
-          }
-        } catch (error) {
-          console.error("Failed to fetch user:", error);
-        }
-      };
-
-      fetchData();
-
-      return () => {
-        isMounted = false;
-      };
-    }, [setUser])
-  );
+  const handleCategorySelect = (selectedCategory) => {
+    setCategory(selectedCategory);
+    setCategoryModalVisible(false);
+  };
 
   const pickImage = async () => {
     const permissionResult =
@@ -148,6 +129,7 @@ export default function PostService({ navigation }) {
           byHour: byHour,
           latitude: user.latitude,
           longitude: user.longitude,
+          category: category,
         },
       ]);
 
@@ -162,6 +144,7 @@ export default function PostService({ navigation }) {
       setTitle("");
       setImageData(null);
       setByHour(false);
+      setCategory("Select a Category");
       return data;
     } else {
       console.log("Upload to Cloudinary failed.");
@@ -189,29 +172,7 @@ export default function PostService({ navigation }) {
     setThumbnail(null);
     setTitle("");
     setByHour(false);
-  };
-
-  const handleSubmit = async () => {
-    const serviceData = {
-      title,
-      thumbnail,
-      description,
-      price,
-      byHour,
-    };
-
-    if (!description || !imageData || !title || !thumbnail || !price) {
-      Alert.alert("Please fill all fields.");
-      return;
-    }
-
-    await handleXHR(serviceData);
-
-    Keyboard.dismiss();
-  };
-
-  const dismissKeyboard = () => {
-    Keyboard.dismiss();
+    setCategory("Select a Category");
   };
 
   const LoadingModal = () => {
@@ -235,53 +196,32 @@ export default function PostService({ navigation }) {
     );
   };
 
-  const CustomButton = ({ title, onPress, disabled }) => (
-    <TouchableOpacity
-      style={[styles.button, disabled && styles.buttonDisabled]}
-      onPress={onPress}
-      disabled={disabled}
-    >
-      <Text style={styles.buttonText}>{title}</Text>
-    </TouchableOpacity>
-  );
+  const handleSubmit = async () => {
+    const serviceData = {
+      title,
+      thumbnail,
+      description,
+      price,
+      byHour,
+      category, // Add selected category here
+    };
 
-  if (!onBoard) {
-    return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
-        <Image
-          style={{ height: 250, width: 250, alignSelf: "center" }}
-          source={require("../assets/postNeedOnBoard.png")}
-        />
-        <View
-          style={{
-            width: width * 0.97,
-            alignSelf: "center",
-          }}
-        >
-          <Text style={{ alignSelf: "center", fontSize: 19, marginBottom: 10 }}>
-            Before you post a service, we’d love to get to know your business
-            better.
-          </Text>
+    if (
+      !description ||
+      !imageData ||
+      !title ||
+      !thumbnail ||
+      !price ||
+      category === "Select a Category"
+    ) {
+      Alert.alert("Please fill all fields.");
+      return;
+    }
 
-          <Text
-            style={{
-              marginBottom: 20,
-              color: "grey",
-              alignSelf: "center",
-              fontSize: 15,
-            }}
-          >
-            Provide your business details to verify your account and start
-            posting services.
-          </Text>
-          <CustomButton
-            onPress={() => navigation.navigate("AuthName")}
-            title="Get Started"
-          />
-        </View>
-      </SafeAreaView>
-    );
-  }
+    await handleXHR(serviceData);
+
+    Keyboard.dismiss();
+  };
 
   return (
     <KeyboardAvoidingView
@@ -295,7 +235,7 @@ export default function PostService({ navigation }) {
         <TouchableOpacity
           style={{ flex: 1 }}
           activeOpacity={1}
-          onPress={dismissKeyboard}
+          onPress={Keyboard.dismiss}
         >
           <View>
             <Text style={styles.label}>Service Title</Text>
@@ -305,6 +245,53 @@ export default function PostService({ navigation }) {
               onChangeText={setTitle}
               placeholder="Enter service name"
             />
+
+            <Text style={styles.label}>Service Category</Text>
+            <TouchableOpacity
+              style={styles.input}
+              onPress={() => setCategoryModalVisible(true)}
+            >
+              <Text
+                style={[
+                  styles.dropdownText,
+                  {
+                    color: category === "Select a Category" ? "#ccc" : "black",
+                  },
+                ]}
+              >
+                {category}
+              </Text>
+            </TouchableOpacity>
+
+            {/* Modal for category selection */}
+            <Modal
+              transparent={true}
+              visible={categoryModalVisible}
+              animationType="slide"
+              onRequestClose={() => setCategoryModalVisible(false)}
+            >
+              <View style={styles.modalOverlay}>
+                <View style={styles.modalContainer}>
+                  {categories.map((cat) => (
+                    <TouchableOpacity
+                      key={cat}
+                      style={styles.categoryOption}
+                      onPress={() => handleCategorySelect(cat)}
+                    >
+                      <Text style={styles.categoryText}>{cat}</Text>
+                    </TouchableOpacity>
+                  ))}
+                  <TouchableOpacity
+                    style={styles.cancelButton}
+                    onPress={() => setCategoryModalVisible(false)}
+                  >
+                    <Text style={styles.cancelText}>Cancel</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </Modal>
+
+            {/* Rest of your form inputs like description, price, etc. */}
 
             <Text style={styles.label}>Service Thumbnail</Text>
             <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
@@ -392,6 +379,7 @@ export default function PostService({ navigation }) {
         </TouchableOpacity>
       </ScrollView>
 
+      {/* Modal for loading */}
       <LoadingModal />
     </KeyboardAvoidingView>
   );
@@ -403,34 +391,9 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: "white",
   },
-  button: {
-    backgroundColor: "#4A3AFF",
-    padding: 15,
-    borderRadius: 5,
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  buttonDisabled: {
-    backgroundColor: "#ccc",
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-  },
   label: {
     fontSize: 16,
     marginVertical: 8,
-  },
-  inputDescription: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 4,
-    padding: 10,
-    fontSize: 16,
-    marginBottom: 12,
-    height: 170,
-    backgroundColor: "#F3F3F9",
-    color: "black",
   },
   input: {
     borderWidth: 1,
@@ -440,6 +403,36 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: "#F3F3F9",
     marginBottom: 12,
+  },
+
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContainer: {
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 10,
+    width: "80%",
+  },
+  categoryOption: {
+    paddingVertical: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+  },
+  categoryText: {
+    fontSize: 16,
+  },
+  cancelButton: {
+    paddingVertical: 15,
+    alignItems: "center",
+    marginTop: 10,
+  },
+  cancelText: {
+    fontSize: 16,
+    color: "#FF0000",
   },
   imagePicker: {
     justifyContent: "center",
@@ -460,16 +453,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     marginVertical: 12,
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#4A3AFF",
-  },
-  modalContent: {
-    backgroundColor: "white",
-    padding: 10,
-    borderRadius: 10,
   },
 });
