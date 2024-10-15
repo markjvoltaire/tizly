@@ -218,7 +218,15 @@ export default function SelectTime({ route, navigation }) {
               onPress={() => handleTimeSelect(time)}
               disabled={isTimeInThePast(time) || isTimeBooked(time)}
             >
-              <Text style={styles.timeText}>{time}</Text>
+              <Text
+                style={{
+                  fontSize: 18,
+                  color: selectedTime === time ? "white" : "#333",
+                  fontWeight: selectedTime === time ? "800" : null,
+                }}
+              >
+                {time}
+              </Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -257,7 +265,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   selectedTimeItem: {
-    backgroundColor: "#4A3AFF",
+    backgroundColor: "#007bff",
   },
   disabledTimeItem: {
     backgroundColor: "#ccc",

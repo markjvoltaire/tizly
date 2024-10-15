@@ -360,7 +360,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   modalContainer: {
-    backgroundColor: "#000",
+    backgroundColor: "#007bff",
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
