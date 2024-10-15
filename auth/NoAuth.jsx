@@ -28,7 +28,23 @@ export default function NoAuth() {
 
       <Stack.Screen name="NoAuthAddLocation" component={NoAuthAddLocation} />
 
-      <Stack.Screen name="Login" component={Login} />
+      <Stack.Screen
+        name="Login"
+        component={Login}
+        options={{
+          headerBackTitle: "Back",
+          headerTitle: "",
+          headerShown: true, // Ensures the header is visible
+          headerTransparent: true, // Makes the header transparent
+          headerTitleStyle: {
+            color: "#fff", // Set title color to white
+          },
+          headerTintColor: "#000", // Set the back button icon color to black
+          headerBackTitleStyle: {
+            color: "#000", // Set the back button text color to black
+          },
+        }}
+      />
 
       <Stack.Screen
         name="SignUp"
@@ -134,7 +150,23 @@ export default function NoAuth() {
           headerBackTitle: "Go Back",
         }}
       />
-      <Stack.Screen name="ResetPassword" component={ResetPassword} />
+      <Stack.Screen
+        name="ResetPassword"
+        component={ResetPassword}
+        options={{
+          headerBackTitle: "Back",
+          headerTitle: "",
+          headerShown: true, // Ensures the header is visible
+          headerTransparent: true, // Makes the header transparent
+          headerTitleStyle: {
+            color: "#fff", // Set title color to white
+          },
+          headerTintColor: "#000", // Set the back button icon color to black
+          headerBackTitleStyle: {
+            color: "#000", // Set the back button text color to black
+          },
+        }}
+      />
     </Stack.Navigator>
   );
 }

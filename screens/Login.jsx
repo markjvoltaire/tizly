@@ -1,209 +1,148 @@
+import React, { useState } from "react";
 import {
-  Modal,
   SafeAreaView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
   TextInput,
-  Button,
+  Pressable,
   Alert,
-  Image,
+  ActivityIndicator,
+  Keyboard,
 } from "react-native";
-import React, { useState } from "react";
 import { supabase } from "../services/supabase";
-import { useUser } from "../context/UserContext";
 
-export default function Login({ navigation }) {
-  const [modalVisible, setModalVisible] = useState(false);
-  const [signUpModal, setSignUpModal] = useState(false);
+const Login = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { setUser } = useUser();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
-  async function getUser(userid) {
+  const handleEmailChange = (text) => {
+    setEmail(text);
+  };
+
+  const handlePasswordChange = (text) => {
+    setPassword(text);
+  };
+
+  const loginWithEmail = async () => {
     try {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("user_id", userid)
-        .single();
-
-      if (error) throw error;
-      return data;
-    } catch (error) {
-      console.error("Error fetching user:", error);
-      return null;
-    }
-  }
-
-  async function loginWithEmail() {
-    try {
-      const { user, error } = await supabase.auth.signIn({ email, password });
+      setLoading(true);
+      const { data: user, error } = await supabase.auth.signIn({
+        email,
+        password,
+      });
 
       if (error) {
-        Alert.alert(error.message);
-      } else {
-        const userData = await getUser(user.id);
-        if (userData) {
-          supabase.auth.setAuth(user.access_token);
-          setUser(userData);
-          setModalVisible(false);
-        } else {
-          Alert.alert("User not found.");
-        }
+        Alert.alert("Login Error", error.message);
       }
     } catch (error) {
-      Alert.alert("Error during login:", error.message);
+      Alert.alert("Error during login", error.message);
+    } finally {
+      setLoading(false);
+      Keyboard.dismiss();
     }
-  }
+  };
 
-  const logUserIn = () => {
-    loginWithEmail();
+  const handleForgotPassword = async () => {
+    navigation.navigate("ResetPassword");
   };
 
   return (
-    <SafeAreaView style={styles.modalView}>
-      <View style={{ marginBottom: 30 }} />
-
-      <Text
-        style={{
-          alignSelf: "center",
-          fontFamily: "Poppins-Black",
-          color: "#4A3AFF",
-          fontSize: 45,
-          marginBottom: 10,
-        }}
-      >
-        tizly
-      </Text>
-
-      <TextInput
-        style={styles.input}
-        placeholderTextColor="grey"
-        autoCapitalize="none"
-        placeholder="Email"
-        value={email}
-        onChangeText={(text) => setEmail(text)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholderTextColor="grey"
-        placeholder="Password"
-        autoCapitalize="none"
-        secureTextEntry
-        value={password}
-        onChangeText={(text) => setPassword(text)}
-      />
-
-      <TouchableOpacity style={styles.submitButton} onPress={logUserIn}>
-        <Text style={styles.submitButtonText}>Log In</Text>
-      </TouchableOpacity>
-      <View style={styles.signUpContainer}></View>
-      <TouchableOpacity
-        style={styles.forgotPassword}
-        onPress={() => {
-          setModalVisible(false);
-          navigation.navigate("ResetPassword");
-        }}
-      >
-        <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.forgotPassword}
-        onPress={() => {
-          navigation.navigate("ProfileType");
-        }}
-      >
-        <Text style={styles.forgotPasswordText}>Create an account</Text>
-      </TouchableOpacity>
+    <SafeAreaView style={styles.container}>
+      <View style={{ top: 50 }}>
+        <View style={styles.header}>
+          <Text style={styles.title}>Welcome Back 👋</Text>
+        </View>
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your email"
+            value={email}
+            onChangeText={handleEmailChange}
+            autoCapitalize="none"
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Enter password"
+            value={password}
+            onChangeText={handlePasswordChange}
+            autoCapitalize="none"
+            secureTextEntry={true}
+          />
+          <Pressable
+            onPress={handleForgotPassword}
+            style={styles.forgotPassword}
+          >
+            <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+          </Pressable>
+        </View>
+        <Pressable
+          onPress={loginWithEmail}
+          style={styles.button}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator size="small" color="#fff" />
+          ) : (
+            <Text style={styles.buttonText}>Login</Text>
+          )}
+        </Pressable>
+      </View>
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#4A3AFF",
-    justifyContent: "center",
+    paddingHorizontal: 20,
+    paddingVertical: 40,
+    backgroundColor: "#f8f9fa",
+  },
+  header: {
+    marginBottom: 40,
     alignItems: "center",
   },
   title: {
-    fontSize: 48,
-    color: "white",
-    fontWeight: "900",
-    marginBottom: 10,
-  },
-  subheading: {
-    fontSize: 18,
-    color: "white",
-    marginBottom: 40,
-  },
-  loginButton: {
-    backgroundColor: "white",
-    paddingVertical: 15,
-    paddingHorizontal: 50,
-    borderRadius: 30,
-  },
-  loginButtonText: {
-    color: "#4A3AFF",
-    fontSize: 18,
-    fontWeight: "600",
-  },
-  modalView: {
-    flex: 1,
-    alignItems: "center",
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    elevation: 5,
-  },
-  modalTitle: {
     fontSize: 24,
-    fontWeight: "bold",
+    fontWeight: "700",
+    color: "#333",
+  },
+  inputContainer: {
     marginBottom: 20,
-    color: "#4A3AFF",
+    paddingHorizontal: 20,
   },
   input: {
-    height: 50,
-    width: "95%",
-    borderColor: "#ccc",
     borderWidth: 1,
-    borderRadius: 12,
-    marginBottom: 20,
-    paddingHorizontal: 15,
-    backgroundColor: "#F3F3F9",
+    borderColor: "#dcdcdc",
+    borderRadius: 10,
+    padding: 15,
     fontSize: 16,
-    color: "black",
-  },
-  submitButton: {
-    backgroundColor: "#4A3AFF",
-    paddingVertical: 15,
-    paddingHorizontal: 50,
-    borderRadius: 30,
-    marginBottom: 20,
-  },
-  submitButtonText: {
-    color: "#FFFFFF",
-    fontSize: 18,
-    fontWeight: "600",
-  },
-  signUpContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  signUpText: {
-    marginRight: 5,
-    fontSize: 16,
-    color: "#4A3AFF",
+    backgroundColor: "#fff",
+    marginBottom: 10,
   },
   forgotPassword: {
+    marginTop: 5,
     marginBottom: 20,
+    alignSelf: "center",
   },
   forgotPasswordText: {
-    color: "#4A3AFF",
+    color: "#007bff",
+    fontSize: 14,
+  },
+  button: {
+    backgroundColor: "#007bff",
+    paddingVertical: 15,
+    borderRadius: 10,
+    alignItems: "center",
+    marginHorizontal: 20,
+  },
+  buttonText: {
+    color: "#fff",
     fontSize: 16,
+    fontWeight: "700",
   },
 });
+
+export default Login;
