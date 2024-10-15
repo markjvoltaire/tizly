@@ -44,7 +44,7 @@ export default function ProfileType({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f0f4f7",
+    backgroundColor: "white",
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 20,

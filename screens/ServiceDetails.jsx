@@ -275,7 +275,7 @@ export default function ServiceDetails({ route, navigation }) {
 const styles = StyleSheet.create({
   scrollViewContainer: {
     paddingBottom: 100,
-    backgroundColor: "#f8f8f8",
+    backgroundColor: "white",
   },
   image: {
     width: screenWidth,
