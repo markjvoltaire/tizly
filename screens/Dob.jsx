@@ -18,9 +18,6 @@ export default function Dob({ navigation, route }) {
   const { selectedMCC: mcc } = route.params;
   const userInfo = route.params.route.params;
 
-  console.log("userInfo", userInfo);
-  console.log("mcc", mcc);
-
   const handleDateChange = (type, value) => {
     const numericValue = value.replace(/[^0-9]/g, "");
 
@@ -86,17 +83,7 @@ export default function Dob({ navigation, route }) {
 
   return (
     <>
-      <SafeAreaView style={styles.safeArea} />
       <View style={styles.container}>
-        <View style={styles.backButtonContainer}>
-          <Pressable onPress={() => navigation.goBack()}>
-            <Image
-              style={styles.backButtonImage}
-              source={require("../assets/WhiteBack.png")}
-            />
-          </Pressable>
-        </View>
-
         <Text style={styles.heading}>Enter Your Date of Birth</Text>
 
         <View style={styles.dateInputContainer}>
@@ -140,25 +127,25 @@ export default function Dob({ navigation, route }) {
 
 const styles = StyleSheet.create({
   safeArea: {
-    backgroundColor: "#4A3AFF",
+    backgroundColor: "#4A90E2",
+    padding: 15,
   },
   container: {
     flex: 1,
-    backgroundColor: "#4A3AFF",
+    backgroundColor: "#F9F9F9",
     padding: 20,
   },
   backButtonContainer: {
-    marginBottom: 20,
+    width: 50,
   },
   backButtonImage: {
-    aspectRatio: 1,
+    width: 30,
     height: 30,
-    marginBottom: 20,
   },
   heading: {
     fontSize: 24,
-    color: "white",
-    fontWeight: "800",
+    color: "#333333",
+    fontWeight: "700",
     marginBottom: 30,
     textAlign: "center",
   },
@@ -169,29 +156,32 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   dateInput: {
-    backgroundColor: "white",
+    backgroundColor: "#FFFFFF",
     padding: 10,
-    borderRadius: 5,
+    borderRadius: 8,
     width: 70,
     textAlign: "center",
     fontSize: 18,
     marginHorizontal: 5,
+    borderWidth: 1,
+    borderColor: "#CCCCCC",
   },
   separator: {
     fontSize: 18,
-    color: "white",
-    margin: 15,
+    color: "#666666",
+    marginHorizontal: 10,
   },
   submitButton: {
-    backgroundColor: "black",
+    backgroundColor: "#4A90E2",
     paddingVertical: 15,
-    borderRadius: 5,
+    borderRadius: 8,
     alignItems: "center",
+    marginTop: 20,
   },
   submitButtonText: {
-    color: "white",
+    color: "#FFFFFF",
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: "600",
   },
   error: {
     color: "red",

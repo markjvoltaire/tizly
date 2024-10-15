@@ -18,45 +18,22 @@ export default function BusinessIntro({ route, navigation }) {
 
   const zipCode = route.params.zipCode;
 
-  const services = [
-    { id: 1, description: "Lawn care" },
-    { id: 2, description: "Car wash" },
-    { id: 3, description: "House cleaning" },
-    { id: 4, description: "Dog grooming" },
-    { id: 5, description: "Photographer" },
-    { id: 6, description: "Plumbing" },
-    { id: 7, description: "Electrician" },
-    { id: 8, description: "Fitness" },
-    { id: 9, description: "Massage therapy" },
-    { id: 10, description: "Handyman" },
-    { id: 11, description: "Event planning" },
-    { id: 12, description: "Makeup artist" },
-    { id: 13, description: "Hair stylist" },
-    { id: 14, description: "Tutoring" },
-    { id: 15, description: "Videography" },
-    { id: 16, description: "Barber" },
-  ];
-
   const mccs = [
-    { id: 1, code: "7230", description: "Makeup artist" },
-    { id: 2, code: "7241", description: "Barber" },
-    { id: 3, code: "5813", description: "Bartending" },
-    { id: 4, code: "7542", description: "Car Wash" },
-    { id: 5, code: "7349", description: "House Cleaning" },
-    { id: 6, code: "7349", description: "Handyman" },
-    { id: 7, code: "7297", description: "Massage" },
-    { id: 8, code: "7299", description: "Miscellaneous" },
-    { id: 9, code: "7991", description: "Fitness" },
-    { id: 10, code: "7333", description: "Photography" },
-    { id: 11, code: "7333", description: "Videography" },
-    { id: 12, code: "7230", description: "Hair stylist" },
+    { id: 4, code: "7542", description: "Car Detailing" }, // Car Wash code (Car Detailing)
+    { id: 5, code: "7349", description: "Home Cleaning" }, // House Cleaning code
+    { id: 6, code: "0780", description: "Lawn Mowing" }, // Landscaping and Lawn Care Services
+    { id: 10, code: "7333", description: "Photography" }, // Photography code
+    { id: 9, code: "7991", description: "Personal Training" }, // Fitness code (Personal Training)
+    { id: 7, code: "0750", description: "Pet Grooming" }, // Veterinary and Pet Grooming code
+    { id: 11, code: "7333", description: "Videography" }, // Videography code
+    { id: 7, code: "7297", description: "Massage" }, // Massage Parlors
   ];
 
   const toggleDropdown = () => {
     const toValue = dropdownVisible ? 0 : 200; // Adjust 200 to your desired height
     Animated.timing(dropdownHeight, {
       toValue,
-      duration: 300, // Animation duration in milliseconds
+      duration: 300,
       useNativeDriver: false,
     }).start();
     setDropdownVisible(!dropdownVisible);
@@ -74,31 +51,21 @@ export default function BusinessIntro({ route, navigation }) {
 
   return (
     <>
-      <SafeAreaView style={styles.safeArea} />
       <View style={styles.container}>
-        <View style={styles.backButtonContainer}>
-          <Pressable onPress={() => navigation.goBack()}>
-            <Image
-              style={styles.backButtonImage}
-              source={require("../assets/WhiteBack.png")}
-            />
-          </Pressable>
-        </View>
-
         <Text style={styles.heading}>
-          Tell us a bit about your business so we can get you set up.
+          Tell us a bit about your business to set you up.
         </Text>
 
         <Pressable style={styles.dropdown} onPress={toggleDropdown}>
           <Text style={styles.dropdownText}>
             {selectedMCC
               ? selectedMCC.description
-              : "Tap to Select Your Business Category"}
+              : "Select Your Business Category"}
           </Text>
-          <Image
+          {/* <Image
             style={styles.dropdownIcon}
-            source={require("../assets/WhiteBack.png")} // Replace with your dropdown icon image
-          />
+            source={require("../assets/dropdown-icon.png")} // Replace with your dropdown icon image
+          /> */}
         </Pressable>
 
         <Animated.View
@@ -117,8 +84,10 @@ export default function BusinessIntro({ route, navigation }) {
             )}
           />
         </Animated.View>
-        {selectedMCC === null ? null : (
+
+        {selectedMCC && (
           <TouchableOpacity
+            style={styles.nextButton}
             onPress={() =>
               navigation.navigate("Dob", {
                 route,
@@ -126,7 +95,6 @@ export default function BusinessIntro({ route, navigation }) {
                 zipCode,
               })
             }
-            style={styles.button}
           >
             <Text style={styles.buttonText}>Next</Text>
           </TouchableOpacity>
@@ -137,75 +105,68 @@ export default function BusinessIntro({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    backgroundColor: "#4A3AFF",
-    padding: 15,
-    height: 10,
+  backButtonContainer: {
+    width: 40,
   },
-  buttonText: {
-    color: "white",
-    fontSize: 18,
-    fontWeight: "bold",
-    alignSelf: "center",
-  },
-  button: {
-    backgroundColor: "black",
-    paddingVertical: 15,
-    borderRadius: 5,
-    alignItems: "center",
+  backButtonImage: {
+    width: 30,
+    height: 30,
   },
   container: {
     flex: 1,
-    backgroundColor: "#4A3AFF",
-    padding: 10,
-    paddingBottom: 180,
-  },
-  backButtonContainer: {
-    width: 90,
-    marginBottom: 50,
-  },
-  backButtonImage: {
-    aspectRatio: 1,
-    height: 30,
+    backgroundColor: "#F9F9F9",
+    padding: 20,
   },
   heading: {
-    fontSize: 20,
+    fontSize: 24,
+    fontWeight: "700",
+    color: "#333333",
     marginBottom: 30,
-    color: "white",
-    fontWeight: "800",
-    width: "100%",
+    textAlign: "center",
   },
   dropdown: {
     padding: 15,
-    backgroundColor: "black",
-    borderRadius: 5,
-    marginBottom: 10,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#CCCCCC",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    marginBottom: 10,
   },
   dropdownText: {
     fontSize: 16,
-    color: "white",
-    fontWeight: "700",
+    color: "#666666",
   },
   dropdownIcon: {
     width: 20,
     height: 20,
-    transform: [{ rotate: "270deg" }], // Rotate the arrow 180 degrees to point down
   },
   dropdownMenu: {
     overflow: "hidden",
-    backgroundColor: "#fff",
-    borderRadius: 5,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 8,
     elevation: 2,
-    marginBottom: 50,
+    marginBottom: 30,
   },
   dropdownItem: {
     padding: 15,
   },
   dropdownItemText: {
     fontSize: 16,
-    color: "#000",
+    color: "#333333",
+  },
+  nextButton: {
+    backgroundColor: "#4A90E2",
+    paddingVertical: 15,
+    borderRadius: 8,
+    alignItems: "center",
+    marginTop: 20,
+  },
+  buttonText: {
+    color: "#FFFFFF",
+    fontSize: 18,
+    fontWeight: "600",
   },
 });

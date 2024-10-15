@@ -13,12 +13,16 @@ import {
 import LottieView from "lottie-react-native";
 
 import { useFonts } from "expo-font";
+import { supabase } from "../services/supabase";
+import { useUser } from "../context/UserContext";
 
 export default function Welcome({ navigation }) {
   const [loading, setLoading] = useState(true);
   const [modal, setModal] = useState(true);
   const [header, setHeader] = useState(true);
   const fadeAnim = useState(new Animated.Value(0))[0];
+
+  const { user, setUser } = useUser();
 
   useEffect(() => {
     setTimeout(() => {
@@ -64,6 +68,11 @@ export default function Welcome({ navigation }) {
     "SF-Medium": require("../assets/fonts/SFUIText-Medium.ttf"),
     "SF-Regular": require("../assets/fonts/SFUIText-Regular.ttf"),
   });
+
+  const signOutUser = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: "#4A3AFF" }}>

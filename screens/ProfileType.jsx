@@ -1,54 +1,36 @@
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
+import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 
 export default function ProfileType({ navigation }) {
   const [selectedType, setSelectedType] = useState(null);
 
   const handleSelect = (type) => {
     setSelectedType(type);
-
-    type === "personal"
-      ? navigation.navigate("AddCity", { type })
-      : navigation.navigate("Name", { type });
+    const route = type === "personal" ? "AddCity" : "Name";
+    navigation.navigate(route, { type });
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>
-        Are You Joining as a Business or an Individual?
-      </Text>
-      <View style={{ marginBottom: 40 }}>
+      <Text style={styles.header}>Join as a Business or an Individual?</Text>
+      {["personal", "business"].map((type, index) => (
         <TouchableOpacity
-          style={[
-            styles.option,
-            selectedType === "personal" && styles.selected,
-          ]}
-          onPress={() => handleSelect("personal")}
+          key={index}
+          style={[styles.option]}
+          onPress={() => handleSelect(type)}
         >
-          <Text style={styles.optionText}>Individual</Text>
-          <Text style={styles.subText}>
-            Looking to book services that fit your needs? A Personal account is
-            perfect for you!
-          </Text>
+          <View style={styles.optionContent}>
+            <Text style={styles.optionText}>
+              {type === "personal" ? "Individual" : "Business"}
+            </Text>
+            <Text style={styles.subText}>
+              {type === "personal"
+                ? "Looking to book services tailored to your needs? Join as an Individual!"
+                : "Ready to showcase your services and reach more clients? Join as a Business!"}
+            </Text>
+          </View>
         </TouchableOpacity>
-      </View>
-
-      <View style={{ marginBottom: 40 }}>
-        <TouchableOpacity
-          style={[
-            styles.option,
-            selectedType === "business" && styles.selected,
-          ]}
-          onPress={() => handleSelect("business")}
-        >
-          <Text style={styles.optionText}>Business</Text>
-          <Text style={styles.subText}>
-            Ready to reach more clients and showcase your services? A Business
-            account is your gateway to success!
-          </Text>
-        </TouchableOpacity>
-      </View>
-      {/* Go Back Button */}
+      ))}
       <TouchableOpacity
         style={styles.goBackButton}
         onPress={() => navigation.goBack()}
@@ -62,48 +44,60 @@ export default function ProfileType({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#f0f4f7",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#4A3AFF",
-    padding: 10,
-    paddingBottom: 180,
+    paddingHorizontal: 20,
   },
   header: {
-    fontSize: 20,
-    marginBottom: 40,
-    color: "white",
-    fontWeight: "800",
-  },
-  option: {
-    width: "90%",
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 10,
-    alignItems: "center",
-    borderWidth: 1.5,
-    borderColor: "#ddd",
-  },
-
-  optionText: {
-    fontSize: 20,
-    color: "white",
-    fontWeight: "800",
-  },
-  subText: {
-    fontSize: 15,
-    color: "white",
-    fontWeight: "400",
-    marginTop: 5,
+    fontSize: 24,
+    fontWeight: "700",
+    color: "#333",
+    marginBottom: 30,
     textAlign: "center",
   },
+  option: {
+    width: "100%",
+    paddingVertical: 20,
+    paddingHorizontal: 15,
+    borderRadius: 12,
+    marginBottom: 20,
+    backgroundColor: "#fff",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  selectedOption: {
+    backgroundColor: "#4A90E2",
+    shadowColor: "#4A90E2",
+    shadowOpacity: 0.3,
+  },
+  optionContent: {
+    alignItems: "center",
+  },
+  optionText: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#333",
+  },
+  subText: {
+    fontSize: 14,
+    color: "#666",
+    textAlign: "center",
+    marginTop: 8,
+  },
   goBackButton: {
-    marginTop: 20,
-    padding: 10,
+    marginTop: 30,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
     borderRadius: 5,
+    backgroundColor: "#333",
   },
   goBackText: {
-    fontSize: 20,
-    color: "white",
-    fontWeight: "700",
+    fontSize: 16,
+    color: "#fff",
+    fontWeight: "600",
   },
 });

@@ -78,14 +78,6 @@ export default function FinancialInfo({ navigation, route }) {
 
   return (
     <>
-      <SafeAreaView style={{ backgroundColor: "#4A3AFF" }}>
-        <Pressable onPress={() => navigation.goBack()}>
-          <Image
-            style={{ aspectRatio: 1, height: 30, left: 20, marginBottom: 40 }}
-            source={require("../assets/WhiteBack.png")}
-          />
-        </Pressable>
-      </SafeAreaView>
       <View style={styles.container}>
         <Text style={styles.heading}>Let's Get Your Payments Set Up!</Text>
         <View style={styles.inputContainer}>
@@ -98,8 +90,6 @@ export default function FinancialInfo({ navigation, route }) {
             keyboardType="numeric"
             placeholder="Last 4 of SSN"
             secureTextEntry
-            accessibilityLabel="SSN Last 4 Digits"
-            accessibilityHint="Enter the last 4 digits of your Social Security Number."
           />
         </View>
         <View style={styles.inputContainer}>
@@ -110,8 +100,6 @@ export default function FinancialInfo({ navigation, route }) {
             maxLength={12}
             keyboardType="numeric"
             placeholder="Account Number"
-            accessibilityLabel="Account Number"
-            accessibilityHint="Enter your bank account number."
           />
         </View>
         <View style={styles.inputContainer}>
@@ -122,33 +110,14 @@ export default function FinancialInfo({ navigation, route }) {
             maxLength={9}
             keyboardType="numeric"
             placeholder="Routing Number"
-            accessibilityLabel="Routing Number"
-            accessibilityHint="Enter your bank routing number."
           />
         </View>
 
         <TouchableOpacity
           onPress={handleContinue}
-          style={{
-            backgroundColor: "black",
-            width: width * 0.8,
-            height: height * 0.06,
-            padding: 12,
-            alignSelf: "center",
-            borderRadius: 13,
-            top: 0.07,
-          }}
+          style={styles.continueButton}
         >
-          <Text
-            style={{
-              fontFamily: "Poppins-SemiBold",
-              alignSelf: "center",
-              fontSize: 18,
-              color: "white",
-            }}
-          >
-            Continue
-          </Text>
+          <Text style={styles.continueButtonText}>Continue</Text>
         </TouchableOpacity>
       </View>
     </>
@@ -156,14 +125,24 @@ export default function FinancialInfo({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    backgroundColor: "#4A3AFF",
+  },
+  backButton: {
+    aspectRatio: 1,
+    height: 30,
+    left: 20,
+    marginBottom: 20,
+  },
   container: {
     padding: 20,
     flex: 1,
-    backgroundColor: "#4A3AFF",
+    backgroundColor: "#F4F4F9",
+    marginTop: 10,
   },
   heading: {
     fontSize: 22,
-    color: "white",
+    color: "#333",
     fontWeight: "800",
     marginBottom: 30,
     textAlign: "center",
@@ -172,25 +151,42 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 15,
-    backgroundColor: "white",
-    borderRadius: 5,
+    backgroundColor: "#FFF",
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 8,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
   },
   prefix: {
     fontSize: 16,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
-    color: "gray",
-    width: 79,
+    paddingRight: 10,
+    color: "#333",
   },
   input: {
     flex: 1,
     fontSize: 16,
+    borderColor: "#DDD",
     padding: 10,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 5,
-    backgroundColor: "#fff",
+    borderRadius: 8,
+    backgroundColor: "#FFF",
+  },
+  continueButton: {
+    backgroundColor: "#4A3AFF",
+    paddingVertical: 15,
+    borderRadius: 10,
+    alignItems: "center",
+    marginTop: 20,
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 10,
+  },
+  continueButtonText: {
+    color: "#FFF",
+    fontSize: 18,
+    fontWeight: "bold",
   },
 });

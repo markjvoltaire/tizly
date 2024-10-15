@@ -1,16 +1,12 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   Text,
   View,
   TextInput,
-  Button,
-  FlatList,
   Image,
   TouchableOpacity,
-  Alert,
   Pressable,
-  Animated,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -22,114 +18,95 @@ export default function Name({ route, navigation }) {
 
   return (
     <>
-      <SafeAreaView
-        style={{ backgroundColor: "#4A3AFF", padding: 15, height: 10 }}
-      >
-        <View style={{ width: 90 }}>
-          <Pressable onPress={() => navigation.goBack()}>
-            <Image
-              style={{ aspectRatio: 1, height: 30 }}
-              source={require("../assets/WhiteBack.png")}
-            />
-          </Pressable>
-        </View>
-      </SafeAreaView>
       <View style={styles.container}>
-        <Text style={styles.header}>Let's Get to Know You</Text>
+        <Text style={styles.header}>Tell Us About Yourself</Text>
 
         <TextInput
           style={styles.input}
-          placeholder="Enter Your First Name"
+          placeholder="First Name"
           value={firstName}
           onChangeText={setFirstName}
+          placeholderTextColor="#B0B0B0"
         />
 
         <TextInput
           style={styles.input}
-          placeholder="Enter Your Last Name"
+          placeholder="Last Name"
           value={lastName}
           onChangeText={setLastName}
+          placeholderTextColor="#B0B0B0"
         />
 
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            onPress={() => {
-              type === "business"
-                ? navigation.navigate("AddAddress", {
-                    firstName,
-                    lastName,
-                    type,
-                  })
-                : navigation.navigate("NoAuthAddLocation", {
-                    firstName,
-                    lastName,
-                    type,
-                  });
-            }}
-            style={styles.button}
-          >
-            <Text style={styles.buttonText}>Next</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => {
+            type === "business"
+              ? navigation.navigate("AddAddress", {
+                  firstName,
+                  lastName,
+                  type,
+                })
+              : navigation.navigate("NoAuthAddLocation", {
+                  firstName,
+                  lastName,
+                  type,
+                });
+          }}
+        >
+          <Text style={styles.buttonText}>Next</Text>
+        </TouchableOpacity>
       </View>
     </>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    backgroundColor: "#FFFFFF",
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+  },
+  backButtonContainer: {
+    width: 40,
+  },
+  backButton: {
+    width: 30,
+    height: 30,
+  },
   container: {
     flex: 1,
-    backgroundColor: "#4A3AFF",
-    padding: 10,
-    paddingBottom: 180,
+    backgroundColor: "#F5F5F5",
+    paddingHorizontal: 20,
+    marginTop: 20,
   },
   header: {
-    fontSize: 25,
+    fontSize: 28,
+    fontWeight: "700",
+    color: "#333333",
     marginBottom: 30,
-    color: "white",
-    fontWeight: "800",
-    width: "100%",
-  },
-  button: {
-    backgroundColor: "black",
-    paddingVertical: 15,
-    borderRadius: 5,
-    alignItems: "center",
+    textAlign: "center",
   },
   input: {
-    width: "100%",
     height: 50,
-    fontSize: 18,
-    padding: 10,
-    borderColor: "#ccc",
+    backgroundColor: "#FFFFFF",
+    borderColor: "#E0E0E0",
     borderWidth: 1,
-    marginBottom: 16,
-    borderRadius: 8,
-    backgroundColor: "white",
-    fontWeight: "600",
+    borderRadius: 10,
+    marginBottom: 20,
+    paddingHorizontal: 15,
+    fontSize: 16,
+    color: "#333333",
   },
-  cityList: {
-    borderColor: "#ccc",
-    borderRadius: 8,
-    backgroundColor: "white",
-    width: "100%",
-    overflow: "hidden",
-  },
-  cityItem: {
-    padding: 10,
-    fontSize: 18,
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
-    fontWeight: "600",
-  },
-  buttonContainer: {
-    marginTop: 16,
-    width: "100%",
+  button: {
+    backgroundColor: "#4A90E2",
+    paddingVertical: 15,
+    borderRadius: 10,
+    alignItems: "center",
+    marginTop: 20,
   },
   buttonText: {
-    color: "white",
+    color: "#FFFFFF",
     fontSize: 18,
-    fontWeight: "bold",
-    alignSelf: "center",
+    fontWeight: "600",
   },
 });

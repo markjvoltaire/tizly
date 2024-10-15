@@ -4,7 +4,6 @@ import {
   Text,
   View,
   TextInput,
-  Button,
   FlatList,
   Image,
   TouchableOpacity,
@@ -1209,18 +1208,18 @@ export default function NoAuthAddLocation({ route, navigation }) {
 
   return (
     <>
-      <SafeAreaView
-        style={{ backgroundColor: "#4A3AFF", padding: 15, height: 10 }}
-      >
-        <View style={{ width: 90 }}>
-          <Pressable onPress={() => navigation.goBack()}>
-            <Image
-              style={{ aspectRatio: 1, height: 30 }}
-              source={require("../assets/WhiteBack.png")}
-            />
-          </Pressable>
-        </View>
+      <SafeAreaView style={styles.safeArea}>
+        <Pressable
+          style={styles.backButtonContainer}
+          onPress={() => navigation.goBack()}
+        >
+          <Image
+            style={styles.backButton}
+            source={require("../assets/WhiteBack.png")}
+          />
+        </Pressable>
       </SafeAreaView>
+
       <View style={styles.container}>
         <Text style={styles.header}>
           Where Are You Located? Let’s Pin Your Spot!
@@ -1230,6 +1229,7 @@ export default function NoAuthAddLocation({ route, navigation }) {
           placeholder="Enter City or State"
           value={city}
           onChangeText={handleCityChange}
+          placeholderTextColor="#9E9E9E"
         />
 
         <Animated.View style={[styles.cityList, { height: dropdownHeight }]}>
@@ -1239,79 +1239,83 @@ export default function NoAuthAddLocation({ route, navigation }) {
               keyExtractor={(item) => `${item.city}, ${item.state}`}
               renderItem={({ item }) => (
                 <TouchableOpacity onPress={() => handleCitySelect(item)}>
-                  <Text
-                    style={styles.cityItem}
-                  >{`${item.city}, ${item.state}`}</Text>
+                  <Text style={styles.cityItem}>
+                    {`${item.city}, ${item.state}`}
+                  </Text>
                 </TouchableOpacity>
               )}
             />
           )}
         </Animated.View>
 
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={handleNext}>
-            <Text style={styles.buttonText}>Next</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity style={styles.button} onPress={handleNext}>
+          <Text style={styles.buttonText}>Next</Text>
+        </TouchableOpacity>
       </View>
     </>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    backgroundColor: "#FFFFFF",
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+  },
+  backButtonContainer: {
+    width: 40,
+  },
+  backButton: {
+    width: 30,
+    height: 30,
+  },
   container: {
     flex: 1,
-    backgroundColor: "#4A3AFF",
-    padding: 10,
-    paddingBottom: 180,
+    backgroundColor: "#F5F5F5",
+    paddingHorizontal: 20,
+    justifyContent: "center",
   },
   header: {
-    fontSize: 25,
+    fontSize: 24,
+    fontWeight: "700",
+    color: "#333333",
+    textAlign: "center",
     marginBottom: 30,
-    color: "white",
-    fontWeight: "800",
-    width: "100%",
-  },
-  button: {
-    backgroundColor: "black",
-    paddingVertical: 15,
-    borderRadius: 5,
-    alignItems: "center",
   },
   input: {
-    width: "100%",
     height: 50,
-    fontSize: 18,
-    padding: 10,
-    borderColor: "#ccc",
+    backgroundColor: "#FFFFFF",
+    borderColor: "#E0E0E0",
     borderWidth: 1,
-    marginBottom: 16,
-    borderRadius: 8,
-    backgroundColor: "white",
-    fontWeight: "600",
+    borderRadius: 12,
+    marginBottom: 20,
+    paddingHorizontal: 15,
+    fontSize: 16,
+    color: "#333333",
   },
   cityList: {
-    borderColor: "#ccc",
-    borderRadius: 8,
-    backgroundColor: "white",
-    width: "100%",
+    borderColor: "#E0E0E0",
+    borderRadius: 12,
+    backgroundColor: "#FFFFFF",
     overflow: "hidden",
+    marginBottom: 20,
   },
   cityItem: {
-    padding: 10,
-    fontSize: 18,
+    padding: 15,
+    fontSize: 16,
     borderBottomWidth: 1,
-    borderBottomColor: "#eee",
-    fontWeight: "600",
+    borderBottomColor: "#E0E0E0",
+    color: "#333333",
   },
-  buttonContainer: {
-    marginTop: 16,
-    width: "100%",
+  button: {
+    backgroundColor: "#4A90E2",
+    paddingVertical: 15,
+    borderRadius: 10,
+    alignItems: "center",
   },
   buttonText: {
-    color: "white",
+    color: "#FFFFFF",
     fontSize: 18,
-    fontWeight: "bold",
-    alignSelf: "center",
+    fontWeight: "600",
   },
 });

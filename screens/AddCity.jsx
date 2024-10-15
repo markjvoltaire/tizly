@@ -4,7 +4,6 @@ import {
   Text,
   View,
   TextInput,
-  Button,
   FlatList,
   Image,
   TouchableOpacity,
@@ -1211,18 +1210,6 @@ export default function AddCity({ route, navigation }) {
 
   return (
     <>
-      <SafeAreaView
-        style={{ backgroundColor: "#4A3AFF", padding: 15, height: 10 }}
-      >
-        <View style={{ width: 90 }}>
-          <Pressable onPress={() => navigation.goBack()}>
-            <Image
-              style={{ aspectRatio: 1, height: 30 }}
-              source={require("../assets/WhiteBack.png")}
-            />
-          </Pressable>
-        </View>
-      </SafeAreaView>
       <View style={styles.container}>
         <Text style={styles.header}>
           Where Are You Located? Let’s Pin Your Spot!
@@ -1233,7 +1220,6 @@ export default function AddCity({ route, navigation }) {
           value={city}
           onChangeText={handleCityChange}
         />
-
         <Animated.View style={[styles.cityList, { height: dropdownHeight }]}>
           {filteredCities.length > 0 && (
             <FlatList
@@ -1241,15 +1227,14 @@ export default function AddCity({ route, navigation }) {
               keyExtractor={(item) => `${item.city}, ${item.state}`}
               renderItem={({ item }) => (
                 <TouchableOpacity onPress={() => handleCitySelect(item)}>
-                  <Text
-                    style={styles.cityItem}
-                  >{`${item.city}, ${item.state}`}</Text>
+                  <Text style={styles.cityItem}>
+                    {`${item.city}, ${item.state}`}
+                  </Text>
                 </TouchableOpacity>
               )}
             />
           )}
         </Animated.View>
-
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.button} onPress={handleNext}>
             <Text style={styles.buttonText}>Next</Text>
@@ -1261,59 +1246,68 @@ export default function AddCity({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    backgroundColor: "#4A90E2",
+  },
+  backButtonContainer: {
+    width: 90,
+  },
+  backButton: {
+    aspectRatio: 1,
+    height: 30,
+  },
   container: {
     flex: 1,
-    backgroundColor: "#4A3AFF",
-    padding: 10,
-    paddingBottom: 180,
+    backgroundColor: "#f0f4f7",
+    paddingHorizontal: 20,
+    marginTop: 100,
   },
   header: {
-    fontSize: 25,
-    marginBottom: 30,
-    color: "white",
-    fontWeight: "800",
-    width: "100%",
-  },
-  button: {
-    backgroundColor: "black",
-    paddingVertical: 15,
-    borderRadius: 5,
-    alignItems: "center",
+    fontSize: 24,
+    fontWeight: "700",
+    color: "#333",
+    marginBottom: 20,
+    textAlign: "center",
   },
   input: {
     width: "100%",
     height: 50,
-    fontSize: 18,
-    padding: 10,
-    borderColor: "#ccc",
+    fontSize: 16,
+    padding: 15,
+    borderColor: "#ddd",
     borderWidth: 1,
-    marginBottom: 16,
-    borderRadius: 8,
-    backgroundColor: "white",
+    borderRadius: 10,
+    marginBottom: 20,
+    backgroundColor: "#fff",
     fontWeight: "600",
   },
   cityList: {
-    borderColor: "#ccc",
-    borderRadius: 8,
-    backgroundColor: "white",
+    borderColor: "#ddd",
+    borderRadius: 10,
+    backgroundColor: "#fff",
     width: "100%",
     overflow: "hidden",
   },
   cityItem: {
-    padding: 10,
-    fontSize: 18,
+    padding: 15,
+    fontSize: 16,
     borderBottomWidth: 1,
     borderBottomColor: "#eee",
     fontWeight: "600",
   },
   buttonContainer: {
-    marginTop: 16,
+    marginTop: 20,
     width: "100%",
   },
+  button: {
+    backgroundColor: "#4A90E2",
+    paddingVertical: 15,
+    borderRadius: 10,
+    alignItems: "center",
+  },
   buttonText: {
-    color: "white",
+    color: "#fff",
     fontSize: 18,
     fontWeight: "bold",
-    alignSelf: "center",
   },
 });

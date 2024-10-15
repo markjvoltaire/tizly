@@ -19,11 +19,9 @@ export default function BusinessSignUp({ route, navigation }) {
   const { user, setUser } = useUser();
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [modal, setModal] = useState(false);
-  const [userCred, setUserCred] = useState();
 
   const accountNumber = route.params.accountNumber;
   const routingNumber = route.params.routingNumber;
@@ -49,26 +47,21 @@ export default function BusinessSignUp({ route, navigation }) {
 
   const signUpWithEmail = async (json) => {
     setModal(true);
-    // Input validation
     if (password.length < 8) {
       Alert.alert("Password should be 8 or more characters");
       setModal(false);
       return;
     }
-
     if (!email) {
       Alert.alert("Please fill in all field inputs");
       setModal(false);
-
       return;
     }
-
     try {
       const { user, error } = await supabase.auth.signUp({
         email: email,
         password: password,
       });
-
       if (!error) {
         const userId = supabase.auth.currentUser.id;
         const resp = await supabase.from("profiles").insert([
@@ -85,7 +78,6 @@ export default function BusinessSignUp({ route, navigation }) {
             niche: mccDescription,
           },
         ]);
-
         setUser(resp.body[0]);
         setModal(false);
         return resp;
@@ -93,22 +85,19 @@ export default function BusinessSignUp({ route, navigation }) {
         setModal(false);
         Alert.alert(error.message);
         console.error("Error during sign-up:", error);
+        setUser(null);
+        return;
       }
-
-      return { user, error };
     } catch (error) {
-      console.log("LINE 75");
       setModal(false);
       console.error("An error occurred during sign-up:", error);
       Alert.alert("An error occurred. Please try again later.");
-
-      return { user: null, error };
+      return;
     }
   };
 
   const createAccount = async (resp) => {
     setModal(true);
-
     try {
       const response = await fetch(
         "https://tizlyexpress.onrender.com/account",
@@ -121,7 +110,7 @@ export default function BusinessSignUp({ route, navigation }) {
           body: JSON.stringify({
             email: email,
             username: username,
-            mcc: mcc,
+            mcc: 7333,
             ssn: ssn,
             address: address,
             city: city,
@@ -138,15 +127,15 @@ export default function BusinessSignUp({ route, navigation }) {
           }),
         }
       );
-
       if (!response.ok) {
+        console.log("mcc", mcc);
+        console.log("response", response);
         setModal(false);
         throw new Error(`HTTP error! Status: ${response.status}`);
       } else {
         const contentType = response.headers.get("content-type");
         if (contentType && contentType.includes("application/json")) {
           const json = await response.json();
-
           await signUpWithEmail(json);
           if (json.error) {
             Alert.alert(json.error);
@@ -160,6 +149,7 @@ export default function BusinessSignUp({ route, navigation }) {
         }
       }
     } catch (error) {
+      console.log("resp", resp);
       setModal(false);
       console.error("Error creating account:", error);
     }
@@ -171,28 +161,8 @@ export default function BusinessSignUp({ route, navigation }) {
 
   return (
     <>
-      <SafeAreaView
-        style={{ backgroundColor: "#4A3AFF", padding: 15, height: 10 }}
-      >
-        <View style={{ width: 90 }}>
-          <Pressable onPress={() => navigation.goBack()}>
-            <Image
-              style={{ aspectRatio: 1, height: 30 }}
-              source={require("../assets/WhiteBack.png")}
-            />
-          </Pressable>
-        </View>
-      </SafeAreaView>
       <View style={styles.container}>
-        <Text
-          style={{
-            fontSize: 25,
-            marginBottom: 30,
-            color: "white",
-            fontWeight: "800",
-            width: "100%",
-          }}
-        >
+        <Text style={styles.heading}>
           Complete your registration and start exploring!
         </Text>
         <View style={styles.formContainer}>
@@ -203,7 +173,6 @@ export default function BusinessSignUp({ route, navigation }) {
             value={username}
             onChangeText={(text) => setUserName(text)}
           />
-
           <TextInput
             style={styles.input}
             placeholderTextColor="#A0A0A0"
@@ -220,7 +189,6 @@ export default function BusinessSignUp({ route, navigation }) {
             value={email}
             onChangeText={(text) => setEmail(text)}
           />
-
           <TextInput
             style={styles.input}
             placeholderTextColor="#A0A0A0"
@@ -229,33 +197,29 @@ export default function BusinessSignUp({ route, navigation }) {
             value={password}
             onChangeText={(text) => setPassword(text)}
           />
-
-          <TouchableOpacity
-            onPress={() => handleSignUp()}
-            style={styles.signupButton}
-          >
-            <Text style={styles.buttonText}>Sign Up</Text>
-          </TouchableOpacity>
         </View>
 
         <TouchableOpacity
-          style={styles.forgotPassword}
-          onPress={() => {
-            navigation.navigate("Login");
-          }}
+          onPress={() => handleSignUp()}
+          style={styles.signupButton}
         >
-          <Text style={styles.forgotPasswordText}>Login Here</Text>
+          <Text style={styles.signupButtonText}>Sign Up</Text>
         </TouchableOpacity>
 
-        <Modal animationType={"fade"} visible={modal}>
-          <View style={{ flex: 1, backgroundColor: "#4A3AFF" }}>
-            <View style={{ top: 200 }}>
-              <LottieView
-                autoPlay
-                style={{ height: 300, width: 300, alignSelf: "center" }}
-                source={require("../assets/lottie/3Dots.json")}
-              />
-            </View>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("Login")}
+          style={styles.loginLink}
+        >
+          <Text style={styles.loginText}>Login Here</Text>
+        </TouchableOpacity>
+
+        <Modal animationType="fade" visible={modal}>
+          <View style={styles.modalContainer}>
+            <LottieView
+              autoPlay
+              style={styles.lottieAnimation}
+              source={require("../assets/lottie/3Dots.json")}
+            />
           </View>
         </Modal>
       </View>
@@ -264,46 +228,70 @@ export default function BusinessSignUp({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    backgroundColor: "#FFF",
+    padding: 15,
+  },
+  backButton: {
+    aspectRatio: 1,
+    height: 30,
+    marginBottom: 20,
+  },
   container: {
     flex: 1,
-    backgroundColor: "#4A3AFF",
+    backgroundColor: "#FFF",
     paddingHorizontal: 20,
-    paddingTop: 40,
+    paddingTop: 10,
   },
-  forgotPassword: {
-    marginBottom: 20,
-    alignSelf: "center",
-  },
-  forgotPasswordText: {
-    color: "#4A3AFF",
-    fontSize: 16,
+  heading: {
+    fontSize: 25,
+    color: "#000",
+    fontWeight: "800",
+    marginBottom: 10,
+    textAlign: "center",
   },
   formContainer: {
     width: "100%",
+    marginBottom: 20,
   },
   input: {
-    height: 40,
+    height: 50,
     width: "100%",
-    borderColor: "#E8E8E8",
+    borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 8,
-    marginBottom: 10,
-    paddingHorizontal: 10,
-    fontFamily: "Helvetica",
-    backgroundColor: "#FAFAFA",
+    marginBottom: 16,
+    paddingHorizontal: 15,
+    backgroundColor: "#F7F7F7",
     fontSize: 16,
   },
   signupButton: {
-    backgroundColor: "black",
-    paddingVertical: 12,
-    borderRadius: 8,
+    backgroundColor: "#4A90E2",
+    paddingVertical: 15,
+    borderRadius: 5,
     alignItems: "center",
-    marginTop: 20,
     marginBottom: 20,
   },
-  buttonText: {
-    color: "#ffffff",
-    fontSize: 16,
+  signupButtonText: {
+    color: "#FFFFFF",
+    fontSize: 18,
     fontWeight: "bold",
+  },
+  loginLink: {
+    alignSelf: "center",
+  },
+  loginText: {
+    color: "black",
+    fontSize: 16,
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: "#4A90E2",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  lottieAnimation: {
+    height: 300,
+    width: 300,
   },
 });

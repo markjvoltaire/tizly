@@ -30,11 +30,41 @@ export default function NoAuth() {
 
       <Stack.Screen name="Login" component={Login} />
 
-      <Stack.Screen name="SignUp" component={SignUp} />
+      <Stack.Screen
+        name="SignUp"
+        component={SignUp}
+        options={{
+          tabBarVisible: false,
+          headerShown: true,
+          headerTitle: "Sign Up",
+          headerTintColor: "black",
+          headerBackTitle: "Go Back",
+        }}
+      />
 
-      <Stack.Screen name="Dob" component={Dob} />
+      <Stack.Screen
+        name="Dob"
+        component={Dob}
+        options={{
+          tabBarVisible: false,
+          headerShown: true,
+          headerTitle: "Sign Up",
+          headerTintColor: "black",
+          headerBackTitle: "Go Back",
+        }}
+      />
 
-      <Stack.Screen name="Name" component={Name} />
+      <Stack.Screen
+        name="Name"
+        component={Name}
+        options={{
+          tabBarVisible: false,
+          headerShown: true,
+          headerTitle: "Sign Up",
+          headerTintColor: "black",
+          headerBackTitle: "Go Back",
+        }}
+      />
 
       <Stack.Screen
         name="PaymentIntro"
@@ -47,13 +77,63 @@ export default function NoAuth() {
         }}
         component={PaymentIntro}
       />
-      <Stack.Screen name="AddAddress" component={AddAddress} />
-      <Stack.Screen name="AddCity" component={AddCity} />
+      <Stack.Screen
+        name="AddAddress"
+        component={AddAddress}
+        options={{
+          tabBarVisible: false,
+          headerShown: true,
+          headerTitle: "Sign Up",
+          headerTintColor: "black",
+          headerBackTitle: "Go Back",
+        }}
+      />
+      <Stack.Screen
+        name="AddCity"
+        component={AddCity}
+        options={{
+          tabBarVisible: false,
+          headerShown: true,
+          headerTitle: "Sign Up",
+          headerTintColor: "black",
+          headerBackTitle: "Go Back",
+        }}
+      />
 
-      <Stack.Screen name="Ssn" component={Ssn} />
-      <Stack.Screen name="BusinessSignUp" component={BusinessSignUp} />
+      <Stack.Screen
+        name="Ssn"
+        component={Ssn}
+        options={{
+          tabBarVisible: false,
+          headerShown: true,
+          headerTitle: "Sign Up",
+          headerTintColor: "black",
+          headerBackTitle: "Go Back",
+        }}
+      />
+      <Stack.Screen
+        name="BusinessSignUp"
+        component={BusinessSignUp}
+        options={{
+          tabBarVisible: false,
+          headerShown: true,
+          headerTitle: "Sign Up",
+          headerTintColor: "black",
+          headerBackTitle: "Go Back",
+        }}
+      />
 
-      <Stack.Screen name="BusinessIntro" component={BusinessIntro} />
+      <Stack.Screen
+        name="BusinessIntro"
+        component={BusinessIntro}
+        options={{
+          tabBarVisible: false,
+          headerShown: true,
+          headerTitle: "Sign Up",
+          headerTintColor: "black",
+          headerBackTitle: "Go Back",
+        }}
+      />
       <Stack.Screen name="ResetPassword" component={ResetPassword} />
     </Stack.Navigator>
   );

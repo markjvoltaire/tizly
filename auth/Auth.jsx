@@ -92,6 +92,14 @@ export default function Auth() {
     fetchUserById();
   }, []);
 
+  if (loading) {
+    return (
+      <View style={{ justifyContent: "center", flex: 1 }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
   if (!user) {
     return (
       <Stack.Navigator screenOptions={{ headerShown: false }}>

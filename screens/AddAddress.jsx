@@ -16,7 +16,6 @@ export default function NoAuthAddLocation({ route, navigation }) {
   const [zipCode, setZipCode] = useState("");
   const [zipCodeError, setZipCodeError] = useState("");
 
-
   const details = route.params;
 
   // Define text variables
@@ -58,18 +57,6 @@ export default function NoAuthAddLocation({ route, navigation }) {
 
   return (
     <>
-      <SafeAreaView
-        style={{ backgroundColor: "#4A3AFF", padding: 15, height: 10 }}
-      >
-        <View style={{ width: 90 }}>
-          <Pressable onPress={() => navigation.goBack()}>
-            <Image
-              style={{ aspectRatio: 1, height: 30 }}
-              source={require("../assets/WhiteBack.png")}
-            />
-          </Pressable>
-        </View>
-      </SafeAreaView>
       <View style={styles.container}>
         <Text style={styles.header}>{headerText}</Text>
         <TextInput
@@ -77,6 +64,7 @@ export default function NoAuthAddLocation({ route, navigation }) {
           placeholder="Enter Street Address"
           value={address}
           onChangeText={handleCityChange}
+          placeholderTextColor="#9E9E9E"
         />
 
         <TextInput
@@ -85,6 +73,7 @@ export default function NoAuthAddLocation({ route, navigation }) {
           value={zipCode}
           keyboardType="number-pad"
           onChangeText={handleZipCodeChange}
+          placeholderTextColor="#9E9E9E"
         />
 
         {zipCodeError ? (
@@ -102,49 +91,58 @@ export default function NoAuthAddLocation({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    backgroundColor: "#FFFFFF",
+    paddingHorizontal: 15,
+  },
+  backButtonContainer: {
+    width: 40,
+  },
+  backButton: {
+    width: 30,
+    height: 30,
+  },
   container: {
     flex: 1,
-    backgroundColor: "#4A3AFF",
-    padding: 10,
-    paddingBottom: 180,
+    backgroundColor: "#F5F5F5",
+    paddingHorizontal: 20,
+    marginTop: 25,
   },
   header: {
-    fontSize: 25,
+    fontSize: 24,
+    fontWeight: "700",
+    color: "#333333",
+    textAlign: "center",
     marginBottom: 30,
-    color: "white",
-    fontWeight: "800",
-    width: "100%",
-  },
-  button: {
-    backgroundColor: "black",
-    paddingVertical: 15,
-    borderRadius: 5,
-    alignItems: "center",
   },
   input: {
     width: "100%",
     height: 50,
-    fontSize: 18,
-    padding: 10,
-    borderColor: "#ccc",
+    fontSize: 16,
+    padding: 12,
+    borderColor: "#E0E0E0",
     borderWidth: 1,
-    marginBottom: 26,
-    borderRadius: 8,
-    backgroundColor: "white",
-    fontWeight: "600",
-  },
-  buttonContainer: {
-    marginTop: 16,
-    width: "100%",
-  },
-  buttonText: {
-    color: "white",
-    fontSize: 18,
-    fontWeight: "bold",
-    alignSelf: "center",
+    marginBottom: 20,
+    borderRadius: 10,
+    backgroundColor: "#FFFFFF",
   },
   errorText: {
     color: "red",
     marginBottom: 20,
+    fontSize: 14,
+  },
+  buttonContainer: {
+    marginTop: 20,
+  },
+  button: {
+    backgroundColor: "#4A90E2",
+    paddingVertical: 15,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#FFFFFF",
+    fontSize: 18,
+    fontWeight: "600",
   },
 });
