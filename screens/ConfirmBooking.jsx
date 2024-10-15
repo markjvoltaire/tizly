@@ -42,10 +42,15 @@ export default function ConfirmBooking({ route, navigation }) {
     return serviceTotal + stripeFee;
   };
   // Convert selectedDate to a readable format
-  const formattedDate = new Date(selectedDate).toLocaleDateString();
+
+  const formattedDate = new Date(selectedDate).toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 
   const sendNotification = async (body, title, tokenCode) => {
-
     // notification message
     const message = {
       to: tokenCode,
@@ -164,15 +169,15 @@ export default function ConfirmBooking({ route, navigation }) {
         <View style={styles.serviceTextContainer}>
           <Text style={styles.serviceTitle}>{service.title}</Text>
 
-          <Text style={styles.serviceAddress}>
+          {/* <Text style={styles.serviceAddress}>
             7683 Thornton Avenue, Newark, Cali...
-          </Text>
+          </Text> */}
         </View>
       </View>
 
       <View style={styles.infoContainer}>
         <Text style={styles.infoText}>{formattedDate}</Text>
-        <Text style={styles.infoText}>{selectedTime}</Text>
+        <Text style={styles.infoText}>@ {selectedTime}</Text>
       </View>
 
       <View style={styles.priceContainer}>
@@ -344,7 +349,7 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   confirmButton: {
-    backgroundColor: "#000",
+    backgroundColor: "#007bff",
     paddingVertical: 15,
     alignItems: "center",
     borderRadius: 5,

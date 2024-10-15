@@ -13,6 +13,7 @@ import {
   Image,
   Alert,
   Dimensions,
+  RefreshControl, // Import RefreshControl
 } from "react-native";
 import { useUser } from "../context/UserContext"; // Import useUser context
 import Icon from "react-native-vector-icons/Ionicons"; // Import Ionicons
@@ -24,8 +25,17 @@ const PersonalHome = ({ navigation }) => {
   const { user, setUser } = useUser(); // Destructure user and setUser from the useUser hook
   const [forYouList, setForYouList] = useState([]);
   const [newServices, setNewServices] = useState([]);
+  const [refreshing, setRefreshing] = useState(false); // State to manage refreshing
   const height = Dimensions.get("window").height;
   const width = Dimensions.get("window").width;
+
+  // Function to refresh the data
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await getForYou();
+    await getNew();
+    setRefreshing(false);
+  };
 
   // Sample services to display when typing into the search bar
   const services = [
@@ -60,7 +70,7 @@ const PersonalHome = ({ navigation }) => {
     userLatitude,
     userLongitude,
     radius = 50,
-    limit = 5
+    limit = 12
   ) {
     try {
       // Fetch all services using the provided query
@@ -176,54 +186,81 @@ const PersonalHome = ({ navigation }) => {
             {/* Today's picks header */}
             <View style={styles.picksHeader}>
               <Text style={styles.picksText}>Today's picks</Text>
-              <View style={styles.locationContainer}>
-                <Icon
-                  name="location-outline"
-                  size={18}
-                  color="#000"
-                  style={styles.locationIcon}
-                />
-                <Text style={styles.locationText}>
-                  {user?.city && user?.state
-                    ? `${user.city}, ${user.state}`
-                    : "North Miami, Florida"}
-                </Text>
-              </View>
+
+              <Pressable onPress={() => navigation.navigate("EditLocation")}>
+                <View style={styles.locationContainer}>
+                  <Icon
+                    name="location-outline"
+                    size={18}
+                    color="#000"
+                    style={styles.locationIcon}
+                  />
+                  <Text style={styles.locationText}>
+                    {user?.city && user?.state
+                      ? `${user.city}, ${user.state}`
+                      : "North Miami, Florida"}
+                  </Text>
+                </View>
+              </Pressable>
             </View>
 
             {/* Product grid displaying For You Services */}
-            <ScrollView
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={styles.grid}
-            >
-              {forYouList.map((service, index) => (
-                <TouchableOpacity
-                  key={index}
-                  style={styles.productContainer}
-                  onPress={() =>
-                    navigation.navigate("ServiceDetails", { item: service })
-                  }
-                >
-                  <Image
-                    source={{ uri: service.thumbnail }}
-                    style={styles.thumbnail}
+            {forYouList.length === 0 ? (
+              <ScrollView
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.noServicesContainer}
+                refreshControl={
+                  <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
                   />
-                  <View style={styles.productInfo}>
-                    <Text style={styles.productPrice} numberOfLines={1}>
-                      ${service.price}
-                    </Text>
+                }
+              >
+                <Text style={styles.noServicesText}>
+                  No services available at the moment. Please check back later.
+                </Text>
+              </ScrollView>
+            ) : (
+              <ScrollView
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.grid}
+                refreshControl={
+                  <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                  />
+                }
+              >
+                {forYouList.map((service, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={styles.productContainer}
+                    onPress={() =>
+                      navigation.navigate("ServiceDetails", { item: service })
+                    }
+                  >
+                    <Image
+                      source={{ uri: service.thumbnail }}
+                      style={styles.thumbnail}
+                    />
+                    <View style={styles.productInfo}>
+                      <Text style={styles.productPrice} numberOfLines={1}>
+                        ${service.price}
+                      </Text>
 
-                    <Text style={styles.productTitle} numberOfLines={1}>
-                      • {service.title}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
+                      <Text style={styles.productTitle} numberOfLines={1}>
+                        • {service.title}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            )}
           </>
         ) : (
           <>
             {/* Services list filtered by search query */}
+
             <FlatList
               contentContainerStyle={{
                 flexGrow: 1,
@@ -269,6 +306,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 2,
+  },
+  noServicesContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  noServicesText: {
+    fontSize: 16,
+    color: "#777",
+    textAlign: "center",
   },
   title: {
     fontSize: 24,

@@ -15,6 +15,7 @@ import {
   Dimensions,
   Switch,
   SafeAreaView,
+  ActivityIndicator,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { supabase } from "../services/supabase";
@@ -179,18 +180,17 @@ export default function PostService({ navigation }) {
     return (
       <Modal
         animationType="slide"
-        transparent={true}
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
       >
-        <View style={styles.modalContainer}>
-          <View style={{ flex: 1, justifyContent: "center" }}>
-            <LottieView
-              autoPlay
-              style={{ height: 300, width: 300, alignSelf: "center" }}
-              source={require("../assets/lottie/3Dots.json")}
-            />
-          </View>
+        <View
+          style={{
+            backgroundColor: "white",
+            flex: 1,
+            justifyContent: "center",
+          }}
+        >
+          <ActivityIndicator size="large" />
         </View>
       </Modal>
     );
@@ -304,7 +304,15 @@ export default function PostService({ navigation }) {
 
             <Text style={styles.label}>Service Description</Text>
             <TextInput
-              style={styles.inputDescription}
+              style={{
+                borderWidth: 1,
+                borderColor: "#ccc",
+                borderRadius: 12,
+                padding: 20,
+                fontSize: 16,
+                backgroundColor: "#F3F3F9",
+                marginBottom: 12,
+              }}
               value={description}
               onChangeText={setDescription}
               placeholder="Describe your service in detail, highlighting key features, benefits, and any unique aspects."

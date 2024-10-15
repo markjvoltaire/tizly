@@ -20,8 +20,6 @@ export default function Category({ route, navigation }) {
     item: { description, id, name },
   } = route.params;
 
-  console.log("name", name);
-
   async function getProfessionals() {
     const resp = await supabase
       .from("services")

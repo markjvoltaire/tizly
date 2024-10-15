@@ -25,6 +25,7 @@ import { supabase } from "../services/supabase";
 import MapView from "react-native-maps";
 import Login from "./Login";
 import * as Notifications from "expo-notifications";
+import Icon from "react-native-vector-icons/Ionicons";
 
 const UserProfile = ({ route, navigation }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -354,6 +355,19 @@ const UserProfile = ({ route, navigation }) => {
               style={styles.icon}
             />
             <Text style={styles.optionText}>Upload To Portfolio</Text>
+          </TouchableOpacity>
+        ) : null}
+
+        {user.type === "business" ? (
+          <TouchableOpacity
+            onPress={() => navigation.navigate("ManagePorfolio")}
+            style={styles.optionContainer}
+          >
+            <Image
+              source={require("../assets/Category.png")}
+              style={styles.icon}
+            />
+            <Text style={styles.optionText}>Manage Portfolio</Text>
           </TouchableOpacity>
         ) : null}
 

@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
     height: screenHeight * 0.25,
     marginBottom: 5,
     backgroundColor: "#ccc",
-    borderRadius: 3,
+    borderRadius: 10,
     resizeMode: "cover",
   },
   serviceTitle: {

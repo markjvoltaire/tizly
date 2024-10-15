@@ -6,12 +6,12 @@ import {
   TouchableOpacity,
   Alert,
   ActivityIndicator,
-  Animated,
   Dimensions,
   Image,
   Modal,
   ScrollView,
   Pressable,
+  TextInput,
 } from "react-native";
 import { useStripe } from "@stripe/stripe-react-native";
 import React, { useState, useEffect, useRef } from "react";
@@ -27,17 +27,21 @@ export default function ServiceDetails({ route, navigation }) {
   const [loading, setLoading] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [businessProfile, setBusinessProfile] = useState({});
-  const fadeAnim = useRef(new Animated.Value(0)).current;
   const [bookingCount, setBookingCount] = useState(0);
   const [ratingAverage, setRatingAverage] = useState(0);
+  const [message, setMessage] = useState("");
+  const { user } = useUser();
 
   useEffect(() => {
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 1000,
-      useNativeDriver: true,
-    }).start();
     fetchBusinessProfile(route.params.item.user_id);
+  }, []);
+
+  useEffect(() => {
+    const getInfo = async () => {
+      await getBookingCount();
+      await getRatings();
+    };
+    getInfo();
   }, []);
 
   async function getBookingCount() {
@@ -48,8 +52,6 @@ export default function ServiceDetails({ route, navigation }) {
       .eq("seller_id", route.params.item.user_id);
 
     setBookingCount(res.body.length);
-
-    return res.body;
   }
 
   async function getRatings() {
@@ -62,24 +64,20 @@ export default function ServiceDetails({ route, navigation }) {
 
       if (error) {
         console.error("Error fetching ratings:", error.message);
-        return null; // or handle the error as needed
+        return;
       }
 
       if (!data || data.length === 0) {
         console.log("No ratings found.");
-        return null; // or handle the case where no ratings are found
+        return;
       }
 
-      // Calculate the average rating
       const totalRatings = data.reduce((sum, record) => sum + record.rating, 0);
       const averageRating = totalRatings / data.length;
 
       setRatingAverage(averageRating);
-
-      return { averageRating };
     } catch (err) {
       console.error("Unexpected error:", err.message);
-      return null; // or handle the error as needed
     }
   }
 
@@ -102,42 +100,131 @@ export default function ServiceDetails({ route, navigation }) {
     navigation.navigate("AddDate", { serviceInfo: route.params.item });
   };
 
-  useEffect(() => {
-    const getInfo = async () => {
-      const res = await getBookingCount();
-      const resp = await getRatings();
+  const sendNotification = async (body, title) => {
+    try {
+      // Notification message
+      const message = {
+        to: businessProfile.expo_push_token,
+        sound: "default",
+        title: title,
+        body: body,
+      };
 
-      console.log("resp", resp);
-      setBookingCount(res.length);
-    };
-    getInfo();
-  }, []);
+      // Send the notification
+      const response = await fetch("https://exp.host/--/api/v2/push/send", {
+        method: "POST",
+        headers: {
+          host: "exp.host",
+          accept: "application/json",
+          "accept-encoding": "gzip, deflate",
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(message),
+      });
+
+      // Check if the response is successful
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      console.log("Notification sent successfully:", data);
+    } catch (error) {
+      console.error("Failed to send notification:", error);
+    }
+  };
+
+  const sendMessage = async () => {
+    try {
+      const userId = supabase.auth.currentUser.id;
+      const body = `New message from ${user.username}`;
+      const title = "Tizly";
+      const tokenCode = businessProfile.expo_push_token;
+
+      if (message.trim() !== "") {
+        const res = await supabase.from("messages").insert([
+          {
+            type: "message",
+            sender: userId,
+            receiver: businessProfile.user_id,
+            message: message.trim(),
+            threadID: `${userId}${businessProfile.user_id}`,
+          },
+        ]);
+
+        console.log("businessProfile", `${userId}${businessProfile.user_id}`);
+
+        if (res.error) {
+          console.error("Error inserting message:", res.error);
+          Alert.alert("An error has occurred, please try again.");
+          return;
+        }
+
+        setMessage("");
+
+        try {
+          await sendNotification(body, title, tokenCode);
+        } catch (notificationError) {
+          console.error("Error sending push notification:", notificationError);
+        }
+      } else {
+        Alert.alert("Please enter a message before sending.");
+      }
+    } catch (error) {
+      console.error("Error sending message:", error);
+      Alert.alert("An error has occurred, please try again.");
+    }
+  };
+
+  const BusinessInfo = ({ businessProfile, bookingCount, ratingAverage }) => {
+    return (
+      <View style={styles.businessInfoContainer}>
+        <Image
+          style={styles.profileImage}
+          source={{ uri: businessProfile.profileimage }}
+        />
+        <View>
+          <Text style={styles.profileName}>{businessProfile.username}</Text>
+          <Text style={styles.ratingText}>
+            {ratingAverage.toFixed(1)} ★ ({bookingCount})
+          </Text>
+        </View>
+      </View>
+    );
+  };
 
   return (
-    <View style={styles.container}>
+    <>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        style={{ paddingBottom: 100 }}
+        style={styles.scrollViewContainer}
       >
         <SharedElement id={route.params.item.thumbnail}>
-          <Animated.Image
+          <Image
             source={{ uri: route.params.item.thumbnail }}
             style={styles.image}
           />
-          <View
-            style={{
-              backgroundColor: "black",
-              width: screenWidth,
-              height: screenHeight * 0.55,
-              resizeMode: "cover",
-              position: "absolute",
-              opacity: 0.5,
-            }}
-          ></View>
+          <View style={styles.imageOverlay} />
         </SharedElement>
+
         <View style={styles.detailsContainer}>
           <Text style={styles.serviceTitle}>{route.params.item.title}</Text>
-          <Text style={styles.priceText}>from ${route.params.item.price}</Text>
+          <Text style={styles.priceText}>${route.params.item.price}</Text>
+
+          <View style={styles.messageContainer}>
+            <TextInput
+              style={styles.messageInput}
+              value={message}
+              onChangeText={setMessage}
+              multiline
+              placeholder="ask any questions about this service"
+            />
+            <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
+              <Text style={styles.sendButtonText}>Send</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.divider} />
+
           <Pressable
             onPress={() =>
               navigation.navigate("ProfileDetail", {
@@ -151,13 +238,14 @@ export default function ServiceDetails({ route, navigation }) {
               ratingAverage={ratingAverage}
             />
           </Pressable>
+
           <Text style={styles.descriptionText}>
             {route.params.item.description}
           </Text>
         </View>
-        <View style={{ marginBottom: 100 }}></View>
-      </ScrollView>
 
+        <View style={{ marginBottom: 100 }} />
+      </ScrollView>
       <View style={styles.bottomBar}>
         <TouchableOpacity
           onPress={goToAddTime}
@@ -171,7 +259,6 @@ export default function ServiceDetails({ route, navigation }) {
           )}
         </TouchableOpacity>
       </View>
-
       <Modal visible={processing} animationType="fade">
         <SafeAreaView style={styles.modalContainer}>
           <LottieView
@@ -181,71 +268,102 @@ export default function ServiceDetails({ route, navigation }) {
           />
         </SafeAreaView>
       </Modal>
-    </View>
+    </>
   );
 }
 
-const BusinessInfo = ({ businessProfile, bookingCount, ratingAverage }) => {
-  return (
-    <View style={styles.businessInfoContainer}>
-      <Image
-        style={styles.profileImage}
-        source={{ uri: businessProfile.profileimage }}
-      />
-      <View>
-        <Text style={styles.profileName}>{businessProfile.username}</Text>
-        <Text style={styles.ratingText}>
-          {ratingAverage} ★ ({bookingCount})
-        </Text>
-      </View>
-    </View>
-  );
-};
-
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "white",
+  scrollViewContainer: {
+    paddingBottom: 100,
+    backgroundColor: "#f8f8f8",
   },
   image: {
     width: screenWidth,
-    height: screenHeight * 0.55,
+    height: screenHeight * 0.5,
     resizeMode: "cover",
+    backgroundColor: "#EEEFF2",
+  },
+  imageOverlay: {
+    width: screenWidth,
+    height: screenHeight * 0.5,
+    backgroundColor: "black",
+    position: "absolute",
+    opacity: 0.4,
   },
   detailsContainer: {
     padding: 10,
   },
   serviceTitle: {
     fontSize: 22,
-    fontWeight: "800",
-    color: "#000",
+    fontWeight: "700",
+    color: "#333",
   },
   priceText: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "600",
-    color: "black",
-    marginVertical: 5,
+    color: "#007bff",
+    marginVertical: 8,
   },
   descriptionText: {
     fontSize: 16,
-    color: "#2C3624",
-    marginTop: 10,
+    color: "#555",
+    marginTop: 12,
+  },
+  messageContainer: {
+    backgroundColor: "#ffffff",
+    borderRadius: 10,
+    padding: 15,
+    marginBottom: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    elevation: 2, // for Android shadow
+    shadowColor: "#000000", // for iOS shadow
+    shadowOpacity: 0.1, // for iOS shadow
+    shadowRadius: 5, // for iOS shadow
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    }, // for iOS shadow
+  },
+  messageInput: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 12,
+    padding: 12,
+    marginRight: 12,
+    backgroundColor: "#f1f2f6",
+  },
+  sendButton: {
+    backgroundColor: "#007bff",
+    paddingVertical: 12,
+    paddingHorizontal: 18,
+    borderRadius: 12,
+  },
+  sendButtonText: {
+    color: "#fff",
+    fontWeight: "600",
+  },
+  divider: {
+    height: 1,
+    backgroundColor: "#ccc",
+    marginVertical: 7,
   },
   bottomBar: {
     backgroundColor: "#fff",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
     borderTopWidth: 1,
-    borderTopColor: "#ccc",
+    borderTopColor: "#ddd",
     position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
   },
   bookButton: {
-    backgroundColor: "black",
+    backgroundColor: "#007bff",
     height: 50,
-    borderRadius: 10,
+    borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -256,29 +374,32 @@ const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
     backgroundColor: "#4A3AFF",
+    justifyContent: "center",
   },
   lottie: {
-    height: 500,
-    width: 500,
+    height: 200,
+    width: 200,
     alignSelf: "center",
   },
   businessInfoContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 7,
+    marginTop: 16,
   },
   profileImage: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    marginRight: 10,
-    backgroundColor: "grey",
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 12,
+    backgroundColor: "#ccc",
   },
   profileName: {
     fontWeight: "600",
-    fontSize: 16,
+    fontSize: 18,
+    color: "#333",
   },
   ratingText: {
-    color: "grey",
+    color: "#888",
+    fontSize: 14,
   },
 });

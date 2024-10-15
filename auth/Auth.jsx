@@ -59,6 +59,7 @@ import AuthSsn from "../screens/AuthSsn";
 import { createSharedElementStackNavigator } from "react-native-shared-element";
 import Upload from "../screens/Upload";
 import Category from "../screens/Category";
+import ManagePorfolio from "../screens/ManagePorfolio";
 
 export default function Auth() {
   const Stack = createNativeStackNavigator();
@@ -803,6 +804,16 @@ export default function Auth() {
         <Stack.Screen
           name="UserProfile"
           component={UserProfile}
+          options={{
+            tabBarVisible: false,
+            headerBackTitle: "Back", // Customizing the back button text
+            headerTintColor: "black", // Changing the color of the back button text
+          }}
+        />
+
+        <Stack.Screen
+          name="ManagePorfolio"
+          component={ManagePorfolio}
           options={{
             tabBarVisible: false,
             headerBackTitle: "Back", // Customizing the back button text
