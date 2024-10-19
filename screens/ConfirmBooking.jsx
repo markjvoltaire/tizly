@@ -215,7 +215,7 @@ export default function ConfirmBooking({ route, navigation }) {
       </View>
 
       <TouchableOpacity style={styles.confirmButton} onPress={handlePayPress}>
-        <Text style={styles.confirmButtonText}>Confirm</Text>
+        <Text style={styles.confirmButtonText}>Book</Text>
       </TouchableOpacity>
 
       <Modal visible={processing} animationType="fade">
@@ -259,6 +259,7 @@ const styles = StyleSheet.create({
     height: 80,
     borderRadius: 10,
     marginRight: 10,
+    backgroundColor: "grey",
   },
   serviceTextContainer: {
     flex: 1,
@@ -285,6 +286,7 @@ const styles = StyleSheet.create({
   infoText: {
     fontSize: 16,
     color: "#333",
+    fontWeight: "600",
   },
   priceContainer: {
     borderTopWidth: 1,
@@ -299,7 +301,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   priceLabel: {
-    fontSize: 16,
+    fontSize: 15,
+    fontWeight: "600",
   },
   priceValue: {
     fontSize: 16,
@@ -352,7 +355,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#007bff",
     paddingVertical: 15,
     alignItems: "center",
-    borderRadius: 5,
+    borderRadius: 10,
   },
   confirmButtonText: {
     color: "#fff",

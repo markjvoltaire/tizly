@@ -13,7 +13,8 @@ import { supabase } from "../services/supabase";
 // Generate array with both whole hours and half hours in 12-hour format (AM/PM)
 const generateHoursOfDay = () => {
   const hoursOfDay = [];
-  for (let hour = 7; hour < 24; hour++) {
+  for (let hour = 7; hour <= 23; hour++) {
+    // Loop until 23 to include 11 PM
     const period = hour < 12 ? "AM" : "PM";
     const displayHour = hour % 12 === 0 ? 12 : hour % 12;
     hoursOfDay.push(`${displayHour}:00 ${period}`);

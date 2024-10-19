@@ -296,7 +296,10 @@ export default function PostService({ navigation }) {
             <Text style={styles.label}>Service Thumbnail</Text>
             <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
               {thumbnail ? (
-                <Image source={{ uri: thumbnail }} style={styles.image} />
+                <Image
+                  source={{ uri: thumbnail }}
+                  style={{ width: "100%", height: "100%" }}
+                />
               ) : (
                 <Text style={{ color: "grey" }}>Select an Image</Text>
               )}

@@ -68,7 +68,7 @@ export default function MyOrders({ navigation }) {
 
   const NoOrders = () => (
     <View style={styles.noOrdersContainer}>
-      <Text style={styles.noOrdersText}>NO ORDERS</Text>
+      <Text style={styles.noOrdersText}>No Orders</Text>
     </View>
   );
 

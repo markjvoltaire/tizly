@@ -57,11 +57,12 @@ export default function InboxDetails({ route, navigation }) {
     }
   };
 
-  const sendNotification = async (body, title) => {
+  const sendNotification = async (body, title, tokenCode) => {
+    console.log("tokenCode", tokenCode);
     try {
       // Notification message
       const message = {
-        to: profileDetails.expo_push_token,
+        to: tokenCode,
         sound: "default",
         title: title,
         body: body,

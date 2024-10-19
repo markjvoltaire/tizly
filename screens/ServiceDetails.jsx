@@ -134,47 +134,7 @@ export default function ServiceDetails({ route, navigation }) {
     }
   };
 
-  const sendMessage = async () => {
-    try {
-      const userId = supabase.auth.currentUser.id;
-      const body = `New message from ${user.username}`;
-      const title = "Tizly";
-      const tokenCode = businessProfile.expo_push_token;
-
-      if (message.trim() !== "") {
-        const res = await supabase.from("messages").insert([
-          {
-            type: "message",
-            sender: userId,
-            receiver: businessProfile.user_id,
-            message: message.trim(),
-            threadID: `${userId}${businessProfile.user_id}`,
-          },
-        ]);
-
-        console.log("businessProfile", `${userId}${businessProfile.user_id}`);
-
-        if (res.error) {
-          console.error("Error inserting message:", res.error);
-          Alert.alert("An error has occurred, please try again.");
-          return;
-        }
-
-        setMessage("");
-
-        try {
-          await sendNotification(body, title, tokenCode);
-        } catch (notificationError) {
-          console.error("Error sending push notification:", notificationError);
-        }
-      } else {
-        Alert.alert("Please enter a message before sending.");
-      }
-    } catch (error) {
-      console.error("Error sending message:", error);
-      Alert.alert("An error has occurred, please try again.");
-    }
-  };
+  console.log("businessInfo", businessProfile);
 
   const BusinessInfo = ({ businessProfile, bookingCount, ratingAverage }) => {
     return (
@@ -211,25 +171,15 @@ export default function ServiceDetails({ route, navigation }) {
           <Text style={styles.serviceTitle}>{route.params.item.title}</Text>
           <Text style={styles.priceText}>${route.params.item.price}</Text>
 
-          <View style={styles.messageContainer}>
-            <TextInput
-              style={styles.messageInput}
-              value={message}
-              onChangeText={setMessage}
-              multiline
-              placeholder="ask any questions about this service"
-            />
-            <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
-              <Text style={styles.sendButtonText}>Send</Text>
-            </TouchableOpacity>
-          </View>
           <View style={styles.divider} />
 
           <Pressable
             onPress={() =>
-              navigation.navigate("ProfileDetail", {
-                item: businessProfile,
-              })
+              user.user_id === businessProfile.user_id
+                ? navigation.navigate("UserProfile")
+                : navigation.navigate("ProfileDetail", {
+                    item: businessProfile,
+                  })
             }
           >
             <BusinessInfo
@@ -247,17 +197,30 @@ export default function ServiceDetails({ route, navigation }) {
         <View style={{ marginBottom: 100 }} />
       </ScrollView>
       <View style={styles.bottomBar}>
-        <TouchableOpacity
-          onPress={goToAddTime}
-          disabled={loading}
-          style={styles.bookButton}
-        >
-          {loading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.bookButtonText}>Select Date</Text>
-          )}
-        </TouchableOpacity>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate("InboxDetails", {
+                profileDetails: businessProfile,
+              })
+            }
+            style={[styles.bookButton, styles.askButton]} // Adjusted styles for the "Ask" button
+          >
+            <Text style={{ color: "#007bff", fontWeight: "bold" }}>Ask</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={goToAddTime}
+            disabled={loading}
+            style={styles.bookButton}
+          >
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.bookButtonText}>Select Date</Text>
+            )}
+          </TouchableOpacity>
+        </View>
       </View>
       <Modal visible={processing} animationType="fade">
         <SafeAreaView style={styles.modalContainer}>
@@ -346,13 +309,17 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 1,
-    backgroundColor: "#ccc",
     marginVertical: 7,
+    borderColor: "grey",
+    borderTopColor: "#ddd",
+    borderTopWidth: 0.8,
+    borderTopColor: "#ddd",
   },
+
   bottomBar: {
     backgroundColor: "#fff",
     paddingVertical: 12,
-    paddingHorizontal: 24,
+    paddingHorizontal: 1,
     borderTopWidth: 1,
     borderTopColor: "#ddd",
     position: "absolute",
@@ -360,17 +327,34 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
   },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between", // Ensure buttons are evenly spaced
+  },
   bookButton: {
     backgroundColor: "#007bff",
     height: 50,
     borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
+    flex: 1, // Each button will take up equal space
+    marginHorizontal: 10, // Adjust the space between the buttons
+  },
+  askButton: {
+    backgroundColor: "white",
+    borderWidth: 1,
+    borderColor: "#007bff",
+    height: 50,
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 1, // Each button will take up equal space
+    marginHorizontal: 10, // Adjust the space between the buttons
   },
   bookButtonText: {
     color: "#fff",
     fontWeight: "bold",
   },
+
   modalContainer: {
     flex: 1,
     backgroundColor: "#4A3AFF",
@@ -384,7 +368,7 @@ const styles = StyleSheet.create({
   businessInfoContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 16,
+    marginTop: 10,
   },
   profileImage: {
     width: 40,

@@ -336,7 +336,7 @@ export default function Auth() {
           component={UserProfile}
           options={{
             tabBarVisible: false,
-
+            headerShown: true,
             headerTitle: "", // Customizing the header title
             headerBackTitle: "Back", // Customizing the back button text
             headerTintColor: "black", // Changing the color of the back button text

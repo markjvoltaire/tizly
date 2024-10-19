@@ -14,10 +14,22 @@ import {
   Alert,
   Dimensions,
   RefreshControl, // Import RefreshControl
+  Platform,
 } from "react-native";
 import { useUser } from "../context/UserContext"; // Import useUser context
 import Icon from "react-native-vector-icons/Ionicons"; // Import Ionicons
 import { supabase } from "../services/supabase";
+import * as Device from "expo-device";
+import * as Notifications from "expo-notifications";
+import Constants from "expo-constants";
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
 
 const PersonalHome = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -35,6 +47,97 @@ const PersonalHome = ({ navigation }) => {
     await getForYou();
     await getNew();
     setRefreshing(false);
+  };
+
+  const [expoPushToken, setExpoPushToken] = useState("");
+
+  const screenHeight = Dimensions.get("window").height;
+
+  useEffect(() => {
+    registerForPushNotificationsAsync().then(
+      (token) => token && setExpoPushToken(token)
+    );
+  }, []);
+
+  async function schedulePushNotification() {
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "You've got mail! 📬",
+        body: "Here is the notification body",
+        data: { data: "goes here", test: { test1: "more data" } },
+      },
+      trigger: { seconds: 2 },
+    });
+  }
+
+  async function registerForPushNotificationsAsync() {
+    let token;
+
+    if (Platform.OS === "android") {
+      await Notifications.setNotificationChannelAsync("default", {
+        name: "default",
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: "#FF231F7C",
+      });
+    }
+
+    if (Device.isDevice) {
+      const { status: existingStatus } =
+        await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+      if (existingStatus !== "granted") {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+      // if (finalStatus !== "granted") {
+      //   alert("Failed to get push token for push notification!");
+      //   return;
+      // }
+      // Learn more about projectId:
+      // https://docs.expo.dev/push-notifications/push-notifications-setup/#configure-projectid
+      // EAS projectId is used here.
+      try {
+        const projectId =
+          Constants?.expoConfig?.extra?.eas?.projectId ??
+          Constants?.easConfig?.projectId;
+        if (!projectId) {
+          throw new Error("Project ID not found");
+        }
+        token = (
+          await Notifications.getExpoPushTokenAsync({
+            projectId,
+          })
+        ).data;
+        console.log("token", token);
+
+        await updateExpoToken(token);
+      } catch (e) {
+        token = `${e}`;
+      }
+    } else {
+      null;
+    }
+
+    return token;
+  }
+
+  const updateExpoToken = async (token) => {
+    console.log("token", token);
+
+    const userId = supabase.auth.currentUser.id;
+
+    const res = await supabase
+      .from("profiles")
+      .update({ expo_push_token: token })
+      .eq("user_id", userId);
+
+    if (res.error) {
+      console.log("ERROR", res.error);
+      Alert.alert("Something Went Wrong");
+    }
+
+    return res;
   };
 
   // Sample services to display when typing into the search bar
@@ -164,13 +267,11 @@ const PersonalHome = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
-        <Text style={styles.title}>Marketplace</Text>
-
         {/* Search Input with Clear Button */}
         <View style={styles.searchContainer}>
           <TextInput
             style={styles.searchInput}
-            placeholder="Search for services..."
+            placeholder="Search on Tizly"
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
@@ -224,6 +325,7 @@ const PersonalHome = ({ navigation }) => {
               <ScrollView
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.grid}
+                style={{ backgroundColor: "#f8f9fa" }}
                 refreshControl={
                   <RefreshControl
                     refreshing={refreshing}
@@ -232,7 +334,7 @@ const PersonalHome = ({ navigation }) => {
                 }
               >
                 {forYouList.map((service, index) => (
-                  <TouchableOpacity
+                  <Pressable
                     key={index}
                     style={styles.productContainer}
                     onPress={() =>
@@ -252,7 +354,7 @@ const PersonalHome = ({ navigation }) => {
                         • {service.title}
                       </Text>
                     </View>
-                  </TouchableOpacity>
+                  </Pressable>
                 ))}
               </ScrollView>
             )}
@@ -320,14 +422,14 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     marginVertical: 10,
     marginLeft: 10,
   },
   searchContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 15,
     borderRadius: 10,
     paddingHorizontal: 10,
     fontSize: 16,
@@ -359,7 +461,7 @@ const styles = StyleSheet.create({
   locationContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: 8,
     marginRight: 10,
   },
   locationIcon: {
@@ -389,17 +491,18 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: 5,
+    marginTop: 2,
     padding: 5,
   },
   picksText: {
-    fontWeight: "600",
+    fontFamily: "Poppins-SemiBold",
     fontSize: 20,
   },
   thumbnail: {
     width: "100%",
     height: 180,
     backgroundColor: "#EEEFF2",
+    borderRadius: 5,
   },
   productTitle: {
     fontSize: 14,

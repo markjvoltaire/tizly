@@ -21,10 +21,16 @@ export default function Category({ route, navigation }) {
   } = route.params;
 
   const getProfessionals = async () => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("services")
       .select("*")
-      .eq("category", name);
+      .eq("category", name)
+      .eq("deactivated", false);
+
+    if (error) {
+      console.error("Error fetching professionals:", error);
+      return [];
+    }
     return data;
   };
 
@@ -62,12 +68,15 @@ export default function Category({ route, navigation }) {
     };
 
     getPros();
-  }, []);
+  }, [user, name]);
 
   if (loading) {
     return (
       <SafeAreaView style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="grey" />
+        <Text style={{ marginTop: 10, color: "#555" }}>
+          Loading services...
+        </Text>
       </SafeAreaView>
     );
   }
@@ -86,11 +95,13 @@ export default function Category({ route, navigation }) {
       style={styles.cardContainer}
     >
       <Image source={{ uri: item.thumbnail }} style={styles.cardThumbnail} />
-      <View style={styles.cardContent}>
-        <Text style={styles.cardTitle}>{item.title}</Text>
-        <View style={styles.cardFooter}>
-          <Text style={styles.cardStats}> Starting at: ${item.price}</Text>
-        </View>
+      <View style={styles.cardTextContainer}>
+        <Text numberOfLines={1} style={styles.cardPrice}>
+          ${item.price}
+        </Text>
+        <Text numberOfLines={1} style={styles.cardTitle}>
+          • {item.title}
+        </Text>
       </View>
     </Pressable>
   );
@@ -102,6 +113,7 @@ export default function Category({ route, navigation }) {
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderItem}
         contentContainerStyle={styles.flatListContent}
+        numColumns={2} // Grid with two columns
       />
     </SafeAreaView>
   );
@@ -109,7 +121,7 @@ export default function Category({ route, navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "white",
+    backgroundColor: "#f8f9fa",
     flex: 1,
   },
   loadingContainer: {
@@ -129,43 +141,45 @@ const styles = StyleSheet.create({
     color: "#888",
   },
   cardContainer: {
-    flexDirection: "row",
-    padding: 20,
-    marginHorizontal: 15,
-    marginVertical: 12,
-    backgroundColor: "white",
-    borderRadius: 12,
+    flex: 1,
+    margin: 2,
+    backgroundColor: "#fff",
+    borderRadius: 1,
+    overflow: "hidden",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 4,
+    shadowRadius: 5,
+    width: "49.5%",
   },
   cardThumbnail: {
-    width: 110,
-    height: 110,
+    width: "100%",
+    height: 180,
     borderRadius: 10,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "#EEEFF2",
   },
-  cardContent: {
-    flex: 1,
-    marginLeft: 20,
-  },
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    marginBottom: 8,
-    color: "#333",
-  },
-  cardFooter: {
+  cardTextContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 2,
+    padding: 5,
   },
-  cardStats: {
-    fontSize: 16,
+  cardTitle: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: "#333",
+    flex: 1,
+    marginRight: 5,
+  },
+  cardPrice: {
+    fontSize: 14,
     color: "#555",
+    marginRight: 2,
   },
   flatListContent: {
     paddingBottom: 30,
+    paddingHorizontal: 1,
+    marginTop: 10,
   },
 });
