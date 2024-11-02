@@ -346,12 +346,12 @@ const PersonalHome = ({ navigation }) => {
                       style={styles.thumbnail}
                     />
                     <View style={styles.productInfo}>
-                      <Text style={styles.productPrice} numberOfLines={1}>
+                      {/* <Text style={styles.productPrice} numberOfLines={1}>
                         ${service.price}
-                      </Text>
+                      </Text> */}
 
                       <Text style={styles.productTitle} numberOfLines={1}>
-                        • {service.title}
+                        {service.title}
                       </Text>
                     </View>
                   </Pressable>

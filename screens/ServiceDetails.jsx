@@ -171,7 +171,7 @@ export default function ServiceDetails({ route, navigation }) {
           <Text style={styles.serviceTitle}>{route.params.item.title}</Text>
           <Text style={styles.priceText}>${route.params.item.price}</Text>
 
-          <View style={styles.divider} />
+          {/* <View style={styles.divider} /> */}
 
           <Pressable
             onPress={() =>
